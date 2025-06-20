@@ -5,15 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Users, Calendar, TrendingUp, Shield, ChevronRight } from "lucide-react";
+import { Plus, Users, Calendar, TrendingUp, Shield, ChevronRight, Search } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
+import UserSearchModal from "@/components/UserSearchModal";
 
 const Index = () => {
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [showUserSearch, setShowUserSearch] = useState(false);
 
   // Mock user data
   const user = {
@@ -53,23 +55,23 @@ const Index = () => {
     }
   ];
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
     }).format(amount);
   };
 
-  const getTrustScoreColor = (score) => {
+  const getTrustScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";
     if (score >= 60) return "text-yellow-600";
     return "text-red-600";
   };
 
-  const getDaysUntilPayout = (date) => {
+  const getDaysUntilPayout = (date: string) => {
     const today = new Date();
     const payoutDate = new Date(date);
-    const diffTime = payoutDate - today;
+    const diffTime = payoutDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };
@@ -134,13 +136,23 @@ const Index = () => {
           </Button>
         </div>
 
+        {/* Search Users Button */}
+        <Button 
+          onClick={() => setShowUserSearch(true)}
+          variant="outline"
+          className="w-full h-14 border-2 border-gray-200 text-gray-700 font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 hover:bg-gray-50"
+        >
+          <Search className="h-5 w-5 mr-2" />
+          Search Users
+        </Button>
+
         {/* Next Payout Alert */}
         {activeGroups.some(group => group.myTurn) && (
           <Card className="p-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white border-0 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-lg">Your Turn!</h3>
-                <p className="text-green-100">Next payout in {getDaysUntilPayout(activeGroups.find(g => g.myTurn)?.nextPayout)} days</p>
+                <p className="text-green-100">Next payout in {getDaysUntilPayout(activeGroups.find(g => g.myTurn)?.nextPayout || "")} days</p>
               </div>
               <TrendingUp className="h-8 w-8 text-green-100" />
             </div>
@@ -228,6 +240,10 @@ const Index = () => {
           onOpenChange={() => setSelectedGroup(null)} 
         />
       )}
+      <UserSearchModal 
+        open={showUserSearch} 
+        onOpenChange={setShowUserSearch} 
+      />
     </div>
   );
 };
