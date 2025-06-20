@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Users, DollarSign, Calendar, Shield, CheckCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Users, DollarSign, Calendar, Shield, CheckCircle, AlertTriangle } from "lucide-react";
 
 interface JoinGroupModalProps {
   open: boolean;
@@ -17,6 +18,7 @@ interface JoinGroupModalProps {
 const JoinGroupModal = ({ open, onOpenChange }: JoinGroupModalProps) => {
   const [inviteCode, setInviteCode] = useState('');
   const [foundGroup, setFoundGroup] = useState(null);
+  const [individualInsurance, setIndividualInsurance] = useState(false);
 
   // Mock group data that would be found by invite code
   const mockGroup = {
@@ -31,6 +33,7 @@ const JoinGroupModal = ({ open, onOpenChange }: JoinGroupModalProps) => {
     currentRecipient: "Lisa Chen",
     creator: "Sarah Mitchell",
     trustScoreAvg: 84,
+    hasGroupInsurance: false, // This determines if individual insurance is available
     memberList: [
       { name: "Sarah M.", avatar: "/placeholder.svg", trustScore: 92 },
       { name: "Mike J.", avatar: "/placeholder.svg", trustScore: 78 },
@@ -53,10 +56,11 @@ const JoinGroupModal = ({ open, onOpenChange }: JoinGroupModalProps) => {
   };
 
   const handleJoin = () => {
-    console.log('Joining group:', foundGroup);
+    console.log('Joining group:', foundGroup, 'Individual insurance:', individualInsurance);
     onOpenChange(false);
     setInviteCode('');
     setFoundGroup(null);
+    setIndividualInsurance(false);
   };
 
   const formatCurrency = (amount) => {
@@ -70,6 +74,10 @@ const JoinGroupModal = ({ open, onOpenChange }: JoinGroupModalProps) => {
     if (score >= 80) return "text-green-600";
     if (score >= 60) return "text-yellow-600";
     return "text-red-600";
+  };
+
+  const calculateIndividualInsuranceCost = () => {
+    return foundGroup ? Math.max(0.50, foundGroup.contributionAmount * 0.005) : 0.50;
   };
 
   return (
@@ -118,6 +126,14 @@ const JoinGroupModal = ({ open, onOpenChange }: JoinGroupModalProps) => {
                 <p className="text-sm text-gray-600">Created by {foundGroup.creator}</p>
               </div>
 
+              {/* Insurance Status */}
+              <div className="flex items-center justify-center space-x-2">
+                <Shield className={`h-4 w-4 ${foundGroup.hasGroupInsurance ? 'text-green-500' : 'text-gray-400'}`} />
+                <Badge variant={foundGroup.hasGroupInsurance ? "default" : "outline"}>
+                  {foundGroup.hasGroupInsurance ? "Group Insurance Enabled" : "No Group Insurance"}
+                </Badge>
+              </div>
+
               {/* Group Stats */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
@@ -131,6 +147,41 @@ const JoinGroupModal = ({ open, onOpenChange }: JoinGroupModalProps) => {
                   <div className="text-xs text-gray-500">Members</div>
                 </div>
               </div>
+
+              {/* Individual Insurance Option */}
+              {!foundGroup.hasGroupInsurance && (
+                <Card className="p-4 bg-yellow-50 border-yellow-200">
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id="individualInsurance"
+                      checked={individualInsurance}
+                      onCheckedChange={setIndividualInsurance}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor="individualInsurance" className="text-sm font-medium cursor-pointer">
+                        Add Individual Insurance (+${calculateIndividualInsuranceCost().toFixed(2)})
+                      </Label>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Protect your contribution (50% coverage) against defaults and fraud
+                      </p>
+                      {individualInsurance && (
+                        <div className="mt-2 p-2 bg-white rounded border">
+                          <div className="flex items-center space-x-1 mb-1">
+                            <Shield className="h-3 w-3 text-green-500" />
+                            <span className="text-xs font-medium">Coverage includes:</span>
+                          </div>
+                          <ul className="text-xs text-gray-600 space-y-0.5">
+                            <li>• Up to 50% of your contribution</li>
+                            <li>• Protection from member defaults</li>
+                            <li>• Fraud protection</li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              )}
 
               {/* Next Payout Info */}
               <div className="bg-blue-50 p-3 rounded-lg">
@@ -176,6 +227,26 @@ const JoinGroupModal = ({ open, onOpenChange }: JoinGroupModalProps) => {
                   )}
                 </div>
               </div>
+
+              {/* Total Cost Breakdown */}
+              <Card className="p-3 bg-gray-50">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Monthly Contribution:</span>
+                    <span className="font-medium">{formatCurrency(foundGroup.contributionAmount)}</span>
+                  </div>
+                  {individualInsurance && (
+                    <div className="flex justify-between text-sm">
+                      <span>Individual Insurance:</span>
+                      <span className="font-medium">+${calculateIndividualInsuranceCost().toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between font-bold border-t pt-2">
+                    <span>Total per month:</span>
+                    <span>{formatCurrency(foundGroup.contributionAmount + (individualInsurance ? calculateIndividualInsuranceCost() : 0))}</span>
+                  </div>
+                </div>
+              </Card>
 
               {/* Join Button */}
               <Button 
