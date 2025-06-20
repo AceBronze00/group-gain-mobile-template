@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -155,7 +154,7 @@ const JoinGroupModal = ({ open, onOpenChange }: JoinGroupModalProps) => {
                     <Checkbox
                       id="individualInsurance"
                       checked={individualInsurance}
-                      onCheckedChange={setIndividualInsurance}
+                      onCheckedChange={(checked) => setIndividualInsurance(checked === true)}
                       className="mt-1"
                     />
                     <div className="flex-1">
