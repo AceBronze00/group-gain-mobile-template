@@ -1,10 +1,11 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Home, Search, User } from "lucide-react";
+import { Home, Search, User, Bell } from "lucide-react";
 import DashboardTab from "@/components/DashboardTab";
 import SearchTab from "@/components/SearchTab";
 import ProfileTab from "@/components/ProfileTab";
+import NotificationsTab from "@/components/NotificationsTab";
 
 const Index = () => {
   return (
@@ -25,6 +26,9 @@ const Index = () => {
             <TabsContent value="search">
               <SearchTab />
             </TabsContent>
+            <TabsContent value="notifications">
+              <NotificationsTab />
+            </TabsContent>
             <TabsContent value="profile">
               <ProfileTab />
             </TabsContent>
@@ -33,7 +37,7 @@ const Index = () => {
           {/* Bottom Navigation */}
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
             <div className="max-w-md mx-auto">
-              <TabsList className="w-full h-16 bg-transparent p-0 grid grid-cols-3">
+              <TabsList className="w-full h-16 bg-transparent p-0 grid grid-cols-4">
                 <TabsTrigger 
                   value="dashboard" 
                   className="h-full flex flex-col items-center justify-center space-y-1 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600"
@@ -47,6 +51,13 @@ const Index = () => {
                 >
                   <Search className="h-5 w-5" />
                   <span className="text-xs">Search</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="notifications" 
+                  className="h-full flex flex-col items-center justify-center space-y-1 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600"
+                >
+                  <Bell className="h-5 w-5" />
+                  <span className="text-xs">Notifications</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="profile" 

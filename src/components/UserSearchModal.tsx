@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -6,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Search, Shield, Users, TrendingUp } from "lucide-react";
+import UserProfileModal from "./UserProfileModal";
 
 interface User {
   id: number;
@@ -24,6 +24,8 @@ interface UserSearchModalProps {
 
 const UserSearchModal = ({ open, onOpenChange }: UserSearchModalProps) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserProfile, setShowUserProfile] = useState(false);
 
   // Mock users data
   const allUsers: User[] = [
@@ -91,76 +93,93 @@ const UserSearchModal = ({ open, onOpenChange }: UserSearchModalProps) => {
     }).format(amount);
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md mx-auto max-h-[80vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-center">Search Users</DialogTitle>
-        </DialogHeader>
-        
-        <div className="flex-1 space-y-4 overflow-hidden">
-          {/* Search Input */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 text-base"
-            />
-          </div>
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user);
+    setShowUserProfile(true);
+  };
 
-          {/* Results */}
-          <div className="flex-1 overflow-y-auto space-y-3 max-h-96">
-            {filteredUsers.length === 0 ? (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">
-                  {searchQuery ? 'No users found' : 'Start typing to search users'}
-                </p>
-              </div>
-            ) : (
-              filteredUsers.map((user) => (
-                <Card key={user.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="bg-blue-500 text-white">
-                        {user.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-800">{user.name}</h3>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <Shield className="h-3 w-3 text-blue-500" />
-                        <Badge className={`text-xs px-2 py-1 ${getTrustScoreColor(user.trustScore)}`}>
-                          Trust: {user.trustScore}
-                        </Badge>
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-md mx-auto max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-center">Search Users</DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 space-y-4 overflow-hidden">
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-12 text-base"
+              />
+            </div>
+
+            {/* Results */}
+            <div className="flex-1 overflow-y-auto space-y-3 max-h-96">
+              {filteredUsers.length === 0 ? (
+                <div className="text-center py-8">
+                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-500">
+                    {searchQuery ? 'No users found' : 'Start typing to search users'}
+                  </p>
+                </div>
+              ) : (
+                filteredUsers.map((user) => (
+                  <Card 
+                    key={user.id} 
+                    className="p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleUserClick(user)}
+                  >
+                    <div className="flex items-center space-x-3 mb-3">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={user.avatar} alt={user.name} />
+                        <AvatarFallback className="bg-blue-500 text-white">
+                          {user.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800">{user.name}</h3>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Shield className="h-3 w-3 text-blue-500" />
+                          <Badge className={`text-xs px-2 py-1 ${getTrustScoreColor(user.trustScore)}`}>
+                            Trust: {user.trustScore}
+                          </Badge>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                    <div>
-                      <div className="font-bold text-blue-600">{user.groupsCompleted}</div>
-                      <div className="text-gray-500 text-xs">Completed</div>
+                    
+                    <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                      <div>
+                        <div className="font-bold text-blue-600">{user.groupsCompleted}</div>
+                        <div className="text-gray-500 text-xs">Completed</div>
+                      </div>
+                      <div>
+                        <div className="font-bold text-green-600">{user.activeGroups}</div>
+                        <div className="text-gray-500 text-xs">Active</div>
+                      </div>
+                      <div>
+                        <div className="font-bold text-purple-600">{formatCurrency(user.totalContributed)}</div>
+                        <div className="text-gray-500 text-xs">Total</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-bold text-green-600">{user.activeGroups}</div>
-                      <div className="text-gray-500 text-xs">Active</div>
-                    </div>
-                    <div>
-                      <div className="font-bold text-purple-600">{formatCurrency(user.totalContributed)}</div>
-                      <div className="text-gray-500 text-xs">Total</div>
-                    </div>
-                  </div>
-                </Card>
-              ))
-            )}
+                  </Card>
+                ))
+              )}
+            </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <UserProfileModal 
+        open={showUserProfile}
+        onOpenChange={setShowUserProfile}
+        user={selectedUser}
+      />
+    </>
   );
 };
 
