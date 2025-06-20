@@ -1,11 +1,11 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Home, Search, User, Bell } from "lucide-react";
+import { Home, Search, User, History } from "lucide-react";
 import DashboardTab from "@/components/DashboardTab";
 import SearchTab from "@/components/SearchTab";
 import ProfileTab from "@/components/ProfileTab";
-import NotificationsTab from "@/components/NotificationsTab";
+import ActivityTab from "@/components/ActivityTab";
 
 const Index = () => {
   return (
@@ -26,8 +26,8 @@ const Index = () => {
             <TabsContent value="search">
               <SearchTab />
             </TabsContent>
-            <TabsContent value="notifications">
-              <NotificationsTab />
+            <TabsContent value="activity">
+              <ActivityTab />
             </TabsContent>
             <TabsContent value="profile">
               <ProfileTab />
@@ -53,11 +53,11 @@ const Index = () => {
                   <span className="text-xs">Search</span>
                 </TabsTrigger>
                 <TabsTrigger 
-                  value="notifications" 
+                  value="activity" 
                   className="h-full flex flex-col items-center justify-center space-y-1 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-600"
                 >
-                  <Bell className="h-5 w-5" />
-                  <span className="text-xs">Notifications</span>
+                  <History className="h-5 w-5" />
+                  <span className="text-xs">Activity</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="profile" 
