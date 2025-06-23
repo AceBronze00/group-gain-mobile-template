@@ -1,23 +1,21 @@
+
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell, DollarSign, Gift } from "lucide-react";
+import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell, DollarSign } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
-import CashoutModal from "@/components/CashoutModal";
-import WalletBalance from "@/components/WalletBalance";
 
 const DashboardTab = () => {
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedGroupForPayment, setSelectedGroupForPayment] = useState(null);
-  const [selectedGroupForCashout, setSelectedGroupForCashout] = useState(null);
 
   // Mock user data
   const user = {
@@ -56,19 +54,6 @@ const DashboardTab = () => {
     }
   ];
 
-  // Mock completed groups ready for cashout
-  const completedGroups = [
-    {
-      id: 3,
-      name: "Emergency Fund",
-      members: 6,
-      totalAmount: 1800,
-      payoutAmount: 1800,
-      completedDate: "2024-06-20",
-      readyForCashout: true
-    }
-  ];
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -91,11 +76,6 @@ const DashboardTab = () => {
   const handlePaymentClick = (e: React.MouseEvent, group: any) => {
     e.stopPropagation(); // Prevent the group details modal from opening
     setSelectedGroupForPayment(group);
-  };
-
-  const handleCashoutClick = (e: React.MouseEvent, group: any) => {
-    e.stopPropagation();
-    setSelectedGroupForCashout(group);
   };
 
   return (
@@ -121,9 +101,6 @@ const DashboardTab = () => {
         </div>
       </Card>
 
-      {/* Wallet Balance */}
-      <WalletBalance />
-
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4">
         <Button 
@@ -142,29 +119,6 @@ const DashboardTab = () => {
           <span>Join Group</span>
         </Button>
       </div>
-
-      {/* Cashout Alert for Completed Groups */}
-      {completedGroups.length > 0 && (
-        <Card className="p-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white border-0 shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-lg flex items-center">
-                <Gift className="h-5 w-5 mr-2" />
-                💰 Ready to Cashout!
-              </h3>
-              <p className="text-green-100">
-                {completedGroups.length} pool{completedGroups.length > 1 ? 's' : ''} completed - claim your payout
-              </p>
-            </div>
-            <Button
-              onClick={() => setSelectedGroupForCashout(completedGroups[0])}
-              className="bg-white text-green-600 hover:bg-green-50 font-semibold"
-            >
-              Cashout Now
-            </Button>
-          </div>
-        </Card>
-      )}
 
       {/* Next Payout Alert */}
       {activeGroups.some(group => group.myTurn) && (
@@ -247,51 +201,6 @@ const DashboardTab = () => {
         ))}
       </div>
 
-      {/* Completed Groups Ready for Cashout */}
-      {completedGroups.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-gray-800 flex items-center">
-              <Gift className="h-5 w-5 mr-2 text-green-500" />
-              Ready to Cashout ({completedGroups.length})
-            </h3>
-          </div>
-          
-          {completedGroups.map((group) => (
-            <Card 
-              key={group.id} 
-              className="p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
-              onClick={() => handleCashoutClick({} as React.MouseEvent, group)}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h4 className="font-bold text-lg text-gray-800">{group.name}</h4>
-                  <p className="text-sm text-gray-600 flex items-center mt-1">
-                    <Users className="h-4 w-4 mr-1" />
-                    {group.members} members • Completed {new Date(group.completedDate).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-green-600">
-                    {formatCurrency(group.payoutAmount)}
-                  </div>
-                  <Badge className="bg-green-500 hover:bg-green-600">
-                    Ready to Cashout 💰
-                  </Badge>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between pt-2">
-                <div className="text-sm text-green-700 font-medium">
-                  🎉 Pool completed! Click to claim your payout
-                </div>
-                <ChevronRight className="h-5 w-5 text-green-500" />
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-
       {activeGroups.length === 0 && (
         <Card className="p-8 text-center bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-2xl">
           <div className="max-w-sm mx-auto">
@@ -331,13 +240,6 @@ const DashboardTab = () => {
           group={selectedGroupForPayment}
           open={!!selectedGroupForPayment}
           onOpenChange={(open) => !open && setSelectedGroupForPayment(null)}
-        />
-      )}
-      {selectedGroupForCashout && (
-        <CashoutModal
-          group={selectedGroupForCashout}
-          open={!!selectedGroupForCashout}
-          onOpenChange={(open) => !open && setSelectedGroupForCashout(null)}
         />
       )}
     </div>
