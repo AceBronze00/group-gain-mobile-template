@@ -4,15 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell } from "lucide-react";
+import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell, DollarSign } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
+import PaymentModal from "@/components/PaymentModal";
 
 const DashboardTab = () => {
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedGroupForPayment, setSelectedGroupForPayment] = useState(null);
 
   // Mock user data
   const user = {
@@ -64,6 +66,15 @@ const DashboardTab = () => {
     const diffTime = payoutDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
+  };
+
+  const handleGroupClick = (group: any) => {
+    setSelectedGroup(group);
+  };
+
+  const handlePaymentClick = (e: React.MouseEvent, group: any) => {
+    e.stopPropagation(); // Prevent the group details modal from opening
+    setSelectedGroupForPayment(group);
   };
 
   return (
@@ -134,7 +145,7 @@ const DashboardTab = () => {
           <Card 
             key={group.id} 
             className="p-5 bg-white/90 backdrop-blur-sm border-0 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
-            onClick={() => setSelectedGroup(group)}
+            onClick={() => handleGroupClick(group)}
           >
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -148,12 +159,23 @@ const DashboardTab = () => {
                 <div className="text-xl font-bold text-gray-800">
                   {formatCurrency(group.totalAmount)}
                 </div>
-                <Badge 
-                  variant={group.myTurn ? "default" : "secondary"}
-                  className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
-                >
-                  {group.myTurn ? "Your Turn 🎯" : `Position ${group.position}`}
-                </Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge 
+                    variant={group.myTurn ? "default" : "secondary"}
+                    className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
+                  >
+                    {group.myTurn ? "Your Turn 🎯" : `Position ${group.position}`}
+                  </Badge>
+                  {group.myTurn && (
+                    <Button
+                      onClick={(e) => handlePaymentClick(e, group)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 h-7"
+                    >
+                      <DollarSign className="h-3 w-3 mr-1" />
+                      Pay Now
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
             
@@ -208,6 +230,13 @@ const DashboardTab = () => {
           group={selectedGroup}
           open={!!selectedGroup} 
           onOpenChange={() => setSelectedGroup(null)} 
+        />
+      )}
+      {selectedGroupForPayment && (
+        <PaymentModal
+          group={selectedGroupForPayment}
+          open={!!selectedGroupForPayment}
+          onOpenChange={(open) => !open && setSelectedGroupForPayment(null)}
         />
       )}
     </div>
