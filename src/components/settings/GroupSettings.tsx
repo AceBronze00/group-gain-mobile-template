@@ -1,10 +1,11 @@
-
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Users, Settings, AlertTriangle, Crown, ExternalLink } from "lucide-react";
+import { Users, Settings, AlertTriangle, Crown, ExternalLink, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import PaymentModal from "@/components/PaymentModal";
 
 interface GroupSettingsProps {
   activeGroups: Array<{
@@ -24,6 +25,7 @@ interface GroupSettingsProps {
 
 const GroupSettings = ({ activeGroups }: GroupSettingsProps) => {
   const { toast } = useToast();
+  const [selectedGroupForPayment, setSelectedGroupForPayment] = useState<any>(null);
 
   const handleLeaveGroup = (groupName: string) => {
     toast({
@@ -37,6 +39,10 @@ const GroupSettings = ({ activeGroups }: GroupSettingsProps) => {
       title: "Issue Flagged",
       description: `Issue reported for "${groupName}". Our team will review it.`,
     });
+  };
+
+  const handlePayment = (group: any) => {
+    setSelectedGroupForPayment(group);
   };
 
   return (
@@ -85,6 +91,15 @@ const GroupSettings = ({ activeGroups }: GroupSettingsProps) => {
                   Recipient: <span className="font-medium">{group.payoutRecipient}</span>
                 </p>
                 <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePayment(group)}
+                    className="flex items-center space-x-1 bg-blue-50 text-blue-600 hover:bg-blue-100"
+                  >
+                    <DollarSign className="h-3 w-3" />
+                    <span>Pay</span>
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
@@ -195,6 +210,15 @@ const GroupSettings = ({ activeGroups }: GroupSettingsProps) => {
           </div>
         </div>
       </Card>
+
+      {/* Payment Modal */}
+      {selectedGroupForPayment && (
+        <PaymentModal
+          group={selectedGroupForPayment}
+          open={!!selectedGroupForPayment}
+          onOpenChange={(open) => !open && setSelectedGroupForPayment(null)}
+        />
+      )}
     </div>
   );
 };
