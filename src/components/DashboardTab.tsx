@@ -166,15 +166,17 @@ const DashboardTab = () => {
                   >
                     {group.myTurn ? "Your Turn 🎯" : `Position ${group.position}`}
                   </Badge>
-                  {group.myTurn && (
-                    <Button
-                      onClick={(e) => handlePaymentClick(e, group)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 h-7"
-                    >
-                      <DollarSign className="h-3 w-3 mr-1" />
-                      Pay Now
-                    </Button>
-                  )}
+                  <Button
+                    onClick={(e) => handlePaymentClick(e, group)}
+                    className={`text-white text-xs px-3 py-1 h-7 ${
+                      group.myTurn 
+                        ? "bg-blue-600 hover:bg-blue-700" 
+                        : "bg-gray-600 hover:bg-gray-700"
+                    }`}
+                  >
+                    <DollarSign className="h-3 w-3 mr-1" />
+                    Pay Now
+                  </Button>
                 </div>
               </div>
             </div>
