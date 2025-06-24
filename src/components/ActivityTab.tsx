@@ -1,11 +1,12 @@
+
 import { useState } from 'react';
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Users, DollarSign, Calendar, Check, X, Bell, History, CheckCircle, XCircle, ArrowUpRight, Wallet, Clock, Star } from "lucide-react";
+import { Bell, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import TrustScoreProfile from "@/components/TrustScoreProfile";
+import NotificationsSection from "./activity/NotificationsSection";
+import HistorySection from "./activity/HistorySection";
 
 const ActivityTab = () => {
   const [activeTab, setActiveTab] = useState<'notifications' | 'history'>('notifications');
@@ -165,13 +166,6 @@ const ActivityTab = () => {
     }
   ];
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
-  };
-
   const handleAcceptInvite = (notificationId: number) => {
     toast({
       title: "Invitation Accepted!",
@@ -193,21 +187,6 @@ const ActivityTab = () => {
       ...member,
       groupName: groupName
     });
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "group_invite":
-        return <Users className="h-5 w-5 text-blue-500" />;
-      case "payment_due":
-        return <Calendar className="h-5 w-5 text-orange-500" />;
-      case "payment_made":
-        return <DollarSign className="h-5 w-5 text-green-500" />;
-      case "payout_scheduled":
-        return <DollarSign className="h-5 w-5 text-purple-500" />;
-      default:
-        return <Bell className="h-5 w-5 text-gray-500" />;
-    }
   };
 
   const unreadCount = notifications.filter(n => n.unread).length;
@@ -284,294 +263,17 @@ const ActivityTab = () => {
 
       {/* Content */}
       {activeTab === 'notifications' ? (
-        <div className="space-y-4">
-          {/* ... keep existing code (notifications rendering) */}
-          {notifications.length === 0 ? (
-            <Card className="p-8 text-center">
-              <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">No notifications</h3>
-              <p className="text-gray-500">You're all caught up!</p>
-            </Card>
-          ) : (
-            notifications.map((notification) => (
-              <Card 
-                key={notification.id} 
-                className={`p-4 ${notification.unread ? 'border-blue-200 bg-blue-50' : ''}`}
-              >
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 mt-1">
-                    {getNotificationIcon(notification.type)}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-semibold text-gray-800">{notification.title}</h4>
-                      <span className="text-xs text-gray-500">{notification.timestamp}</span>
-                    </div>
-                    
-                    <p className="text-sm text-gray-600 mb-3">{notification.message}</p>
-                    
-                    {notification.type === "group_invite" && (
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage src={notification.data.inviterAvatar} alt={notification.data.inviterName} />
-                            <AvatarFallback className="bg-blue-500 text-white text-xs">
-                              {notification.data.inviterName.split(' ').map((n: string) => n[0]).join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm text-gray-600">
-                            {formatCurrency(notification.data.contributionAmount)} {notification.data.frequency}
-                          </span>
-                        </div>
-                        
-                        <div className="flex space-x-2">
-                          <Button 
-                            size="sm" 
-                            onClick={() => handleAcceptInvite(notification.id)}
-                            className="bg-green-500 hover:bg-green-600"
-                          >
-                            <Check className="h-3 w-3 mr-1" />
-                            Accept
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleDeclineInvite(notification.id)}
-                          >
-                            <X className="h-3 w-3 mr-1" />
-                            Decline
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {notification.type === "payment_due" && (
-                      <div className="bg-orange-50 p-3 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">Amount Due:</span>
-                          <span className="text-sm font-bold text-orange-600">
-                            {formatCurrency(notification.data.amount)}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="text-xs text-gray-600">Due Date:</span>
-                          <span className="text-xs text-gray-600">
-                            {new Date(notification.data.dueDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {notification.type === "payment_made" && (
-                      <div className="flex items-center space-x-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={notification.data.payerAvatar} alt={notification.data.payerName} />
-                          <AvatarFallback className="bg-green-500 text-white text-xs">
-                            {notification.data.payerName.split(' ').map((n: string) => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm font-medium text-green-600">
-                          {formatCurrency(notification.data.amount)}
-                        </span>
-                      </div>
-                    )}
-                    
-                    {notification.type === "payout_scheduled" && (
-                      <div className="bg-purple-50 p-3 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">Payout Amount:</span>
-                          <span className="text-sm font-bold text-purple-600">
-                            {formatCurrency(notification.data.amount)}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="text-xs text-gray-600">Payout Date:</span>
-                          <span className="text-xs text-gray-600">
-                            {new Date(notification.data.payoutDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {notification.unread && (
-                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                  )}
-                </div>
-              </Card>
-            ))
-          )}
-        </div>
+        <NotificationsSection
+          notifications={notifications}
+          onAcceptInvite={handleAcceptInvite}
+          onDeclineInvite={handleDeclineInvite}
+        />
       ) : (
-        <div className="space-y-6">
-          {/* Recent Transactions Section */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-gray-800">Recent Transactions</h3>
-            {transactionHistory.map((transaction) => (
-              <Card key={transaction.id} className="p-4 rounded-2xl">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-full ${
-                      transaction.type === 'cashout' ? 'bg-green-100' :
-                      transaction.type === 'deposit' ? 'bg-blue-100' : 'bg-orange-100'
-                    }`}>
-                      {transaction.type === 'cashout' && <ArrowUpRight className="h-4 w-4 text-green-600" />}
-                      {transaction.type === 'deposit' && <Wallet className="h-4 w-4 text-blue-600" />}
-                      {transaction.type === 'transfer' && <Clock className="h-4 w-4 text-orange-600" />}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800 text-sm">{transaction.description}</p>
-                      <p className="text-xs text-gray-600">{new Date(transaction.date).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className={`font-bold text-sm ${
-                      transaction.type === 'deposit' ? 'text-green-600' : 'text-gray-800'
-                    }`}>
-                      {transaction.type === 'deposit' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                    </p>
-                    <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'} className="mt-1 text-xs">
-                      {transaction.status}
-                    </Badge>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {/* Pool History Section */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-gray-800">Pool History</h3>
-            {history.length === 0 ? (
-              <Card className="p-8 text-center">
-                <History className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No history</h3>
-                <p className="text-gray-500">Your completed pools will appear here</p>
-              </Card>
-            ) : (
-              history.map((pool) => (
-                <Card key={pool.id} className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 mt-1">
-                      {pool.status === 'completed' ? (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      ) : (
-                        <XCircle className="h-5 w-5 text-red-500" />
-                      )}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-gray-800 text-sm">{pool.groupName}</h4>
-                        <Badge 
-                          className={`text-xs ${
-                            pool.status === 'completed' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {pool.status === 'completed' ? 'Completed' : 'Failed'}
-                        </Badge>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                        <div>
-                          <span className="text-gray-500">My Contribution:</span>
-                          <div className="font-medium">{formatCurrency(pool.myContribution)}</div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">
-                            {pool.status === 'completed' ? 'Payout:' : 'Refund:'}
-                          </span>
-                          <div className={`font-medium ${
-                            pool.status === 'completed' ? 'text-green-600' : 'text-orange-600'
-                          }`}>
-                            {formatCurrency(pool.payout)}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Total Pool:</span>
-                          <div className="font-medium">{formatCurrency(pool.totalAmount)}</div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Participants:</span>
-                          <div className="font-medium">{pool.participants} members</div>
-                        </div>
-                      </div>
-
-                      {/* Members to Rate Section - only for completed groups */}
-                      {pool.status === 'completed' && pool.membersToRate && (
-                        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-blue-800">Rate Group Members</span>
-                            <span className="text-xs text-blue-600">
-                              {pool.membersToRate.filter(m => !m.hasRated).length} pending
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-1 gap-2">
-                            {pool.membersToRate.slice(0, 3).map((member) => (
-                              <div key={member.id} className="flex items-center justify-between p-2 bg-white rounded border">
-                                <div className="flex items-center space-x-2">
-                                  <Avatar className="h-6 w-6">
-                                    <AvatarImage src={member.avatar} alt={member.name} />
-                                    <AvatarFallback className="bg-blue-500 text-white text-xs">
-                                      {member.name.split(' ').map(n => n[0]).join('')}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <span className="text-xs font-medium">{member.name}</span>
-                                </div>
-                                <div>
-                                  {member.hasRated ? (
-                                    <Badge variant="outline" className="text-green-600 bg-green-50 text-xs">
-                                      <CheckCircle className="h-3 w-3 mr-1" />
-                                      Rated
-                                    </Badge>
-                                  ) : (
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleRateMember(member, pool.groupName)}
-                                      className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-6 px-2"
-                                    >
-                                      <Star className="h-2 w-2 mr-1" />
-                                      Rate
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                            {pool.membersToRate.length > 3 && (
-                              <div className="text-center">
-                                <span className="text-xs text-gray-500">
-                                  +{pool.membersToRate.length - 3} more members
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
-                      <div className="mt-3 pt-3 border-t border-gray-100">
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>Duration: {pool.duration}</span>
-                          <span>
-                            {pool.status === 'completed' ? 'Completed' : 'Failed'}: {' '}
-                            {new Date(pool.status === 'completed' ? pool.completedDate : pool.failedDate!).toLocaleDateString()}
-                          </span>
-                        </div>
-                        {pool.status === 'failed' && pool.reason && (
-                          <div className="mt-1 text-xs text-red-600">
-                            Reason: {pool.reason}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))
-            )}
-          </div>
-        </div>
+        <HistorySection
+          transactionHistory={transactionHistory}
+          poolHistory={history}
+          onRateMember={handleRateMember}
+        />
       )}
     </div>
   );
