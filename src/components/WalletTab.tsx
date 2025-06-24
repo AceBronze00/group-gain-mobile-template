@@ -85,38 +85,40 @@ const WalletTab = () => {
   };
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6 pb-20 px-2">
       {/* Wallet Balance Card */}
-      <Card className="p-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <Wallet className="h-5 w-5" />
-            <span className="font-semibold">App Wallet</span>
+      <Card className="p-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <Wallet className="h-6 w-6" />
+            <span className="font-bold text-lg">App Wallet</span>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowBalance(!showBalance)}
-            className="text-white hover:bg-white/20 p-1 h-auto"
+            className="text-white hover:bg-white/20 p-2 h-auto rounded-full"
           >
-            {showBalance ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showBalance ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
           </Button>
         </div>
         
-        <div className="space-y-2">
-          <div>
-            <p className="text-sm text-green-100">Available Balance</p>
-            <p className="text-2xl font-bold">
+        <div className="space-y-4 mb-6">
+          <div className="text-center">
+            <p className="text-sm text-green-100 mb-2">Available Balance</p>
+            <p className="text-3xl font-bold">
               {showBalance ? formatCurrency(walletBalance) : "••••••"}
             </p>
           </div>
           
           {pendingTransfers > 0 && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-green-100">Pending Transfers</span>
-              <Badge variant="outline" className="text-green-100 border-green-200">
-                {showBalance ? formatCurrency(pendingTransfers) : "••••"}
-              </Badge>
+            <div className="flex items-center justify-center">
+              <div className="flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
+                <span className="text-sm text-green-100">Pending Transfers</span>
+                <Badge variant="outline" className="text-green-100 border-green-200 bg-white/10">
+                  {showBalance ? formatCurrency(pendingTransfers) : "••••"}
+                </Badge>
+              </div>
             </div>
           )}
         </div>
@@ -124,9 +126,9 @@ const WalletTab = () => {
         {walletBalance > 0 && (
           <Button
             onClick={() => setShowTransferModal(true)}
-            className="w-full mt-4 bg-white text-green-600 hover:bg-green-50 font-semibold"
+            className="w-full bg-white text-green-600 hover:bg-green-50 font-bold py-3 rounded-xl"
           >
-            <ArrowUpRight className="h-4 w-4 mr-2" />
+            <ArrowUpRight className="h-5 w-5 mr-2" />
             Transfer to Bank
           </Button>
         )}
@@ -134,20 +136,20 @@ const WalletTab = () => {
 
       {/* Cashout Alert for Completed Groups */}
       {completedGroups.length > 0 && (
-        <Card className="p-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white border-0 shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-lg flex items-center">
-                <Gift className="h-5 w-5 mr-2" />
+        <Card className="p-6 bg-gradient-to-r from-green-400 to-emerald-500 text-white border-0 shadow-lg rounded-2xl">
+          <div className="text-center">
+            <div className="mb-4">
+              <Gift className="h-8 w-8 mx-auto mb-2" />
+              <h3 className="font-bold text-xl">
                 💰 Ready to Cashout!
               </h3>
-              <p className="text-green-100">
-                {completedGroups.length} pool{completedGroups.length > 1 ? 's' : ''} completed - claim your payout
-              </p>
             </div>
+            <p className="text-green-100 mb-4">
+              {completedGroups.length} pool{completedGroups.length > 1 ? 's' : ''} completed - claim your payout
+            </p>
             <Button
               onClick={() => setSelectedGroupForCashout(completedGroups[0])}
-              className="bg-white text-green-600 hover:bg-green-50 font-semibold"
+              className="bg-white text-green-600 hover:bg-green-50 font-bold px-6 py-2 rounded-xl"
             >
               View All
             </Button>
@@ -158,9 +160,9 @@ const WalletTab = () => {
       {/* Completed Groups Ready for Cashout */}
       {completedGroups.length > 0 && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-gray-800 flex items-center">
-              <Gift className="h-5 w-5 mr-2 text-green-500" />
+          <div className="text-center">
+            <h3 className="text-xl font-bold text-gray-800 flex items-center justify-center">
+              <Gift className="h-6 w-6 mr-2 text-green-500" />
               Ready to Cashout ({completedGroups.length})
             </h3>
           </div>
@@ -168,32 +170,31 @@ const WalletTab = () => {
           {completedGroups.map((group) => (
             <Card 
               key={group.id} 
-              className="p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
+              className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
               onClick={() => handleCashoutClick(group)}
             >
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h4 className="font-bold text-lg text-gray-800">{group.name}</h4>
-                  <p className="text-sm text-gray-600 flex items-center mt-1">
-                    <Users className="h-4 w-4 mr-1" />
-                    {group.members} members • Completed {new Date(group.completedDate).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-green-600">
-                    {formatCurrency(group.payoutAmount)}
-                  </div>
-                  <Badge className="bg-green-500 hover:bg-green-600">
-                    Ready to Cashout 💰
-                  </Badge>
-                </div>
+              <div className="text-center mb-4">
+                <h4 className="font-bold text-xl text-gray-800 mb-2">{group.name}</h4>
+                <p className="text-sm text-gray-600 flex items-center justify-center">
+                  <Users className="h-4 w-4 mr-1" />
+                  {group.members} members • Completed {new Date(group.completedDate).toLocaleDateString()}
+                </p>
               </div>
               
-              <div className="flex items-center justify-between pt-2">
-                <div className="text-sm text-green-700 font-medium">
-                  🎉 Pool completed! Click to claim your payout
+              <div className="text-center mb-4">
+                <div className="text-2xl font-bold text-green-600 mb-2">
+                  {formatCurrency(group.payoutAmount)}
                 </div>
-                <ChevronRight className="h-5 w-5 text-green-500" />
+                <Badge className="bg-green-500 hover:bg-green-600 px-4 py-1">
+                  Ready to Cashout 💰
+                </Badge>
+              </div>
+              
+              <div className="flex items-center justify-center pt-2">
+                <div className="text-sm text-green-700 font-medium flex items-center">
+                  🎉 Pool completed! Click to claim your payout
+                  <ChevronRight className="h-5 w-5 ml-2 text-green-500" />
+                </div>
               </div>
             </Card>
           ))}
@@ -202,18 +203,18 @@ const WalletTab = () => {
 
       {/* Transaction History */}
       <div className="space-y-4">
-        <h3 className="text-xl font-bold text-gray-800">Recent Transactions</h3>
+        <h3 className="text-xl font-bold text-gray-800 text-center">Recent Transactions</h3>
         {transactionHistory.map((transaction) => (
-          <Card key={transaction.id} className="p-4">
+          <Card key={transaction.id} className="p-5 rounded-2xl">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-full ${
+              <div className="flex items-center space-x-4">
+                <div className={`p-3 rounded-full ${
                   transaction.type === 'cashout' ? 'bg-green-100' :
                   transaction.type === 'deposit' ? 'bg-blue-100' : 'bg-orange-100'
                 }`}>
-                  {transaction.type === 'cashout' && <ArrowUpRight className="h-4 w-4 text-green-600" />}
-                  {transaction.type === 'deposit' && <Wallet className="h-4 w-4 text-blue-600" />}
-                  {transaction.type === 'transfer' && <Clock className="h-4 w-4 text-orange-600" />}
+                  {transaction.type === 'cashout' && <ArrowUpRight className="h-5 w-5 text-green-600" />}
+                  {transaction.type === 'deposit' && <Wallet className="h-5 w-5 text-blue-600" />}
+                  {transaction.type === 'transfer' && <Clock className="h-5 w-5 text-orange-600" />}
                 </div>
                 <div>
                   <p className="font-medium text-gray-800">{transaction.description}</p>
@@ -221,12 +222,12 @@ const WalletTab = () => {
                 </div>
               </div>
               <div className="text-right">
-                <p className={`font-bold ${
+                <p className={`font-bold text-lg ${
                   transaction.type === 'deposit' ? 'text-green-600' : 'text-gray-800'
                 }`}>
                   {transaction.type === 'deposit' ? '+' : '-'}{formatCurrency(transaction.amount)}
                 </p>
-                <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
+                <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'} className="mt-1">
                   {transaction.status}
                 </Badge>
               </div>
