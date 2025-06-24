@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,38 +25,6 @@ const DashboardTab = () => {
     avatar: "/placeholder.svg",
     greeting: "Good morning"
   };
-
-  // Mock active groups data
-  const activeGroups = [
-    {
-      id: 1,
-      name: "Coffee Fund",
-      members: 5,
-      totalAmount: 500,
-      contributionAmount: 100,
-      frequency: "weekly",
-      nextPayout: "2024-06-27",
-      payoutRecipient: "Sarah M.",
-      progress: 80,
-      myTurn: false,
-      position: 3,
-      myPayoutDate: "2024-07-11" // When this user gets paid
-    },
-    {
-      id: 2,
-      name: "Vacation Pool",
-      members: 8,
-      totalAmount: 2400,
-      contributionAmount: 300,
-      frequency: "monthly",
-      nextPayout: "2024-07-15",
-      payoutRecipient: "You",
-      progress: 60,
-      myTurn: true,
-      position: 1,
-      myPayoutDate: "2024-07-15" // This user's turn now
-    }
-  ];
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
