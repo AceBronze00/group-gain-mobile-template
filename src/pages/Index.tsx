@@ -14,7 +14,7 @@ const Index = () => {
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="text-center pt-8 pb-4">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">MoneyPool</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">R.R.S</h1>
           <p className="text-gray-600">Smart group savings & lending</p>
         </div>
 
