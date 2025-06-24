@@ -12,10 +12,12 @@ import SecuritySettings from "@/components/settings/SecuritySettings";
 import PaymentSettings from "@/components/settings/PaymentSettings";
 import GroupSettings from "@/components/settings/GroupSettings";
 import GeneralSettings from "@/components/settings/GeneralSettings";
+import TrustScoreProfile from "@/components/TrustScoreProfile";
 
 const ProfileTab = () => {
   const [activeSettingsTab, setActiveSettingsTab] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showTrustScore, setShowTrustScore] = useState(false);
 
   // Mock user data
   const user = {
@@ -62,6 +64,23 @@ const ProfileTab = () => {
     if (score >= 60) return "text-yellow-600";
     return "text-red-600";
   };
+
+  if (showTrustScore) {
+    return (
+      <div className="space-y-6 pb-20">
+        <div className="flex items-center space-x-4 mb-6">
+          <Button 
+            variant="ghost" 
+            onClick={() => setShowTrustScore(false)}
+            className="text-blue-600"
+          >
+            ← Back to Profile
+          </Button>
+        </div>
+        <TrustScoreProfile />
+      </div>
+    );
+  }
 
   if (activeSettingsTab) {
     return (
@@ -145,9 +164,12 @@ const ProfileTab = () => {
             <p className="text-sm text-gray-600 mb-1">{user.bio}</p>
             <div className="flex items-center space-x-2 mt-1">
               <Shield className="h-4 w-4 text-blue-500" />
-              <span className={`font-semibold ${getTrustScoreColor(user.trustScore)}`}>
+              <button 
+                onClick={() => setShowTrustScore(true)}
+                className={`font-semibold ${getTrustScoreColor(user.trustScore)} hover:underline cursor-pointer`}
+              >
                 Trust Score: {user.trustScore}
-              </span>
+              </button>
             </div>
           </div>
         </div>
