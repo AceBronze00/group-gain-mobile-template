@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -91,19 +92,6 @@ const DashboardTab = () => {
           <span>Join Group</span>
         </Button>
       </div>
-
-      {/* Next Payout Alert */}
-      {activeGroups.some(group => group.myTurn) && (
-        <Card className="p-4 bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-lg">🎉 Your Turn!</h3>
-              <p className="text-orange-100">You'll receive your payout in {getDaysUntilPayout(activeGroups.find(g => g.myTurn)?.nextPayout || "")} days</p>
-            </div>
-            <TrendingUp className="h-8 w-8 text-orange-100" />
-          </div>
-        </Card>
-      )}
 
       {/* Active Groups */}
       <div className="space-y-4">
@@ -230,3 +218,4 @@ const DashboardTab = () => {
 };
 
 export default DashboardTab;
+
