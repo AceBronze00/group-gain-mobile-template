@@ -6,8 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Shield } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings } from "lucide-react";
 
 interface CreateGroupModalProps {
   open: boolean;
@@ -21,9 +20,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     contributionAmount: '',
     totalAmount: '',
     frequency: 'weekly',
-    memberLimit: '5',
-    groupInsurance: false,
-    insuranceType: 'split' // 'split' or 'organizer'
+    memberLimit: '5'
   });
 
   const frequencies = [
@@ -33,7 +30,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
   ];
 
   const handleNext = () => {
-    if (step < 4) setStep(step + 1);
+    if (step < 3) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -52,12 +49,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     return contribution * members;
   };
 
-  const calculateInsuranceCost = () => {
-    const totalPool = calculateEstimatedPayout();
-    const insuranceCost = totalPool * 0.01; // 1% of total pool
-    return formData.insuranceType === 'split' ? insuranceCost / parseInt(formData.memberLimit) : insuranceCost;
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md mx-auto">
@@ -66,7 +57,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             Create New Group
           </DialogTitle>
           <div className="flex justify-center space-x-2 mt-4">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div
                 key={i}
                 className={`w-3 h-3 rounded-full ${
@@ -167,93 +158,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             </div>
           )}
 
-          {/* Step 3: Insurance Options */}
+          {/* Step 3: Review */}
           {step === 3 && (
-            <div className="space-y-4">
-              <div className="text-center mb-4">
-                <Shield className="h-12 w-12 text-purple-500 mx-auto mb-2" />
-                <h3 className="text-lg font-semibold">Group Insurance</h3>
-                <p className="text-gray-600 text-sm">Protect your group's contributions</p>
-              </div>
-
-              <Card className="p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="groupInsurance" className="text-base font-medium">
-                      Enable Group Insurance
-                    </Label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Protect against fraud and defaults (50% coverage)
-                    </p>
-                  </div>
-                  <Switch
-                    id="groupInsurance"
-                    checked={formData.groupInsurance}
-                    onCheckedChange={(checked) => setFormData({...formData, groupInsurance: checked})}
-                  />
-                </div>
-
-                {formData.groupInsurance && (
-                  <div className="space-y-4 pt-4 border-t">
-                    <div>
-                      <Label>Insurance Payment</Label>
-                      <div className="grid grid-cols-2 gap-2 mt-2">
-                        <Button
-                          variant={formData.insuranceType === 'split' ? "default" : "outline"}
-                          onClick={() => setFormData({...formData, insuranceType: 'split'})}
-                          className="h-12 text-xs"
-                        >
-                          Split Among Members
-                        </Button>
-                        <Button
-                          variant={formData.insuranceType === 'organizer' ? "default" : "outline"}
-                          onClick={() => setFormData({...formData, insuranceType: 'organizer'})}
-                          className="h-12 text-xs"
-                        >
-                          I'll Pay Full Cost
-                        </Button>
-                      </div>
-                    </div>
-
-                    <Card className="p-3 bg-green-50">
-                      <div className="text-center">
-                        <p className="text-sm text-gray-600">
-                          {formData.insuranceType === 'split' ? 'Cost per member' : 'Total cost'}
-                        </p>
-                        <p className="text-lg font-bold text-green-600">
-                          ${calculateInsuranceCost().toFixed(2)}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          1% of total pool • Up to 50% coverage
-                        </p>
-                      </div>
-                    </Card>
-
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <h4 className="font-medium text-sm mb-2">Coverage includes:</h4>
-                      <ul className="text-xs text-gray-600 space-y-1">
-                        <li>• Member defaults or non-payment</li>
-                        <li>• Fraudulent activity</li>
-                        <li>• Organizer misconduct</li>
-                        <li>• Maximum 50% of contribution covered</li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {!formData.groupInsurance && (
-                  <div className="bg-yellow-50 p-3 rounded-lg">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Note:</strong> Members can still opt for individual insurance when joining (covers their own contribution only).
-                    </p>
-                  </div>
-                )}
-              </Card>
-            </div>
-          )}
-
-          {/* Step 4: Review */}
-          {step === 4 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
                 <Settings className="h-12 w-12 text-purple-500 mx-auto mb-2" />
@@ -278,21 +184,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   <span className="text-gray-600">Frequency:</span>
                   <Badge variant="secondary">{formData.frequency}</Badge>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Group Insurance:</span>
-                  <Badge variant={formData.groupInsurance ? "default" : "outline"}>
-                    {formData.groupInsurance ? "Enabled" : "Disabled"}
-                  </Badge>
-                </div>
-                {formData.groupInsurance && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Insurance Cost:</span>
-                    <span className="font-medium">
-                      ${calculateInsuranceCost().toFixed(2)} 
-                      {formData.insuranceType === 'split' ? ' per member' : ' total'}
-                    </span>
-                  </div>
-                )}
                 <div className="flex justify-between border-t pt-2">
                   <span className="text-gray-600">Expected Payout:</span>
                   <span className="font-bold text-green-600">
@@ -316,11 +207,11 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             </Button>
 
             <Button
-              onClick={step === 4 ? handleSubmit : handleNext}
+              onClick={step === 3 ? handleSubmit : handleNext}
               className="flex items-center"
             >
-              {step === 4 ? 'Create Group' : 'Next'}
-              {step !== 4 && <ChevronRight className="h-4 w-4 ml-1" />}
+              {step === 3 ? 'Create Group' : 'Next'}
+              {step !== 3 && <ChevronRight className="h-4 w-4 ml-1" />}
             </Button>
           </div>
         </div>
