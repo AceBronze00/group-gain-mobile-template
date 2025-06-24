@@ -79,6 +79,26 @@ const ProfileTab = () => {
         { id: 4, name: "James W.", avatar: "/placeholder.svg", hasRated: true },
         { id: 5, name: "Lisa K.", avatar: "/placeholder.svg", hasRated: false }
       ]
+    },
+    {
+      id: 4,
+      name: "Holiday Savings Group",
+      members: 8,
+      totalAmount: 2400,
+      contributionAmount: 300,
+      frequency: "weekly",
+      completedDate: "2024-05-20",
+      yourPosition: 2,
+      status: "completed",
+      membersToRate: [
+        { id: 6, name: "David R.", avatar: "/placeholder.svg", hasRated: false },
+        { id: 7, name: "Anna L.", avatar: "/placeholder.svg", hasRated: false },
+        { id: 8, name: "Tom B.", avatar: "/placeholder.svg", hasRated: true },
+        { id: 9, name: "Sophie C.", avatar: "/placeholder.svg", hasRated: false },
+        { id: 10, name: "Chris P.", avatar: "/placeholder.svg", hasRated: false },
+        { id: 11, name: "Maya S.", avatar: "/placeholder.svg", hasRated: true },
+        { id: 12, name: "Alex T.", avatar: "/placeholder.svg", hasRated: false }
+      ]
     }
   ];
 
