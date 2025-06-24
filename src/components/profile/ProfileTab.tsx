@@ -42,7 +42,8 @@ const ProfileTab = () => {
       payoutRecipient: "Sarah M.",
       progress: 80,
       myTurn: false,
-      position: 3
+      position: 3,
+      status: "active"
     },
     {
       id: 2,
@@ -55,7 +56,29 @@ const ProfileTab = () => {
       payoutRecipient: "You",
       progress: 60,
       myTurn: true,
-      position: 1
+      position: 1,
+      status: "active"
+    }
+  ];
+
+  const completedGroups = [
+    {
+      id: 3,
+      name: "Emergency Fund Circle",
+      members: 6,
+      totalAmount: 1200,
+      contributionAmount: 200,
+      frequency: "monthly",
+      completedDate: "2024-06-15",
+      yourPosition: 4,
+      status: "completed",
+      membersToRate: [
+        { id: 1, name: "Sarah M.", avatar: "/placeholder.svg", hasRated: false },
+        { id: 2, name: "Mike J.", avatar: "/placeholder.svg", hasRated: true },
+        { id: 3, name: "Emma D.", avatar: "/placeholder.svg", hasRated: false },
+        { id: 4, name: "James W.", avatar: "/placeholder.svg", hasRated: true },
+        { id: 5, name: "Lisa K.", avatar: "/placeholder.svg", hasRated: false }
+      ]
     }
   ];
 
@@ -131,7 +154,7 @@ const ProfileTab = () => {
               <PaymentSettings />
             </TabsContent>
             <TabsContent value="groups">
-              <GroupSettings activeGroups={activeGroups} />
+              <GroupSettings activeGroups={activeGroups} completedGroups={completedGroups} />
             </TabsContent>
             <TabsContent value="general">
               <GeneralSettings />
