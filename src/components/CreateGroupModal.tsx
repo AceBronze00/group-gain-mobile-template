@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
@@ -21,7 +23,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     contributionAmount: '',
     totalAmount: '',
     frequency: 'weekly',
-    memberLimit: '5'
+    memberLimit: '5',
+    allowDoubleContribution: false
   });
 
   const frequencies = [
@@ -47,7 +50,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       contributionAmount: '',
       totalAmount: '',
       frequency: 'weekly',
-      memberLimit: '5'
+      memberLimit: '5',
+      allowDoubleContribution: false
     });
   };
 
@@ -150,6 +154,30 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   </div>
                 </div>
 
+                {/* Double Contribution Option */}
+                <Card className="p-4 bg-blue-50 border-blue-200">
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id="allowDoubleContribution"
+                      checked={formData.allowDoubleContribution}
+                      onCheckedChange={(checked) => 
+                        setFormData({...formData, allowDoubleContribution: !!checked})
+                      }
+                    />
+                    <div className="space-y-1">
+                      <Label 
+                        htmlFor="allowDoubleContribution" 
+                        className="text-sm font-medium cursor-pointer"
+                      >
+                        Allow Double Contributions
+                      </Label>
+                      <p className="text-xs text-gray-600">
+                        Members can contribute 2x and receive 2x payouts (get paid twice in rotation)
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
                 {formData.contributionAmount && (
                   <Card className="p-4 bg-blue-50">
                     <div className="text-center">
@@ -157,6 +185,11 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                       <p className="text-2xl font-bold text-blue-600">
                         ${calculateEstimatedPayout().toLocaleString()}
                       </p>
+                      {formData.allowDoubleContribution && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Double contributors get: ${(calculateEstimatedPayout() * 2).toLocaleString()}
+                        </p>
+                      )}
                     </div>
                   </Card>
                 )}
@@ -188,6 +221,12 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Frequency:</span>
                   <Badge variant="secondary">{formData.frequency}</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Double Contributions:</span>
+                  <Badge variant={formData.allowDoubleContribution ? "default" : "secondary"}>
+                    {formData.allowDoubleContribution ? "Enabled" : "Disabled"}
+                  </Badge>
                 </div>
                 <div className="flex justify-between border-t pt-2">
                   <span className="text-gray-600">Expected Payout:</span>

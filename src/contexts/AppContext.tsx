@@ -17,6 +17,8 @@ export interface Group {
   myPayoutDate: string;
   membersPaid: number;
   status: 'active' | 'completed';
+  allowDoubleContribution?: boolean;
+  isDoubleContributor?: boolean;
 }
 
 interface AppContextType {
@@ -45,7 +47,8 @@ const initialGroups: Group[] = [
     position: 3,
     myPayoutDate: "2024-07-11",
     membersPaid: 4,
-    status: 'active'
+    status: 'active',
+    allowDoubleContribution: false
   },
   {
     id: 2,
@@ -61,7 +64,9 @@ const initialGroups: Group[] = [
     position: 1,
     myPayoutDate: "2024-07-15",
     membersPaid: 5,
-    status: 'active'
+    status: 'active',
+    allowDoubleContribution: true,
+    isDoubleContributor: false
   }
 ];
 
@@ -80,12 +85,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       frequency: groupData.frequency,
       nextPayout: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       payoutRecipient: "You",
-      progress: 12, // Starting progress
+      progress: 12,
       myTurn: true,
       position: 1,
       myPayoutDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       membersPaid: 1,
-      status: 'active'
+      status: 'active',
+      allowDoubleContribution: groupData.allowDoubleContribution || false,
+      isDoubleContributor: false
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -101,15 +108,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         const newMembersPaid = group.membersPaid + 1;
         const newProgress = Math.min((newMembersPaid / group.members) * 100, 100);
         
-        // If it's your turn and payment is complete, add to wallet
         if (group.myTurn && newProgress >= 100) {
-          setWalletBalance(prevBalance => prevBalance + group.totalAmount);
+          const payoutAmount = group.isDoubleContributor ? group.totalAmount * 2 : group.totalAmount;
+          setWalletBalance(prevBalance => prevBalance + payoutAmount);
           toast({
             title: "Payment Complete!",
-            description: `You've received $${group.totalAmount} from "${group.name}"`,
+            description: `You've received $${payoutAmount} from "${group.name}"`,
           });
           
-          // Move to next person's turn
           return {
             ...group,
             progress: 0,
@@ -138,7 +144,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const joinGroup = (groupCode: string) => {
-    // Simulate joining a group
     const newGroup: Group = {
       id: Date.now(),
       name: `Group ${groupCode}`,
@@ -153,7 +158,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       position: 4,
       myPayoutDate: new Date(Date.now() + 42 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       membersPaid: 2,
-      status: 'active'
+      status: 'active',
+      allowDoubleContribution: Math.random() > 0.5,
+      isDoubleContributor: false
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -166,10 +173,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const cashoutGroup = (groupId: number) => {
     const group = groups.find(g => g.id === groupId);
     if (group) {
-      setWalletBalance(prev => prev + group.totalAmount);
+      const payoutAmount = group.isDoubleContributor ? group.totalAmount * 2 : group.totalAmount;
+      setWalletBalance(prev => prev + payoutAmount);
       toast({
         title: "Cashout Successful!",
-        description: `$${group.totalAmount} has been added to your wallet.`,
+        description: `$${payoutAmount} has been added to your wallet.`,
       });
     }
   };
