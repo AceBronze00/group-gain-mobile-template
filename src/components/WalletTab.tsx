@@ -38,34 +38,6 @@ const WalletTab = () => {
     }
   ];
 
-  // Mock transaction history
-  const transactionHistory = [
-    {
-      id: 1,
-      type: "cashout",
-      amount: 500,
-      description: "Vacation Pool Cashout",
-      date: "2024-06-20",
-      status: "completed"
-    },
-    {
-      id: 2,
-      type: "deposit",
-      amount: 1250.75,
-      description: "Emergency Fund Payout",
-      date: "2024-06-18",
-      status: "completed"
-    },
-    {
-      id: 3,
-      type: "transfer",
-      amount: 300,
-      description: "Transfer to Bank",
-      date: "2024-06-15",
-      status: "pending"
-    }
-  ];
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -200,41 +172,6 @@ const WalletTab = () => {
           ))}
         </div>
       )}
-
-      {/* Transaction History */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold text-gray-800 text-center">Recent Transactions</h3>
-        {transactionHistory.map((transaction) => (
-          <Card key={transaction.id} className="p-5 rounded-2xl">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className={`p-3 rounded-full ${
-                  transaction.type === 'cashout' ? 'bg-green-100' :
-                  transaction.type === 'deposit' ? 'bg-blue-100' : 'bg-orange-100'
-                }`}>
-                  {transaction.type === 'cashout' && <ArrowUpRight className="h-5 w-5 text-green-600" />}
-                  {transaction.type === 'deposit' && <Wallet className="h-5 w-5 text-blue-600" />}
-                  {transaction.type === 'transfer' && <Clock className="h-5 w-5 text-orange-600" />}
-                </div>
-                <div>
-                  <p className="font-medium text-gray-800">{transaction.description}</p>
-                  <p className="text-sm text-gray-600">{new Date(transaction.date).toLocaleDateString()}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className={`font-bold text-lg ${
-                  transaction.type === 'deposit' ? 'text-green-600' : 'text-gray-800'
-                }`}>
-                  {transaction.type === 'deposit' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                </p>
-                <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'} className="mt-1">
-                  {transaction.status}
-                </Badge>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
 
       {/* Modals */}
       <CashoutModal
