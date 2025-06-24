@@ -34,38 +34,18 @@ interface ActiveGroup {
   status: string;
 }
 
-interface CompletedGroup {
-  id: number;
-  name: string;
-  members: number;
-  totalAmount: number;
-  contributionAmount: number;
-  frequency: string;
-  completedDate: string;
-  yourPosition: number;
-  status: string;
-  membersToRate: Array<{
-    id: number;
-    name: string;
-    avatar: string;
-    hasRated: boolean;
-  }>;
-}
-
 interface ProfileSettingsProps {
   activeSettingsTab: string;
   setActiveSettingsTab: (tab: string | null) => void;
   user: User;
   activeGroups: ActiveGroup[];
-  completedGroups: CompletedGroup[];
 }
 
 const ProfileSettings = ({ 
   activeSettingsTab, 
   setActiveSettingsTab, 
   user, 
-  activeGroups, 
-  completedGroups 
+  activeGroups 
 }: ProfileSettingsProps) => {
   return (
     <div className="space-y-6 pb-20">
@@ -121,7 +101,7 @@ const ProfileSettings = ({
             <PaymentSettings />
           </TabsContent>
           <TabsContent value="groups">
-            <GroupSettings activeGroups={activeGroups} completedGroups={completedGroups} />
+            <GroupSettings activeGroups={activeGroups} />
           </TabsContent>
           <TabsContent value="general">
             <GeneralSettings />

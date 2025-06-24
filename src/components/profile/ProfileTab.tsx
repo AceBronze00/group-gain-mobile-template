@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import TrustScoreProfile from "@/components/TrustScoreProfile";
 import ProfileSettings from "./ProfileSettings";
 import ProfileContent from "./ProfileContent";
-import { mockUser, mockActiveGroups, mockCompletedGroups } from "@/data/mockUserData";
+import { mockUser, mockActiveGroups } from "@/data/mockUserData";
 
 const ProfileTab = () => {
   const [activeSettingsTab, setActiveSettingsTab] = useState<string | null>(null);
@@ -35,7 +35,6 @@ const ProfileTab = () => {
         setActiveSettingsTab={setActiveSettingsTab}
         user={mockUser}
         activeGroups={mockActiveGroups}
-        completedGroups={mockCompletedGroups}
       />
     );
   }
