@@ -230,7 +230,6 @@ const ActivityTab = () => {
       {/* Content */}
       {activeTab === 'notifications' ? (
         <div className="space-y-4">
-          {/* ... keep existing code (notifications section) */}
           {notifications.length === 0 ? (
             <Card className="p-8 text-center">
               <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -354,120 +353,123 @@ const ActivityTab = () => {
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Recent Transactions Section */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-gray-800 text-center">Recent Transactions</h3>
-            {transactionHistory.map((transaction) => (
-              <Card key={transaction.id} className="p-5 rounded-2xl">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className={`p-3 rounded-full ${
-                      transaction.type === 'cashout' ? 'bg-green-100' :
-                      transaction.type === 'deposit' ? 'bg-blue-100' : 'bg-orange-100'
-                    }`}>
-                      {transaction.type === 'cashout' && <ArrowUpRight className="h-5 w-5 text-green-600" />}
-                      {transaction.type === 'deposit' && <Wallet className="h-5 w-5 text-blue-600" />}
-                      {transaction.type === 'transfer' && <Clock className="h-5 w-5 text-orange-600" />}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-800">{transaction.description}</p>
-                      <p className="text-sm text-gray-600">{new Date(transaction.date).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className={`font-bold text-lg ${
-                      transaction.type === 'deposit' ? 'text-green-600' : 'text-gray-800'
-                    }`}>
-                      {transaction.type === 'deposit' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                    </p>
-                    <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'} className="mt-1">
-                      {transaction.status}
-                    </Badge>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {/* Pool History Section */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-gray-800 text-center">Pool History</h3>
-            {history.length === 0 ? (
-              <Card className="p-8 text-center">
-                <History className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">No history</h3>
-                <p className="text-gray-500">Your completed pools will appear here</p>
-              </Card>
-            ) : (
-              history.map((pool) => (
-                <Card key={pool.id} className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 mt-1">
-                      {pool.status === 'completed' ? (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      ) : (
-                        <XCircle className="h-5 w-5 text-red-500" />
-                      )}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-gray-800">{pool.groupName}</h4>
-                        <Badge 
-                          className={`${
-                            pool.status === 'completed' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {pool.status === 'completed' ? 'Completed' : 'Failed'}
-                        </Badge>
+          {/* Side by Side Layout for History */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Recent Transactions Section */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800 text-center">Recent Transactions</h3>
+              {transactionHistory.map((transaction) => (
+                <Card key={transaction.id} className="p-4 rounded-2xl">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-2 rounded-full ${
+                        transaction.type === 'cashout' ? 'bg-green-100' :
+                        transaction.type === 'deposit' ? 'bg-blue-100' : 'bg-orange-100'
+                      }`}>
+                        {transaction.type === 'cashout' && <ArrowUpRight className="h-4 w-4 text-green-600" />}
+                        {transaction.type === 'deposit' && <Wallet className="h-4 w-4 text-blue-600" />}
+                        {transaction.type === 'transfer' && <Clock className="h-4 w-4 text-orange-600" />}
                       </div>
-                      
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-500">My Contribution:</span>
-                          <div className="font-medium">{formatCurrency(pool.myContribution)}</div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">
-                            {pool.status === 'completed' ? 'Payout:' : 'Refund:'}
-                          </span>
-                          <div className={`font-medium ${
-                            pool.status === 'completed' ? 'text-green-600' : 'text-orange-600'
-                          }`}>
-                            {formatCurrency(pool.payout)}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Total Pool:</span>
-                          <div className="font-medium">{formatCurrency(pool.totalAmount)}</div>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Participants:</span>
-                          <div className="font-medium">{pool.participants} members</div>
-                        </div>
+                      <div>
+                        <p className="font-medium text-gray-800 text-sm">{transaction.description}</p>
+                        <p className="text-xs text-gray-600">{new Date(transaction.date).toLocaleDateString()}</p>
                       </div>
-                      
-                      <div className="mt-3 pt-3 border-t border-gray-100">
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>Duration: {pool.duration}</span>
-                          <span>
-                            {pool.status === 'completed' ? 'Completed' : 'Failed'}: {' '}
-                            {new Date(pool.status === 'completed' ? pool.completedDate : pool.failedDate!).toLocaleDateString()}
-                          </span>
-                        </div>
-                        {pool.status === 'failed' && pool.reason && (
-                          <div className="mt-1 text-xs text-red-600">
-                            Reason: {pool.reason}
-                          </div>
-                        )}
-                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-bold text-sm ${
+                        transaction.type === 'deposit' ? 'text-green-600' : 'text-gray-800'
+                      }`}>
+                        {transaction.type === 'deposit' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                      </p>
+                      <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'} className="mt-1 text-xs">
+                        {transaction.status}
+                      </Badge>
                     </div>
                   </div>
                 </Card>
-              ))
-            )}
+              ))}
+            </div>
+
+            {/* Pool History Section */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-800 text-center">Pool History</h3>
+              {history.length === 0 ? (
+                <Card className="p-8 text-center">
+                  <History className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No history</h3>
+                  <p className="text-gray-500">Your completed pools will appear here</p>
+                </Card>
+              ) : (
+                history.map((pool) => (
+                  <Card key={pool.id} className="p-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 mt-1">
+                        {pool.status === 'completed' ? (
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-gray-800 text-sm">{pool.groupName}</h4>
+                          <Badge 
+                            className={`text-xs ${
+                              pool.status === 'completed' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {pool.status === 'completed' ? 'Completed' : 'Failed'}
+                          </Badge>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <span className="text-gray-500">My Contribution:</span>
+                            <div className="font-medium">{formatCurrency(pool.myContribution)}</div>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">
+                              {pool.status === 'completed' ? 'Payout:' : 'Refund:'}
+                            </span>
+                            <div className={`font-medium ${
+                              pool.status === 'completed' ? 'text-green-600' : 'text-orange-600'
+                            }`}>
+                              {formatCurrency(pool.payout)}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Total Pool:</span>
+                            <div className="font-medium">{formatCurrency(pool.totalAmount)}</div>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Participants:</span>
+                            <div className="font-medium">{pool.participants} members</div>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <div className="flex justify-between text-xs text-gray-500">
+                            <span>Duration: {pool.duration}</span>
+                            <span>
+                              {pool.status === 'completed' ? 'Completed' : 'Failed'}: {' '}
+                              {new Date(pool.status === 'completed' ? pool.completedDate : pool.failedDate!).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {pool.status === 'failed' && pool.reason && (
+                            <div className="mt-1 text-xs text-red-600">
+                              Reason: {pool.reason}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
           </div>
         </div>
       )}
