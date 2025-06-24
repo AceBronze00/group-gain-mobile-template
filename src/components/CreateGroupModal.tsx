@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings } from "lucide-react";
+import { useApp } from "@/contexts/AppContext";
 
 interface CreateGroupModalProps {
   open: boolean;
@@ -14,6 +14,7 @@ interface CreateGroupModalProps {
 }
 
 const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
+  const { createGroup } = useApp();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     groupName: '',
@@ -38,9 +39,16 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
   };
 
   const handleSubmit = () => {
-    console.log('Creating group:', formData);
+    createGroup(formData);
     onOpenChange(false);
     setStep(1);
+    setFormData({
+      groupName: '',
+      contributionAmount: '',
+      totalAmount: '',
+      frequency: 'weekly',
+      memberLimit: '5'
+    });
   };
 
   const calculateEstimatedPayout = () => {
@@ -69,7 +77,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Step 1: Basic Info */}
           {step === 1 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
@@ -106,7 +113,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             </div>
           )}
 
-          {/* Step 2: Financial Settings */}
           {step === 2 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
@@ -158,7 +164,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             </div>
           )}
 
-          {/* Step 3: Review */}
           {step === 3 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
@@ -194,7 +199,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             </div>
           )}
 
-          {/* Navigation Buttons */}
           <div className="flex justify-between pt-4">
             <Button
               variant="outline"
@@ -209,6 +213,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             <Button
               onClick={step === 3 ? handleSubmit : handleNext}
               className="flex items-center"
+              disabled={step === 1 && !formData.groupName}
             >
               {step === 3 ? 'Create Group' : 'Next'}
               {step !== 3 && <ChevronRight className="h-4 w-4 ml-1" />}

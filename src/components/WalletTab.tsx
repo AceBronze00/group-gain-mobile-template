@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,14 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Wallet, ArrowUpRight, Eye, EyeOff, Gift, Clock, CheckCircle, Users, ChevronRight } from "lucide-react";
 import CashoutModal from "./CashoutModal";
+import { useApp } from "@/contexts/AppContext";
 
 const WalletTab = () => {
+  const { walletBalance, cashoutGroup } = useApp();
   const [showBalance, setShowBalance] = useState(true);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [selectedGroupForCashout, setSelectedGroupForCashout] = useState(null);
   
   // Mock wallet data
-  const walletBalance = 1250.75;
   const pendingTransfers = 300.00;
 
   // Mock completed groups ready for cashout
