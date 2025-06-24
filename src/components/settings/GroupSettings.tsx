@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,6 +50,9 @@ const GroupSettings = ({ activeGroups, completedGroups = [] }: GroupSettingsProp
   const { toast } = useToast();
   const [selectedGroupForPayment, setSelectedGroupForPayment] = useState<any>(null);
   const [selectedUserForRating, setSelectedUserForRating] = useState<any>(null);
+
+  console.log("GroupSettings - completedGroups:", completedGroups);
+  console.log("GroupSettings - completedGroups length:", completedGroups.length);
 
   const handleLeaveGroup = (groupName: string) => {
     toast({
@@ -164,13 +166,18 @@ const GroupSettings = ({ activeGroups, completedGroups = [] }: GroupSettingsProp
         </div>
       </Card>
 
-      {/* Completed Groups - Rate Members */}
-      {completedGroups.length > 0 && (
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center">
-            <CheckCircle className="h-5 w-5 mr-2 text-green-500" />
-            Completed Groups - Rate Members
-          </h3>
+      {/* Completed Groups - Rate Members - Always show this section for debugging */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4 flex items-center">
+          <CheckCircle className="h-5 w-5 mr-2 text-green-500" />
+          Completed Groups - Rate Members ({completedGroups.length})
+        </h3>
+        {completedGroups.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>No completed groups yet.</p>
+            <p className="text-sm">Complete a group to rate your fellow members!</p>
+          </div>
+        ) : (
           <div className="space-y-4">
             {completedGroups.map((group) => (
               <div key={group.id} className="p-4 border rounded-lg bg-green-50">
@@ -224,8 +231,8 @@ const GroupSettings = ({ activeGroups, completedGroups = [] }: GroupSettingsProp
               </div>
             ))}
           </div>
-        </Card>
-      )}
+        )}
+      </Card>
 
       {/* Group Management Options */}
       <Card className="p-6">
