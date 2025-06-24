@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell, DollarSign } from "lucide-react";
+import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell, DollarSign, Clock } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
@@ -37,7 +36,8 @@ const DashboardTab = () => {
       payoutRecipient: "Sarah M.",
       progress: 80,
       myTurn: false,
-      position: 3
+      position: 3,
+      myPayoutDate: "2024-07-11" // When this user gets paid
     },
     {
       id: 2,
@@ -50,7 +50,8 @@ const DashboardTab = () => {
       payoutRecipient: "You",
       progress: 60,
       myTurn: true,
-      position: 1
+      position: 1,
+      myPayoutDate: "2024-07-15" // This user's turn now
     }
   ];
 
@@ -195,6 +196,17 @@ const DashboardTab = () => {
                   <span className="font-medium">Next: {new Date(group.nextPayout).toLocaleDateString()}</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-gray-400" />
+              </div>
+              
+              {/* My Payout Date - subtle addition */}
+              <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+                <div className="flex items-center text-xs text-gray-500">
+                  <Clock className="h-3 w-3 mr-1 text-green-500" />
+                  <span>My payout: {new Date(group.myPayoutDate).toLocaleDateString()}</span>
+                </div>
+                <span className="text-xs text-gray-400">
+                  {group.myTurn ? "Today!" : `${getDaysUntilPayout(group.myPayoutDate)} days`}
+                </span>
               </div>
             </div>
           </Card>
