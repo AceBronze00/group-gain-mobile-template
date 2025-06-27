@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,8 +12,8 @@ const ActivityTab = () => {
   const [selectedUserForRating, setSelectedUserForRating] = useState<any>(null);
   const { toast } = useToast();
 
-  // Mock notifications data
-  const notifications = [
+  // Mock notifications data with state management
+  const [notifications, setNotifications] = useState([
     {
       id: 1,
       type: "group_invite",
@@ -70,7 +69,7 @@ const ActivityTab = () => {
         payoutDate: "2024-06-21"
       }
     }
-  ];
+  ]);
 
   // Mock history data with member rating functionality
   const history = [
@@ -167,6 +166,9 @@ const ActivityTab = () => {
   ];
 
   const handleAcceptInvite = (notificationId: number) => {
+    // Remove the notification from the list
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    
     toast({
       title: "Invitation Accepted!",
       description: "You've successfully joined the group",
@@ -175,6 +177,9 @@ const ActivityTab = () => {
   };
 
   const handleDeclineInvite = (notificationId: number) => {
+    // Remove the notification from the list
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    
     toast({
       title: "Invitation Declined",
       description: "The invitation has been declined",
