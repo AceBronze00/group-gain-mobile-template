@@ -1,20 +1,20 @@
-
-
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell, DollarSign, Clock } from "lucide-react";
+import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell, DollarSign, Clock, Key, Copy } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
 import { useApp } from "@/contexts/AppContext";
+import { useToast } from "@/hooks/use-toast";
 
 const DashboardTab = () => {
   const { groups: activeGroups } = useApp();
+  const { toast } = useToast();
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -40,6 +40,14 @@ const DashboardTab = () => {
     const diffTime = payoutDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
+  };
+
+  const copyInviteCode = (inviteCode: string) => {
+    navigator.clipboard.writeText(inviteCode);
+    toast({
+      title: "Invite Code Copied!",
+      description: `Code "${inviteCode}" copied to clipboard`,
+    });
   };
 
   const handleGroupClick = (group: any) => {
@@ -110,7 +118,14 @@ const DashboardTab = () => {
           >
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h4 className="font-bold text-lg text-gray-800">{group.name}</h4>
+                <div className="flex items-center space-x-2">
+                  <h4 className="font-bold text-lg text-gray-800">{group.name}</h4>
+                  {group.isAdmin && (
+                    <Badge variant="outline" className="text-xs bg-purple-50 text-purple-600 border-purple-200">
+                      Admin
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-sm text-gray-600 flex items-center mt-1">
                   <Users className="h-4 w-4 mr-1" />
                   {group.members} members
@@ -141,6 +156,33 @@ const DashboardTab = () => {
                 </div>
               </div>
             </div>
+            
+            {/* Admin Invite Code Section */}
+            {group.isAdmin && (
+              <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Key className="h-4 w-4 text-purple-600" />
+                    <span className="text-sm font-medium text-purple-700">Invite Code:</span>
+                    <code className="bg-purple-100 px-2 py-1 rounded text-sm font-mono text-purple-800">
+                      {group.inviteCode}
+                    </code>
+                  </div>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyInviteCode(group.inviteCode);
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="h-7 px-2 border-purple-300 text-purple-600 hover:bg-purple-100"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
+                <p className="text-xs text-purple-600 mt-1">Share this code with members to join your group</p>
+              </div>
+            )}
             
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
@@ -218,4 +260,3 @@ const DashboardTab = () => {
 };
 
 export default DashboardTab;
-

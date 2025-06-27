@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,11 +18,15 @@ export interface Group {
   status: 'active' | 'completed';
   allowDoubleContribution?: boolean;
   isDoubleContributor?: boolean;
+  inviteCode: string;
+  adminId: string;
+  isAdmin: boolean;
 }
 
 interface AppContextType {
   groups: Group[];
   walletBalance: number;
+  currentUserId: string;
   createGroup: (groupData: any) => void;
   makePayment: (groupId: number, amount: number) => void;
   joinGroup: (groupCode: string) => void;
@@ -48,7 +51,10 @@ const initialGroups: Group[] = [
     myPayoutDate: "2024-07-11",
     membersPaid: 4,
     status: 'active',
-    allowDoubleContribution: false
+    allowDoubleContribution: false,
+    inviteCode: "COFFEE123",
+    adminId: "user1",
+    isAdmin: false
   },
   {
     id: 2,
@@ -66,39 +72,46 @@ const initialGroups: Group[] = [
     membersPaid: 5,
     status: 'active',
     allowDoubleContribution: true,
-    isDoubleContributor: false
+    isDoubleContributor: false,
+    inviteCode: "VACATION456", 
+    adminId: "currentUser",
+    isAdmin: true
   }
 ];
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [groups, setGroups] = useState<Group[]>(initialGroups);
   const [walletBalance, setWalletBalance] = useState(1250.75);
+  const currentUserId = "currentUser"; // This would normally come from authentication
   const { toast } = useToast();
 
   const createGroup = (groupData: any) => {
     const newGroup: Group = {
       id: Date.now(),
       name: groupData.groupName,
-      members: parseInt(groupData.memberLimit),
+      members: 1, // Start with just the creator
       totalAmount: parseFloat(groupData.contributionAmount) * parseInt(groupData.memberLimit),
       contributionAmount: parseFloat(groupData.contributionAmount),
       frequency: groupData.frequency,
       nextPayout: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       payoutRecipient: "You",
-      progress: 12,
+      progress: 0, // Start at 0% since no payments made yet
       myTurn: true,
       position: 1,
       myPayoutDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      membersPaid: 1,
+      membersPaid: 0,
       status: 'active',
       allowDoubleContribution: groupData.allowDoubleContribution || false,
-      isDoubleContributor: false
+      isDoubleContributor: false,
+      inviteCode: groupData.inviteCode,
+      adminId: currentUserId,
+      isAdmin: true
     };
 
     setGroups(prev => [...prev, newGroup]);
     toast({
-      title: "Group Created!",
-      description: `"${groupData.groupName}" has been created successfully.`,
+      title: "Group Created Successfully!",
+      description: `"${groupData.groupName}" is ready. Share invite code: ${groupData.inviteCode}`,
     });
   };
 
@@ -144,6 +157,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const joinGroup = (groupCode: string) => {
+    // Check if group with this invite code exists
+    const existingGroup = groups.find(g => g.inviteCode === groupCode);
+    if (existingGroup) {
+      toast({
+        title: "Already in Group!",
+        description: `You're already part of "${existingGroup.name}"`,
+      });
+      return;
+    }
+
     const newGroup: Group = {
       id: Date.now(),
       name: `Group ${groupCode}`,
@@ -160,7 +183,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       membersPaid: 2,
       status: 'active',
       allowDoubleContribution: Math.random() > 0.5,
-      isDoubleContributor: false
+      isDoubleContributor: false,
+      inviteCode: groupCode,
+      adminId: "someOtherUser",
+      isAdmin: false
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -186,6 +212,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     <AppContext.Provider value={{
       groups,
       walletBalance,
+      currentUserId,
       createGroup,
       makePayment,
       joinGroup,

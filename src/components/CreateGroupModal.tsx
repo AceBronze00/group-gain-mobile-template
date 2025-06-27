@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
 interface CreateGroupModalProps {
@@ -24,7 +23,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     totalAmount: '',
     frequency: 'weekly',
     memberLimit: '5',
-    allowDoubleContribution: false
+    allowDoubleContribution: false,
+    inviteCode: ''
   });
 
   const frequencies = [
@@ -33,8 +33,17 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     { value: 'monthly', label: 'Monthly' }
   ];
 
+  const generateRandomCode = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setFormData({...formData, inviteCode: result});
+  };
+
   const handleNext = () => {
-    if (step < 3) setStep(step + 1);
+    if (step < 4) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -51,7 +60,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       totalAmount: '',
       frequency: 'weekly',
       memberLimit: '5',
-      allowDoubleContribution: false
+      allowDoubleContribution: false,
+      inviteCode: ''
     });
   };
 
@@ -69,7 +79,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             Create New Group
           </DialogTitle>
           <div className="flex justify-center space-x-2 mt-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
                 className={`w-3 h-3 rounded-full ${
@@ -200,6 +210,55 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
           {step === 3 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
+                <Key className="h-12 w-12 text-purple-500 mx-auto mb-2" />
+                <h3 className="text-lg font-semibold">Invite Code</h3>
+                <p className="text-gray-600 text-sm">Create a unique code for your group</p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="inviteCode">Group Invite Code</Label>
+                  <div className="flex space-x-2 mt-1">
+                    <Input
+                      id="inviteCode"
+                      placeholder="Enter 6-character code"
+                      value={formData.inviteCode}
+                      onChange={(e) => setFormData({...formData, inviteCode: e.target.value.toUpperCase()})}
+                      className="text-center font-mono text-lg tracking-wider"
+                      maxLength={6}
+                    />
+                    <Button
+                      type="button"
+                      onClick={generateRandomCode}
+                      variant="outline"
+                      className="px-3"
+                    >
+                      Generate
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Members will use this code to join your group
+                  </p>
+                </div>
+
+                <Card className="p-4 bg-yellow-50 border-yellow-200">
+                  <div className="flex items-start space-x-2">
+                    <Key className="h-4 w-4 text-yellow-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-yellow-800">Keep This Private</p>
+                      <p className="text-xs text-yellow-700">
+                        Only share this code with people you want to join your group. As the admin, only you can see this code.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-4">
+              <div className="text-center mb-4">
                 <Settings className="h-12 w-12 text-purple-500 mx-auto mb-2" />
                 <h3 className="text-lg font-semibold">Review & Create</h3>
                 <p className="text-gray-600 text-sm">Confirm your group settings</p>
@@ -221,6 +280,10 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Frequency:</span>
                   <Badge variant="secondary">{formData.frequency}</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Invite Code:</span>
+                  <Badge variant="default" className="font-mono">{formData.inviteCode}</Badge>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Double Contributions:</span>
@@ -250,12 +313,12 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             </Button>
 
             <Button
-              onClick={step === 3 ? handleSubmit : handleNext}
+              onClick={step === 4 ? handleSubmit : handleNext}
               className="flex items-center"
-              disabled={step === 1 && !formData.groupName}
+              disabled={(step === 1 && !formData.groupName) || (step === 3 && !formData.inviteCode)}
             >
-              {step === 3 ? 'Create Group' : 'Next'}
-              {step !== 3 && <ChevronRight className="h-4 w-4 ml-1" />}
+              {step === 4 ? 'Create Group' : 'Next'}
+              {step !== 4 && <ChevronRight className="h-4 w-4 ml-1" />}
             </Button>
           </div>
         </div>
