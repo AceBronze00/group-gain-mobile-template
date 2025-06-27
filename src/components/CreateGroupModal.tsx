@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
   const [formData, setFormData] = useState({
     groupName: '',
     contributionAmount: '',
-    totalAmount: '',
     frequency: 'weekly',
     memberLimit: '5',
     allowDoubleContribution: false,
@@ -42,6 +42,18 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     setFormData({...formData, inviteCode: result});
   };
 
+  const resetForm = () => {
+    setFormData({
+      groupName: '',
+      contributionAmount: '',
+      frequency: 'weekly',
+      memberLimit: '5',
+      allowDoubleContribution: false,
+      inviteCode: ''
+    });
+    setStep(1);
+  };
+
   const handleNext = () => {
     if (step < 4) setStep(step + 1);
   };
@@ -50,19 +62,25 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     if (step > 1) setStep(step - 1);
   };
 
+  const validateStep = (currentStep: number) => {
+    switch (currentStep) {
+      case 1:
+        return formData.groupName.trim() !== '' && parseInt(formData.memberLimit) >= 2;
+      case 2:
+        return parseFloat(formData.contributionAmount) > 0;
+      case 3:
+        return formData.inviteCode.length === 6;
+      default:
+        return true;
+    }
+  };
+
   const handleSubmit = () => {
+    if (!validateStep(4)) return;
+    
     createGroup(formData);
     onOpenChange(false);
-    setStep(1);
-    setFormData({
-      groupName: '',
-      contributionAmount: '',
-      totalAmount: '',
-      frequency: 'weekly',
-      memberLimit: '5',
-      allowDoubleContribution: false,
-      inviteCode: ''
-    });
+    resetForm();
   };
 
   const calculateEstimatedPayout = () => {
@@ -71,8 +89,18 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     return contribution * members;
   };
 
+  // Auto-generate invite code when modal opens
+  React.useEffect(() => {
+    if (open && !formData.inviteCode) {
+      generateRandomCode();
+    }
+  }, [open]);
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      onOpenChange(isOpen);
+      if (!isOpen) resetForm();
+    }}>
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center">
@@ -101,18 +129,19 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="groupName">Group Name</Label>
+                  <Label htmlFor="groupName">Group Name *</Label>
                   <Input
                     id="groupName"
                     placeholder="e.g., Coffee Fund, Vacation Pool"
                     value={formData.groupName}
                     onChange={(e) => setFormData({...formData, groupName: e.target.value})}
                     className="mt-1"
+                    required
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="memberLimit">Maximum Members</Label>
+                  <Label htmlFor="memberLimit">Maximum Members *</Label>
                   <Input
                     id="memberLimit"
                     type="number"
@@ -121,7 +150,9 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                     value={formData.memberLimit}
                     onChange={(e) => setFormData({...formData, memberLimit: e.target.value})}
                     className="mt-1"
+                    required
                   />
+                  <p className="text-sm text-gray-500 mt-1">Including yourself (minimum 2)</p>
                 </div>
               </div>
             </div>
@@ -137,19 +168,25 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="contributionAmount">Contribution per Person</Label>
-                  <Input
-                    id="contributionAmount"
-                    type="number"
-                    placeholder="100"
-                    value={formData.contributionAmount}
-                    onChange={(e) => setFormData({...formData, contributionAmount: e.target.value})}
-                    className="mt-1"
-                  />
+                  <Label htmlFor="contributionAmount">Contribution per Person *</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                    <Input
+                      id="contributionAmount"
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      placeholder="100.00"
+                      value={formData.contributionAmount}
+                      onChange={(e) => setFormData({...formData, contributionAmount: e.target.value})}
+                      className="mt-1 pl-8"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <Label>Contribution Frequency</Label>
+                  <Label>Contribution Frequency *</Label>
                   <div className="grid grid-cols-3 gap-2 mt-2">
                     {frequencies.map((freq) => (
                       <Button
@@ -157,6 +194,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                         variant={formData.frequency === freq.value ? "default" : "outline"}
                         onClick={() => setFormData({...formData, frequency: freq.value})}
                         className="h-10"
+                        type="button"
                       >
                         {freq.label}
                       </Button>
@@ -164,7 +202,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   </div>
                 </div>
 
-                {/* Double Contribution Option */}
                 <Card className="p-4 bg-blue-50 border-blue-200">
                   <div className="flex items-start space-x-3">
                     <Checkbox
@@ -182,24 +219,22 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                         Allow Double Contributions
                       </Label>
                       <p className="text-xs text-gray-600">
-                        Members can contribute 2x and receive 2x payouts (get paid twice in rotation)
+                        Members can contribute 2x and receive 2x payouts
                       </p>
                     </div>
                   </div>
                 </Card>
 
                 {formData.contributionAmount && (
-                  <Card className="p-4 bg-blue-50">
+                  <Card className="p-4 bg-green-50 border-green-200">
                     <div className="text-center">
-                      <p className="text-sm text-gray-600">Estimated Payout per Member</p>
-                      <p className="text-2xl font-bold text-blue-600">
+                      <p className="text-sm text-gray-600">Total Pool Amount</p>
+                      <p className="text-2xl font-bold text-green-600">
                         ${calculateEstimatedPayout().toLocaleString()}
                       </p>
-                      {formData.allowDoubleContribution && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Double contributors get: ${(calculateEstimatedPayout() * 2).toLocaleString()}
-                        </p>
-                      )}
+                      <p className="text-xs text-gray-500 mt-1">
+                        Each member gets this amount on their turn
+                      </p>
                     </div>
                   </Card>
                 )}
@@ -217,15 +252,16 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="inviteCode">Group Invite Code</Label>
+                  <Label htmlFor="inviteCode">Group Invite Code *</Label>
                   <div className="flex space-x-2 mt-1">
                     <Input
                       id="inviteCode"
-                      placeholder="Enter 6-character code"
+                      placeholder="6-character code"
                       value={formData.inviteCode}
-                      onChange={(e) => setFormData({...formData, inviteCode: e.target.value.toUpperCase()})}
+                      onChange={(e) => setFormData({...formData, inviteCode: e.target.value.toUpperCase().slice(0, 6)})}
                       className="text-center font-mono text-lg tracking-wider"
                       maxLength={6}
+                      required
                     />
                     <Button
                       type="button"
@@ -243,11 +279,11 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
 
                 <Card className="p-4 bg-yellow-50 border-yellow-200">
                   <div className="flex items-start space-x-2">
-                    <Key className="h-4 w-4 text-yellow-600 mt-0.5" />
+                    <Key className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-yellow-800">Keep This Private</p>
+                      <p className="text-sm font-medium text-yellow-800">Admin Only</p>
                       <p className="text-xs text-yellow-700">
-                        Only share this code with people you want to join your group. As the admin, only you can see this code.
+                        Only you can see this code. Share it carefully with trusted members only.
                       </p>
                     </div>
                   </div>
@@ -279,7 +315,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Frequency:</span>
-                  <Badge variant="secondary">{formData.frequency}</Badge>
+                  <Badge variant="secondary" className="capitalize">{formData.frequency}</Badge>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Invite Code:</span>
@@ -292,11 +328,17 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   </Badge>
                 </div>
                 <div className="flex justify-between border-t pt-2">
-                  <span className="text-gray-600">Expected Payout:</span>
+                  <span className="text-gray-600">Pool Amount:</span>
                   <span className="font-bold text-green-600">
                     ${calculateEstimatedPayout().toLocaleString()}
                   </span>
                 </div>
+              </Card>
+
+              <Card className="p-4 bg-blue-50 border-blue-200">
+                <p className="text-sm text-blue-800 text-center">
+                  🎯 You'll be first in the rotation and receive the initial payout when all members contribute!
+                </p>
               </Card>
             </div>
           )}
@@ -315,7 +357,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             <Button
               onClick={step === 4 ? handleSubmit : handleNext}
               className="flex items-center"
-              disabled={(step === 1 && !formData.groupName) || (step === 3 && !formData.inviteCode)}
+              disabled={!validateStep(step)}
             >
               {step === 4 ? 'Create Group' : 'Next'}
               {step !== 4 && <ChevronRight className="h-4 w-4 ml-1" />}

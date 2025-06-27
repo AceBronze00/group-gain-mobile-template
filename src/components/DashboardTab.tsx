@@ -1,10 +1,11 @@
+
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, TrendingUp, ChevronRight, Bell, DollarSign, Clock, Key, Copy } from "lucide-react";
+import { Plus, Users, Calendar, Bell, DollarSign, Clock, Key, Copy, ChevronRight } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
@@ -13,14 +14,13 @@ import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/hooks/use-toast";
 
 const DashboardTab = () => {
-  const { groups: activeGroups } = useApp();
+  const { groups: activeGroups, walletBalance } = useApp();
   const { toast } = useToast();
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedGroupForPayment, setSelectedGroupForPayment] = useState(null);
 
-  // Mock user data
   const user = {
     name: "Alex Johnson",
     avatar: "/placeholder.svg",
@@ -55,7 +55,7 @@ const DashboardTab = () => {
   };
 
   const handlePaymentClick = (e: React.MouseEvent, group: any) => {
-    e.stopPropagation(); // Prevent the group details modal from opening
+    e.stopPropagation();
     setSelectedGroupForPayment(group);
   };
 
@@ -73,11 +73,15 @@ const DashboardTab = () => {
           <div className="flex-1">
             <p className="text-blue-100 text-sm">{user.greeting},</p>
             <h2 className="text-2xl font-bold">{user.name}</h2>
-            <p className="text-blue-100 text-sm mt-1">Ready to save together?</p>
+            <p className="text-blue-100 text-sm mt-1">
+              Balance: {formatCurrency(walletBalance)}
+            </p>
           </div>
           <div className="relative">
             <Bell className="h-6 w-6 text-blue-100" />
-            <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></div>
+            {activeGroups.some(g => g.myTurn) && (
+              <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></div>
+            )}
           </div>
         </div>
       </Card>
@@ -180,7 +184,7 @@ const DashboardTab = () => {
                     <Copy className="h-3 w-3" />
                   </Button>
                 </div>
-                <p className="text-xs text-purple-600 mt-1">Share this code with members to join your group</p>
+                <p className="text-xs text-purple-600 mt-1">Share this code with trusted members only</p>
               </div>
             )}
             
@@ -199,7 +203,6 @@ const DashboardTab = () => {
                 <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
               
-              {/* My Payout Date - subtle addition */}
               <div className="flex items-center justify-between pt-1 border-t border-gray-100">
                 <div className="flex items-center text-xs text-gray-500">
                   <Clock className="h-3 w-3 mr-1 text-green-500" />
@@ -220,14 +223,25 @@ const DashboardTab = () => {
             <div className="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
               <Users className="h-10 w-10 text-blue-500" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Start Your First Group!</h3>
-            <p className="text-gray-600 mb-6">Create or join a group to begin your savings journey with friends and family.</p>
-            <Button 
-              onClick={() => setShowCreateGroup(true)}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 px-8 py-3 rounded-xl font-semibold"
-            >
-              Get Started
-            </Button>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Start Your First Savings Group!</h3>
+            <p className="text-gray-600 mb-6">
+              Create a group to save with friends, or join an existing group using an invite code.
+            </p>
+            <div className="space-y-3">
+              <Button 
+                onClick={() => setShowCreateGroup(true)}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 px-8 py-3 rounded-xl font-semibold"
+              >
+                Create Your First Group
+              </Button>
+              <Button 
+                onClick={() => setShowJoinGroup(true)}
+                variant="outline"
+                className="w-full border-2 border-gray-200 hover:bg-gray-50 px-8 py-3 rounded-xl font-semibold"
+              >
+                Join Existing Group
+              </Button>
+            </div>
           </div>
         </Card>
       )}
