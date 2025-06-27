@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Crown, AlertTriangle, Settings, DollarSign } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ActiveGroup {
   id: number;
@@ -25,6 +26,15 @@ interface ActiveGroupCardProps {
 }
 
 const ActiveGroupCard = ({ group, onPayment, onFlagIssue }: ActiveGroupCardProps) => {
+  const { toast } = useToast();
+
+  const handleManageGroup = () => {
+    toast({
+      title: "Group Management",
+      description: `Opening management options for "${group.name}"`,
+    });
+  };
+
   return (
     <div className="p-4 border rounded-lg">
       <div className="flex items-center justify-between mb-3">
@@ -83,6 +93,7 @@ const ActiveGroupCard = ({ group, onPayment, onFlagIssue }: ActiveGroupCardProps
           <Button
             variant="outline"
             size="sm"
+            onClick={handleManageGroup}
             className="flex items-center space-x-1"
           >
             <Settings className="h-3 w-3" />
