@@ -79,32 +79,32 @@ const DashboardTab = () => {
   return (
     <div className="space-y-6 pb-20">
       {/* User Welcome Banner */}
-      <div className="relative min-h-[180px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-3xl overflow-hidden shadow-2xl">
+      <div className="relative min-h-[140px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl overflow-hidden shadow-lg">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative z-10 p-8">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-6">
-              <Avatar className="h-20 w-20 ring-4 ring-white/30 shadow-xl">
+        <div className="relative z-10 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16 ring-3 ring-white/30 shadow-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="bg-white/20 text-white text-xl font-bold backdrop-blur-sm">
+                <AvatarFallback className="bg-white/20 text-white text-lg font-bold backdrop-blur-sm">
                   {user.name.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
               <div className="text-white">
-                <p className="text-blue-100 text-sm font-medium">{user.greeting},</p>
-                <h1 className="text-3xl font-bold mb-2">{user.name}</h1>
-                <div className="flex items-center space-x-4 text-sm">
-                  <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                    <span className="font-semibold">Balance: {formatCurrency(walletBalance)}</span>
+                <p className="text-blue-100 text-xs font-medium">{user.greeting},</p>
+                <h1 className="text-xl font-bold mb-1">{user.name}</h1>
+                <div className="flex items-center space-x-3 text-xs">
+                  <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                    <span className="font-medium">{formatCurrency(walletBalance)}</span>
                   </div>
-                  <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                    <span className="font-semibold">{activeGroups.length} Active Groups</span>
+                  <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                    <span className="font-medium">{activeGroups.length} Groups</span>
                   </div>
                 </div>
               </div>
             </div>
             <div className="relative">
-              <Bell className="h-7 w-7 text-white/80 hover:text-white transition-colors cursor-pointer" />
+              <Bell className="h-6 w-6 text-white/80 hover:text-white transition-colors cursor-pointer" />
               {activeGroups.some(g => g.myTurn) && (
                 <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
                   <span className="text-xs text-white font-bold">
@@ -116,8 +116,8 @@ const DashboardTab = () => {
           </div>
         </div>
         {/* Decorative elements */}
-        <div className="absolute top-4 right-20 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-4 left-20 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
+        <div className="absolute top-2 right-16 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
+        <div className="absolute bottom-2 left-16 w-16 h-16 bg-white/5 rounded-full blur-lg"></div>
       </div>
 
       {/* Quick Actions */}
