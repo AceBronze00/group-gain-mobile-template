@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, Bell, DollarSign, Clock, Key, Copy, ChevronRight } from "lucide-react";
+import { Plus, Users, Calendar, Bell, DollarSign, Clock, Key, Copy, ChevronRight, Share2 } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
@@ -14,7 +13,7 @@ import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/hooks/use-toast";
 
 const DashboardTab = () => {
-  const { groups: activeGroups, walletBalance } = useApp();
+  const { groups: activeGroups, walletBalance, generateInviteUrl } = useApp();
   const { toast } = useToast();
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showJoinGroup, setShowJoinGroup] = useState(false);
@@ -47,6 +46,15 @@ const DashboardTab = () => {
     toast({
       title: "Invite Code Copied!",
       description: `Code "${inviteCode}" copied to clipboard`,
+    });
+  };
+
+  const copyInviteUrl = (inviteCode: string) => {
+    const inviteUrl = generateInviteUrl(inviteCode);
+    navigator.clipboard.writeText(inviteUrl);
+    toast({
+      title: "Invite URL Copied!",
+      description: "Share this link for others to join your group",
     });
   };
 
@@ -164,7 +172,7 @@ const DashboardTab = () => {
             {/* Admin Invite Code Section */}
             {group.isAdmin && (
               <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
                     <Key className="h-4 w-4 text-purple-600" />
                     <span className="text-sm font-medium text-purple-700">Invite Code:</span>
@@ -184,7 +192,21 @@ const DashboardTab = () => {
                     <Copy className="h-3 w-3" />
                   </Button>
                 </div>
-                <p className="text-xs text-purple-600 mt-1">Share this code with trusted members only</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-purple-600">Share this code or URL with trusted members</p>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyInviteUrl(group.inviteCode);
+                    }}
+                    size="sm"
+                    variant="outline"
+                    className="h-7 px-3 border-purple-300 text-purple-600 hover:bg-purple-100 flex items-center space-x-1"
+                  >
+                    <Share2 className="h-3 w-3" />
+                    <span>Share URL</span>
+                  </Button>
+                </div>
               </div>
             )}
             

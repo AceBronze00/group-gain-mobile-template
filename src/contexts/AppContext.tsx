@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -33,7 +32,9 @@ interface AppContextType {
   createGroup: (groupData: any) => void;
   makePayment: (groupId: number, amount: number) => void;
   joinGroup: (groupCode: string) => void;
+  joinGroupByUrl: (groupCode: string) => void;
   cashoutGroup: (groupId: number) => void;
+  generateInviteUrl: (groupCode: string) => string;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -235,6 +236,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const generateInviteUrl = (groupCode: string) => {
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/?invite=${groupCode}`;
+  };
+
+  const joinGroupByUrl = (groupCode: string) => {
+    // Same logic as joinGroup but for URL-based invites
+    joinGroup(groupCode);
+  };
+
   return (
     <AppContext.Provider value={{
       groups,
@@ -243,7 +254,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       createGroup,
       makePayment,
       joinGroup,
-      cashoutGroup
+      joinGroupByUrl,
+      cashoutGroup,
+      generateInviteUrl
     }}>
       {children}
     </AppContext.Provider>
