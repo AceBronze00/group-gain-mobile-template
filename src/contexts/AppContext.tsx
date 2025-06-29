@@ -40,7 +40,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize with a sample active group
+  // Initialize with a sample active group showing double contribution
   const [groups, setGroups] = useState<Group[]>([
     {
       id: 1,
@@ -58,7 +58,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       membersPaid: 4,
       status: 'active',
       allowDoubleContribution: true,
-      isDoubleContributor: false,
+      isDoubleContributor: true, // Current user is doing double contributions
       inviteCode: "GETAWAY2024",
       adminId: "admin123",
       isAdmin: true,

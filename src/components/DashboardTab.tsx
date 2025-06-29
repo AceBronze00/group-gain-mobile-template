@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, Bell, DollarSign, Clock, ChevronRight } from "lucide-react";
+import { Plus, Users, Calendar, Bell, DollarSign, Clock, ChevronRight, Star } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
@@ -53,30 +53,25 @@ const DashboardTab = () => {
 
   return (
     <div className="space-y-6 pb-20">
-      {/* User Welcome Banner */}
-      <div className="relative min-h-[120px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl overflow-hidden shadow-lg">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative z-10 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Avatar className="h-12 w-12 ring-2 ring-white/30 shadow-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="bg-white/20 text-white text-sm font-bold backdrop-blur-sm">
-                  {user.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-white">
-                <p className="text-blue-100 text-xs font-medium">{user.greeting},</p>
-                <h1 className="text-lg font-bold mb-1">{user.name}</h1>
-                <div className="flex items-center space-x-2 text-xs">
-                  <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
-                    <span className="font-medium">{formatCurrency(walletBalance)}</span>
-                  </div>
-                  <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
-                    <span className="font-medium">{activeGroups.length} Groups</span>
-                  </div>
-                </div>
-              </div>
+      {/* User Welcome Banner - Compact Left-Aligned */}
+      <div className="relative h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl overflow-hidden shadow-md">
+        <div className="flex items-center h-full px-4">
+          <Avatar className="h-10 w-10 ring-2 ring-white/30 shadow-md">
+            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarFallback className="bg-white/20 text-white text-xs font-bold backdrop-blur-sm">
+              {user.name.split(' ').map(n => n[0]).join('')}
+            </AvatarFallback>
+          </Avatar>
+          <div className="ml-3 text-white flex-1">
+            <p className="text-xs text-blue-100">{user.greeting},</p>
+            <h1 className="text-sm font-bold">{user.name}</h1>
+          </div>
+          <div className="flex items-center space-x-3 text-white">
+            <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-xs font-medium">{formatCurrency(walletBalance)}</span>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+              <span className="text-xs font-medium">{activeGroups.length} Groups</span>
             </div>
             <div className="relative">
               <Bell className="h-5 w-5 text-white/80 hover:text-white transition-colors cursor-pointer" />
@@ -90,9 +85,6 @@ const DashboardTab = () => {
             </div>
           </div>
         </div>
-        {/* Decorative elements */}
-        <div className="absolute top-2 right-16 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
-        <div className="absolute bottom-2 left-16 w-12 h-12 bg-white/5 rounded-full blur-lg"></div>
       </div>
 
       {/* Quick Actions */}
@@ -138,6 +130,12 @@ const DashboardTab = () => {
                       Admin
                     </Badge>
                   )}
+                  {group.isDoubleContributor && (
+                    <Badge className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
+                      <Star className="h-3 w-3 mr-1" />
+                      2x Contributor
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-sm text-gray-600 flex items-center mt-1">
                   <Users className="h-4 w-4 mr-1" />
@@ -148,7 +146,12 @@ const DashboardTab = () => {
                 <div className="text-xl font-bold text-gray-800">
                   {formatCurrency(group.totalAmount)}
                 </div>
-                <div className="flex items-center space-x-2">
+                {group.isDoubleContributor && (
+                  <div className="text-sm text-orange-600 font-semibold">
+                    Your payout: {formatCurrency(group.totalAmount * 2)}
+                  </div>
+                )}
+                <div className="flex items-center space-x-2 mt-1">
                   <Badge 
                     variant={group.myTurn ? "default" : "secondary"}
                     className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
@@ -164,7 +167,7 @@ const DashboardTab = () => {
                     }`}
                   >
                     <DollarSign className="h-3 w-3 mr-1" />
-                    Pay Now
+                    {group.isDoubleContributor ? `Pay $${group.contributionAmount * 2}` : "Pay Now"}
                   </Button>
                 </div>
               </div>
@@ -194,6 +197,23 @@ const DashboardTab = () => {
                   {group.myTurn ? "Today!" : `${getDaysUntilPayout(group.myPayoutDate)} days`}
                 </span>
               </div>
+              
+              {group.isDoubleContributor && (
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-3 mt-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-orange-700 font-medium flex items-center">
+                      <Star className="h-4 w-4 mr-1 text-yellow-500" />
+                      Double Contribution Active
+                    </span>
+                    <span className="text-orange-600 font-bold">
+                      2x Payout Guaranteed
+                    </span>
+                  </div>
+                  <p className="text-xs text-orange-600 mt-1">
+                    You contribute ${group.contributionAmount * 2} and receive ${group.totalAmount * 2} when it's your turn
+                  </p>
+                </div>
+              )}
             </div>
           </Card>
         ))}
