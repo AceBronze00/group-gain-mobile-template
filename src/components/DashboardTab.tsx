@@ -5,24 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, Bell, DollarSign, Clock, Key, Copy, ChevronRight, Share2, LinkIcon } from "lucide-react";
+import { Plus, Users, Calendar, Bell, DollarSign, Clock, ChevronRight } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
-import InviteLinkTemplate from "@/components/InviteLinkTemplate";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/hooks/use-toast";
 
 const DashboardTab = () => {
-  const { groups: activeGroups, walletBalance, generateInviteUrl } = useApp();
+  const { groups: activeGroups, walletBalance } = useApp();
   const { toast } = useToast();
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedGroupForPayment, setSelectedGroupForPayment] = useState(null);
-  const [selectedGroupForInvite, setSelectedGroupForInvite] = useState(null);
 
   const user = {
     name: "Alex Johnson",
@@ -45,23 +42,6 @@ const DashboardTab = () => {
     return diffDays;
   };
 
-  const copyInviteCode = (inviteCode: string) => {
-    navigator.clipboard.writeText(inviteCode);
-    toast({
-      title: "Invite Code Copied!",
-      description: `Code "${inviteCode}" copied to clipboard`,
-    });
-  };
-
-  const copyInviteUrl = (inviteCode: string) => {
-    const inviteUrl = generateInviteUrl(inviteCode);
-    navigator.clipboard.writeText(inviteUrl);
-    toast({
-      title: "Invite URL Copied!",
-      description: "Share this link for others to join your group",
-    });
-  };
-
   const handleGroupClick = (group: any) => {
     setSelectedGroup(group);
   };
@@ -71,29 +51,24 @@ const DashboardTab = () => {
     setSelectedGroupForPayment(group);
   };
 
-  const showInviteTemplate = (e: React.MouseEvent, group: any) => {
-    e.stopPropagation();
-    setSelectedGroupForInvite(group);
-  };
-
   return (
     <div className="space-y-6 pb-20">
       {/* User Welcome Banner */}
-      <div className="relative min-h-[140px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl overflow-hidden shadow-lg">
+      <div className="relative min-h-[120px] bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-2xl overflow-hidden shadow-lg">
         <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative z-10 p-6">
+        <div className="relative z-10 p-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16 ring-3 ring-white/30 shadow-lg">
+            <div className="flex items-center space-x-3">
+              <Avatar className="h-12 w-12 ring-2 ring-white/30 shadow-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="bg-white/20 text-white text-lg font-bold backdrop-blur-sm">
+                <AvatarFallback className="bg-white/20 text-white text-sm font-bold backdrop-blur-sm">
                   {user.name.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
               <div className="text-white">
                 <p className="text-blue-100 text-xs font-medium">{user.greeting},</p>
-                <h1 className="text-xl font-bold mb-1">{user.name}</h1>
-                <div className="flex items-center space-x-3 text-xs">
+                <h1 className="text-lg font-bold mb-1">{user.name}</h1>
+                <div className="flex items-center space-x-2 text-xs">
                   <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
                     <span className="font-medium">{formatCurrency(walletBalance)}</span>
                   </div>
@@ -104,9 +79,9 @@ const DashboardTab = () => {
               </div>
             </div>
             <div className="relative">
-              <Bell className="h-6 w-6 text-white/80 hover:text-white transition-colors cursor-pointer" />
+              <Bell className="h-5 w-5 text-white/80 hover:text-white transition-colors cursor-pointer" />
               {activeGroups.some(g => g.myTurn) && (
-                <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
+                <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full flex items-center justify-center">
                   <span className="text-xs text-white font-bold">
                     {activeGroups.filter(g => g.myTurn).length}
                   </span>
@@ -116,8 +91,8 @@ const DashboardTab = () => {
           </div>
         </div>
         {/* Decorative elements */}
-        <div className="absolute top-2 right-16 w-24 h-24 bg-white/5 rounded-full blur-xl"></div>
-        <div className="absolute bottom-2 left-16 w-16 h-16 bg-white/5 rounded-full blur-lg"></div>
+        <div className="absolute top-2 right-16 w-20 h-20 bg-white/5 rounded-full blur-xl"></div>
+        <div className="absolute bottom-2 left-16 w-12 h-12 bg-white/5 rounded-full blur-lg"></div>
       </div>
 
       {/* Quick Actions */}
@@ -194,57 +169,6 @@ const DashboardTab = () => {
                 </div>
               </div>
             </div>
-            
-            {/* Admin Invite Code Section */}
-            {group.isAdmin && (
-              <div className="mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <Key className="h-4 w-4 text-purple-600" />
-                    <span className="text-sm font-medium text-purple-700">Invite Code:</span>
-                    <code className="bg-purple-100 px-2 py-1 rounded text-sm font-mono text-purple-800">
-                      {group.inviteCode}
-                    </code>
-                  </div>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyInviteCode(group.inviteCode);
-                    }}
-                    size="sm"
-                    variant="outline"
-                    className="h-7 px-2 border-purple-300 text-purple-600 hover:bg-purple-100"
-                  >
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-purple-600">Share this code or URL with trusted members</p>
-                  <div className="flex space-x-2">
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        copyInviteUrl(group.inviteCode);
-                      }}
-                      size="sm"
-                      variant="outline"
-                      className="h-7 px-3 border-purple-300 text-purple-600 hover:bg-purple-100 flex items-center space-x-1"
-                    >
-                      <Share2 className="h-3 w-3" />
-                      <span>Share URL</span>
-                    </Button>
-                    <Button
-                      onClick={(e) => showInviteTemplate(e, group)}
-                      size="sm"
-                      className="h-7 px-3 bg-purple-600 hover:bg-purple-700 text-white flex items-center space-x-1"
-                    >
-                      <LinkIcon className="h-3 w-3" />
-                      <span>Invite Template</span>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
             
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
@@ -326,20 +250,6 @@ const DashboardTab = () => {
           open={!!selectedGroupForPayment}
           onOpenChange={(open) => !open && setSelectedGroupForPayment(null)}
         />
-      )}
-      
-      {/* Invite Template Modal */}
-      {selectedGroupForInvite && (
-        <Dialog open={!!selectedGroupForInvite} onOpenChange={() => setSelectedGroupForInvite(null)}>
-          <DialogContent className="max-w-md mx-auto max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-center">
-                Share Group Invite
-              </DialogTitle>
-            </DialogHeader>
-            <InviteLinkTemplate group={selectedGroupForInvite} />
-          </DialogContent>
-        </Dialog>
       )}
     </div>
   );
