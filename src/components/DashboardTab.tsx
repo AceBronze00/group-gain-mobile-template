@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, Bell, DollarSign, Clock, Key, Copy, ChevronRight, Share2 } from "lucide-react";
+import { Plus, Users, Calendar, Bell, DollarSign, Clock, Key, Copy, ChevronRight, Share2, LinkIcon } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
+import InviteLinkTemplate from "@/components/InviteLinkTemplate";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,6 +21,7 @@ const DashboardTab = () => {
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedGroupForPayment, setSelectedGroupForPayment] = useState(null);
+  const [selectedGroupForInvite, setSelectedGroupForInvite] = useState(null);
 
   const user = {
     name: "Alex Johnson",
@@ -65,6 +68,11 @@ const DashboardTab = () => {
   const handlePaymentClick = (e: React.MouseEvent, group: any) => {
     e.stopPropagation();
     setSelectedGroupForPayment(group);
+  };
+
+  const showInviteTemplate = (e: React.MouseEvent, group: any) => {
+    e.stopPropagation();
+    setSelectedGroupForInvite(group);
   };
 
   return (
@@ -194,18 +202,28 @@ const DashboardTab = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-purple-600">Share this code or URL with trusted members</p>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyInviteUrl(group.inviteCode);
-                    }}
-                    size="sm"
-                    variant="outline"
-                    className="h-7 px-3 border-purple-300 text-purple-600 hover:bg-purple-100 flex items-center space-x-1"
-                  >
-                    <Share2 className="h-3 w-3" />
-                    <span>Share URL</span>
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        copyInviteUrl(group.inviteCode);
+                      }}
+                      size="sm"
+                      variant="outline"
+                      className="h-7 px-3 border-purple-300 text-purple-600 hover:bg-purple-100 flex items-center space-x-1"
+                    >
+                      <Share2 className="h-3 w-3" />
+                      <span>Share URL</span>
+                    </Button>
+                    <Button
+                      onClick={(e) => showInviteTemplate(e, group)}
+                      size="sm"
+                      className="h-7 px-3 bg-purple-600 hover:bg-purple-700 text-white flex items-center space-x-1"
+                    >
+                      <LinkIcon className="h-3 w-3" />
+                      <span>Invite Template</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
@@ -290,6 +308,20 @@ const DashboardTab = () => {
           open={!!selectedGroupForPayment}
           onOpenChange={(open) => !open && setSelectedGroupForPayment(null)}
         />
+      )}
+      
+      {/* Invite Template Modal */}
+      {selectedGroupForInvite && (
+        <Dialog open={!!selectedGroupForInvite} onOpenChange={() => setSelectedGroupForInvite(null)}>
+          <DialogContent className="max-w-md mx-auto max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-center">
+                Share Group Invite
+              </DialogTitle>
+            </DialogHeader>
+            <InviteLinkTemplate group={selectedGroupForInvite} />
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
