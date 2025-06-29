@@ -40,7 +40,32 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [groups, setGroups] = useState<Group[]>([]);
+  // Initialize with a sample active group
+  const [groups, setGroups] = useState<Group[]>([
+    {
+      id: 1,
+      name: "Weekend Getaway Fund",
+      members: 6,
+      totalAmount: 1800,
+      contributionAmount: 300,
+      frequency: "weekly",
+      nextPayout: "2024-07-05",
+      payoutRecipient: "Sarah M.",
+      progress: 65,
+      myTurn: false,
+      position: 3,
+      myPayoutDate: "2024-07-19",
+      membersPaid: 4,
+      status: 'active',
+      allowDoubleContribution: true,
+      isDoubleContributor: false,
+      inviteCode: "GETAWAY2024",
+      adminId: "admin123",
+      isAdmin: true,
+      membersList: ["currentUser", "sarah123", "mike456", "emma789", "james101", "lisa202"],
+      createdAt: "2024-06-20T10:00:00.000Z"
+    }
+  ]);
   const [walletBalance, setWalletBalance] = useState(500.00);
   const currentUserId = "currentUser";
   const { toast } = useToast();
