@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key, Lock, Unlock } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
@@ -23,8 +22,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     contributionAmount: '',
     frequency: 'weekly',
     memberLimit: '5',
-    allowDoubleContribution: false,
-    lockWithdrawals: true, // New field for withdrawal lock setting
+    lockWithdrawals: true,
     inviteCode: ''
   });
 
@@ -49,7 +47,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       contributionAmount: '',
       frequency: 'weekly',
       memberLimit: '5',
-      allowDoubleContribution: false,
       lockWithdrawals: true,
       inviteCode: ''
     });
@@ -57,7 +54,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
   };
 
   const handleNext = () => {
-    if (step < 5) setStep(step + 1); // Updated to 5 steps
+    if (step < 5) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -71,7 +68,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       case 2:
         return parseFloat(formData.contributionAmount) > 0;
       case 3:
-        return true; // Withdrawal policy step - always valid
+        return true;
       case 4:
         return formData.inviteCode.length === 6;
       default:
@@ -93,7 +90,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     return contribution * members;
   };
 
-  // Auto-generate invite code when modal opens
   React.useEffect(() => {
     if (open && !formData.inviteCode) {
       generateRandomCode();
@@ -205,29 +201,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                     ))}
                   </div>
                 </div>
-
-                <Card className="p-4 bg-blue-50 border-blue-200">
-                  <div className="flex items-start space-x-3">
-                    <Checkbox
-                      id="allowDoubleContribution"
-                      checked={formData.allowDoubleContribution}
-                      onCheckedChange={(checked) => 
-                        setFormData({...formData, allowDoubleContribution: !!checked})
-                      }
-                    />
-                    <div className="space-y-1">
-                      <Label 
-                        htmlFor="allowDoubleContribution" 
-                        className="text-sm font-medium cursor-pointer"
-                      >
-                        Allow Double Contributions
-                      </Label>
-                      <p className="text-xs text-gray-600">
-                        Members can contribute 2x and receive 2x payouts
-                      </p>
-                    </div>
-                  </div>
-                </Card>
 
                 {formData.contributionAmount && (
                   <Card className="p-4 bg-green-50 border-green-200">
@@ -429,12 +402,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Invite Code:</span>
                   <Badge variant="default" className="font-mono">{formData.inviteCode}</Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Double Contributions:</span>
-                  <Badge variant={formData.allowDoubleContribution ? "default" : "secondary"}>
-                    {formData.allowDoubleContribution ? "Enabled" : "Disabled"}
-                  </Badge>
                 </div>
                 <div className="flex justify-between border-t pt-2">
                   <span className="text-gray-600">Pool Amount:</span>
