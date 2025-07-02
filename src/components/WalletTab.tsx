@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Wallet, ArrowUpRight, Eye, EyeOff, Gift, Clock, CheckCircle, Users, ChevronRight } from "lucide-react";
+import { Wallet, ArrowUpRight, Eye, EyeOff, Gift, Clock, CheckCircle, Users, ChevronRight, Lock, Unlock, Shield } from "lucide-react";
 import CashoutModal from "./CashoutModal";
 import WithdrawModal from "./WithdrawModal";
 import { useApp } from "@/contexts/AppContext";
@@ -13,7 +13,9 @@ const WalletTab = () => {
   const { 
     walletBalance, 
     getWithdrawableBalance, 
-    walletEntries,
+    getPendingUnlockBalance,
+    getLockedEntries,
+    getUnlockedEntries,
     currentUserId
   } = useApp();
   
@@ -22,7 +24,9 @@ const WalletTab = () => {
   const [selectedGroupForCashout, setSelectedGroupForCashout] = useState(null);
   
   const withdrawableBalance = getWithdrawableBalance();
-  const userEntries = walletEntries.filter(entry => entry.userId === currentUserId);
+  const pendingUnlockBalance = getPendingUnlockBalance();
+  const lockedEntries = getLockedEntries();
+  const unlockedEntries = getUnlockedEntries();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -46,7 +50,7 @@ const WalletTab = () => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             <Wallet className="h-6 w-6" />
-            <span className="font-bold text-lg">Wallet Balance</span>
+            <span className="font-bold text-lg">Withdrawable Balance</span>
           </div>
           <Button
             variant="ghost"
@@ -78,17 +82,34 @@ const WalletTab = () => {
         )}
       </Card>
 
-      {/* Wallet Entries */}
-      {userEntries.length > 0 && (
+      {/* Pending Unlock Balance */}
+      {pendingUnlockBalance > 0 && (
+        <Card className="p-6 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-2xl">
+          <div className="flex items-center space-x-3 mb-4">
+            <Lock className="h-6 w-6" />
+            <span className="font-bold text-lg">Pending Unlock</span>
+          </div>
+          
+          <div className="text-center">
+            <p className="text-sm text-orange-100 mb-2">Locked Until Group Completion</p>
+            <p className="text-3xl font-bold">
+              {showBalance ? formatCurrency(pendingUnlockBalance) : "••••••"}
+            </p>
+          </div>
+        </Card>
+      )}
+
+      {/* Unlocked Wallet Entries */}
+      {unlockedEntries.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-bold text-gray-800 flex items-center">
-              <CheckCircle className="h-5 w-5 mr-2 text-green-500" />
-              Wallet Entries ({userEntries.length})
+              <Unlock className="h-5 w-5 mr-2 text-green-500" />
+              Available Funds ({unlockedEntries.length})
             </h3>
           </div>
           
-          {userEntries.map((entry) => (
+          {unlockedEntries.map((entry) => (
             <Card key={entry.id} className="p-4 bg-green-50 border-green-200 rounded-xl">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
@@ -96,6 +117,10 @@ const WalletTab = () => {
                   <p className="text-sm text-gray-600 flex items-center mt-1">
                     <CheckCircle className="h-4 w-4 mr-1 text-green-500" />
                     Received {formatDate(entry.receivedDate)}
+                  </p>
+                  <p className="text-xs text-gray-500 flex items-center mt-1">
+                    <Shield className="h-3 w-3 mr-1" />
+                    {entry.groupLockPolicy ? 'Group completed - funds unlocked' : 'Immediate withdrawal policy'}
                   </p>
                 </div>
                 <div className="text-right">
@@ -112,8 +137,49 @@ const WalletTab = () => {
         </div>
       )}
 
+      {/* Locked Wallet Entries */}
+      {lockedEntries.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-gray-800 flex items-center">
+              <Lock className="h-5 w-5 mr-2 text-orange-500" />
+              Locked Funds ({lockedEntries.length})
+            </h3>
+          </div>
+          
+          {lockedEntries.map((entry) => (
+            <Card key={entry.id} className="p-4 bg-orange-50 border-orange-200 rounded-xl">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-800 flex items-center">
+                    {entry.groupName}
+                    <Lock className="h-4 w-4 ml-2 text-orange-500" />
+                  </h4>
+                  <p className="text-sm text-gray-600 flex items-center mt-1">
+                    <Clock className="h-4 w-4 mr-1 text-orange-500" />
+                    Received {formatDate(entry.receivedDate)}
+                  </p>
+                  <p className="text-xs text-orange-600 flex items-center mt-1">
+                    <Shield className="h-3 w-3 mr-1" />
+                    🔒 Still Active - Funds locked until group completes
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold text-orange-600">
+                    {formatCurrency(entry.amount)}
+                  </div>
+                  <Badge variant="outline" className="border-orange-300 text-orange-600">
+                    Locked
+                  </Badge>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
       {/* Empty State */}
-      {userEntries.length === 0 && (
+      {unlockedEntries.length === 0 && lockedEntries.length === 0 && (
         <Card className="p-8 text-center bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-2xl">
           <div className="max-w-sm mx-auto">
             <div className="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">

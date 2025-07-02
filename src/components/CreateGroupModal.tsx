@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key, Lock, Unlock } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
 interface CreateGroupModalProps {
@@ -24,6 +24,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     frequency: 'weekly',
     memberLimit: '5',
     allowDoubleContribution: false,
+    lockWithdrawals: true, // New field for withdrawal lock setting
     inviteCode: ''
   });
 
@@ -49,13 +50,14 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       frequency: 'weekly',
       memberLimit: '5',
       allowDoubleContribution: false,
+      lockWithdrawals: true,
       inviteCode: ''
     });
     setStep(1);
   };
 
   const handleNext = () => {
-    if (step < 4) setStep(step + 1);
+    if (step < 5) setStep(step + 1); // Updated to 5 steps
   };
 
   const handleBack = () => {
@@ -69,6 +71,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       case 2:
         return parseFloat(formData.contributionAmount) > 0;
       case 3:
+        return true; // Withdrawal policy step - always valid
+      case 4:
         return formData.inviteCode.length === 6;
       default:
         return true;
@@ -76,7 +80,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
   };
 
   const handleSubmit = () => {
-    if (!validateStep(4)) return;
+    if (!validateStep(5)) return;
     
     createGroup(formData);
     onOpenChange(false);
@@ -107,7 +111,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             Create New Group
           </DialogTitle>
           <div className="flex justify-center space-x-2 mt-4">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
                 className={`w-3 h-3 rounded-full ${
@@ -245,6 +249,104 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
           {step === 3 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
+                {formData.lockWithdrawals ? (
+                  <Lock className="h-12 w-12 text-orange-500 mx-auto mb-2" />
+                ) : (
+                  <Unlock className="h-12 w-12 text-green-500 mx-auto mb-2" />
+                )}
+                <h3 className="text-lg font-semibold">Withdrawal Policy</h3>
+                <p className="text-gray-600 text-sm">Choose when members can withdraw their payouts</p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  <Card 
+                    className={`p-4 cursor-pointer transition-all ${
+                      formData.lockWithdrawals 
+                        ? 'border-orange-300 bg-orange-50' 
+                        : 'border-gray-200 hover:border-orange-200'
+                    }`}
+                    onClick={() => setFormData({...formData, lockWithdrawals: true})}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className={`w-4 h-4 rounded-full border-2 mt-1 ${
+                        formData.lockWithdrawals 
+                          ? 'border-orange-500 bg-orange-500' 
+                          : 'border-gray-300'
+                      }`}>
+                        {formData.lockWithdrawals && (
+                          <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <Lock className="h-4 w-4 text-orange-500" />
+                          <Label className="font-medium text-orange-700">Lock Until Group Completes</Label>
+                          <Badge variant="outline" className="text-xs bg-orange-100 text-orange-600 border-orange-200">
+                            Recommended
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          Payouts stay locked in member wallets until all members have received their turn. 
+                          This ensures everyone stays committed to the group.
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card 
+                    className={`p-4 cursor-pointer transition-all ${
+                      !formData.lockWithdrawals 
+                        ? 'border-green-300 bg-green-50' 
+                        : 'border-gray-200 hover:border-green-200'
+                    }`}
+                    onClick={() => setFormData({...formData, lockWithdrawals: false})}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className={`w-4 h-4 rounded-full border-2 mt-1 ${
+                        !formData.lockWithdrawals 
+                          ? 'border-green-500 bg-green-500' 
+                          : 'border-gray-300'
+                      }`}>
+                        {!formData.lockWithdrawals && (
+                          <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <Unlock className="h-4 w-4 text-green-500" />
+                          <Label className="font-medium text-green-700">Allow Immediate Withdrawal</Label>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          Members can withdraw their payouts immediately after receiving them. 
+                          More flexible but may reduce group commitment.
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+
+                <Card className="p-3 bg-blue-50 border-blue-200">
+                  <div className="flex items-start space-x-2">
+                    <Settings className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-blue-800">Policy Impact</p>
+                      <p className="text-xs text-blue-700">
+                        {formData.lockWithdrawals 
+                          ? "All payouts will be locked until every member has received their payout."
+                          : "Members can withdraw funds immediately after receiving their payout."
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="space-y-4">
+              <div className="text-center mb-4">
                 <Key className="h-12 w-12 text-purple-500 mx-auto mb-2" />
                 <h3 className="text-lg font-semibold">Invite Code</h3>
                 <p className="text-gray-600 text-sm">Create a unique code for your group</p>
@@ -292,7 +394,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             </div>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
                 <Settings className="h-12 w-12 text-purple-500 mx-auto mb-2" />
@@ -316,6 +418,13 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Frequency:</span>
                   <Badge variant="secondary" className="capitalize">{formData.frequency}</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Withdrawal Policy:</span>
+                  <Badge variant={formData.lockWithdrawals ? "outline" : "default"} className="flex items-center space-x-1">
+                    {formData.lockWithdrawals ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+                    <span>{formData.lockWithdrawals ? "Locked" : "Immediate"}</span>
+                  </Badge>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Invite Code:</span>
@@ -355,12 +464,12 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             </Button>
 
             <Button
-              onClick={step === 4 ? handleSubmit : handleNext}
+              onClick={step === 5 ? handleSubmit : handleNext}
               className="flex items-center"
               disabled={!validateStep(step)}
             >
-              {step === 4 ? 'Create Group' : 'Next'}
-              {step !== 4 && <ChevronRight className="h-4 w-4 ml-1" />}
+              {step === 5 ? 'Create Group' : 'Next'}
+              {step !== 5 && <ChevronRight className="h-4 w-4 ml-1" />}
             </Button>
           </div>
         </div>
