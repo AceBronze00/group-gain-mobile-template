@@ -32,9 +32,7 @@ export interface WalletEntry {
   groupId: number;
   groupName: string;
   amount: number;
-  isLocked: boolean;
   receivedDate: string;
-  unlockedDate?: string;
 }
 
 interface AppContextType {
@@ -49,9 +47,6 @@ interface AppContextType {
   cashoutGroup: (groupId: number) => void;
   generateInviteUrl: (groupCode: string) => string;
   getWithdrawableBalance: () => number;
-  getPendingUnlockBalance: () => number;
-  getLockedEntries: () => WalletEntry[];
-  getUnlockedEntries: () => WalletEntry[];
   withdrawFunds: (amount: number) => void;
 }
 
@@ -85,7 +80,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   ]);
 
-  // Initialize wallet entries with some sample data
+  // Initialize wallet entries with some sample data (all unlocked)
   const [walletEntries, setWalletEntries] = useState<WalletEntry[]>([
     {
       id: 1,
@@ -93,9 +88,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       groupId: 2,
       groupName: "Emergency Fund",
       amount: 1800,
-      isLocked: false,
-      receivedDate: "2024-06-20T10:00:00.000Z",
-      unlockedDate: "2024-06-25T10:00:00.000Z"
+      receivedDate: "2024-06-20T10:00:00.000Z"
     },
     {
       id: 2,
@@ -103,7 +96,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       groupId: 3,
       groupName: "Holiday Shopping",
       amount: 1200,
-      isLocked: true,
       receivedDate: "2024-06-18T10:00:00.000Z"
     }
   ]);
@@ -114,39 +106,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const getWithdrawableBalance = () => {
     return walletEntries
-      .filter(entry => entry.userId === currentUserId && !entry.isLocked)
+      .filter(entry => entry.userId === currentUserId)
       .reduce((total, entry) => total + entry.amount, 0);
-  };
-
-  const getPendingUnlockBalance = () => {
-    return walletEntries
-      .filter(entry => entry.userId === currentUserId && entry.isLocked)
-      .reduce((total, entry) => total + entry.amount, 0);
-  };
-
-  const getLockedEntries = () => {
-    return walletEntries.filter(entry => entry.userId === currentUserId && entry.isLocked);
-  };
-
-  const getUnlockedEntries = () => {
-    return walletEntries.filter(entry => entry.userId === currentUserId && !entry.isLocked);
-  };
-
-  const unlockGroupFunds = (groupId: number) => {
-    setWalletEntries(prev => prev.map(entry => {
-      if (entry.groupId === groupId && entry.isLocked) {
-        toast({
-          title: "Funds Unlocked! 🎉",
-          description: `$${entry.amount.toLocaleString()} from "${entry.groupName}" is now available for withdrawal.`,
-        });
-        return {
-          ...entry,
-          isLocked: false,
-          unlockedDate: new Date().toISOString()
-        };
-      }
-      return entry;
-    }));
   };
 
   const createGroup = (groupData: any) => {
@@ -284,28 +245,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         if (group.myTurn && newProgress >= 100) {
           const payoutAmount = group.totalAmount;
           
-          // Add wallet entry for this payout (locked initially)
+          // Add wallet entry for this payout (immediately available)
           const newWalletEntry: WalletEntry = {
             id: Date.now(),
             userId: currentUserId,
             groupId: group.id,
             groupName: group.name,
             amount: payoutAmount,
-            isLocked: true, // Initially locked
             receivedDate: new Date().toISOString()
           };
           
           setWalletEntries(prevEntries => [...prevEntries, newWalletEntry]);
           
-          // Check if all members have been paid out to unlock funds
           const allPaidOut = newMembersPaid === group.members;
-          if (allPaidOut) {
-            setTimeout(() => unlockGroupFunds(group.id), 1000); // Small delay for UX
-          }
           
           toast({
             title: "Payment Complete - You Win!",
-            description: `You received $${payoutAmount.toLocaleString()} from "${group.name}"${allPaidOut ? ' - Funds unlocked!' : ' - Funds locked until group completes'}`,
+            description: `You received $${payoutAmount.toLocaleString()} from "${group.name}" - Available for withdrawal now!`,
           });
           
           // Update group status
@@ -343,16 +299,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (group) {
       const payoutAmount = group.totalAmount;
       
-      // Add wallet entry for cashout
+      // Add wallet entry for cashout (immediately available)
       const newWalletEntry: WalletEntry = {
         id: Date.now(),
         userId: currentUserId,
         groupId: group.id,
         groupName: group.name,
         amount: payoutAmount,
-        isLocked: false, // Unlocked since it's a manual cashout
-        receivedDate: new Date().toISOString(),
-        unlockedDate: new Date().toISOString()
+        receivedDate: new Date().toISOString()
       };
       
       setWalletEntries(prevEntries => [...prevEntries, newWalletEntry]);
@@ -369,7 +323,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       
       toast({
         title: "Cashout Successful!",
-        description: `$${payoutAmount.toLocaleString()} has been added to your wallet.`,
+        description: `$${payoutAmount.toLocaleString()} has been added to your wallet and is available for withdrawal.`,
       });
     }
   };
@@ -379,18 +333,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     
     if (amount > withdrawableBalance) {
       toast({
-        title: "Insufficient Withdrawable Balance",
-        description: `You can only withdraw $${withdrawableBalance.toLocaleString()} in unlocked funds.`,
+        title: "Insufficient Balance",
+        description: `You can only withdraw $${withdrawableBalance.toLocaleString()}.`,
         variant: "destructive"
       });
       return;
     }
 
-    // Remove withdrawn amounts from unlocked entries (FIFO basis)
+    // Remove withdrawn amounts from entries (FIFO basis)
     let remainingAmount = amount;
     setWalletEntries(prev => {
       return prev.filter(entry => {
-        if (entry.userId === currentUserId && !entry.isLocked && remainingAmount > 0) {
+        if (entry.userId === currentUserId && remainingAmount > 0) {
           if (entry.amount <= remainingAmount) {
             remainingAmount -= entry.amount;
             return false; // Remove this entry
@@ -434,9 +388,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       cashoutGroup,
       generateInviteUrl,
       getWithdrawableBalance,
-      getPendingUnlockBalance,
-      getLockedEntries,
-      getUnlockedEntries,
       withdrawFunds
     }}>
       {children}
