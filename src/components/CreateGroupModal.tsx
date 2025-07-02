@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key, Lock, Unlock } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key, Lock, Unlock, RefreshCw, UserCheck } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
 interface CreateGroupModalProps {
@@ -21,8 +23,9 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     groupName: '',
     contributionAmount: '',
     frequency: 'weekly',
-    memberLimit: '5',
     lockWithdrawals: true,
+    allowMultipleContributions: false,
+    payoutOrder: 'randomized',
     inviteCode: ''
   });
 
@@ -46,8 +49,9 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       groupName: '',
       contributionAmount: '',
       frequency: 'weekly',
-      memberLimit: '5',
       lockWithdrawals: true,
+      allowMultipleContributions: false,
+      payoutOrder: 'randomized',
       inviteCode: ''
     });
     setStep(1);
@@ -64,7 +68,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
   const validateStep = (currentStep: number) => {
     switch (currentStep) {
       case 1:
-        return formData.groupName.trim() !== '' && parseInt(formData.memberLimit) >= 2;
+        return formData.groupName.trim() !== '';
       case 2:
         return parseFloat(formData.contributionAmount) > 0;
       case 3:
@@ -82,12 +86,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     createGroup(formData);
     onOpenChange(false);
     resetForm();
-  };
-
-  const calculateEstimatedPayout = () => {
-    const contribution = parseFloat(formData.contributionAmount) || 0;
-    const members = parseInt(formData.memberLimit) || 1;
-    return contribution * members;
   };
 
   React.useEffect(() => {
@@ -140,20 +138,17 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="memberLimit">Maximum Members *</Label>
-                  <Input
-                    id="memberLimit"
-                    type="number"
-                    min="2"
-                    max="20"
-                    value={formData.memberLimit}
-                    onChange={(e) => setFormData({...formData, memberLimit: e.target.value})}
-                    className="mt-1"
-                    required
-                  />
-                  <p className="text-sm text-gray-500 mt-1">Including yourself (minimum 2)</p>
-                </div>
+                <Card className="p-4 bg-blue-50 border-blue-200">
+                  <div className="flex items-start space-x-2">
+                    <Users className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-blue-800">No Participant Limit</p>
+                      <p className="text-xs text-blue-700">
+                        Members can join your group at any time, even after it has started.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
               </div>
             </div>
           )}
@@ -202,24 +197,98 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   </div>
                 </div>
 
-                {formData.contributionAmount && (
-                  <Card className="p-4 bg-green-50 border-green-200">
-                    <div className="text-center">
-                      <p className="text-sm text-gray-600">Total Pool Amount</p>
-                      <p className="text-2xl font-bold text-green-600">
-                        ${calculateEstimatedPayout().toLocaleString()}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Each member gets this amount on their turn
-                      </p>
-                    </div>
-                  </Card>
-                )}
+                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div className="flex-1">
+                    <Label className="font-medium">Allow Multiple Contributions</Label>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Members can contribute multiple shares for multiple payouts
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.allowMultipleContributions}
+                    onCheckedChange={(checked) => setFormData({...formData, allowMultipleContributions: checked})}
+                  />
+                </div>
               </div>
             </div>
           )}
 
           {step === 3 && (
+            <div className="space-y-4">
+              <div className="text-center mb-4">
+                <RefreshCw className="h-12 w-12 text-purple-500 mx-auto mb-2" />
+                <h3 className="text-lg font-semibold">Payout Order</h3>
+                <p className="text-gray-600 text-sm">Choose how the payout sequence is determined</p>
+              </div>
+
+              <div className="space-y-4">
+                <RadioGroup 
+                  value={formData.payoutOrder} 
+                  onValueChange={(value) => setFormData({...formData, payoutOrder: value})}
+                >
+                  <Card className={`p-4 cursor-pointer transition-all ${
+                    formData.payoutOrder === 'randomized' 
+                      ? 'border-purple-300 bg-purple-50' 
+                      : 'border-gray-200 hover:border-purple-200'
+                  }`}>
+                    <div className="flex items-start space-x-3">
+                      <RadioGroupItem value="randomized" className="mt-1" />
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <RefreshCw className="h-4 w-4 text-purple-500" />
+                          <Label className="font-medium text-purple-700">Randomized Order</Label>
+                          <Badge variant="outline" className="text-xs bg-purple-100 text-purple-600 border-purple-200">
+                            Recommended
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          Payout order will be automatically randomized after all participants join. 
+                          Ensures fairness and prevents gaming.
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Card className={`p-4 cursor-pointer transition-all ${
+                    formData.payoutOrder === 'manual' 
+                      ? 'border-blue-300 bg-blue-50' 
+                      : 'border-gray-200 hover:border-blue-200'
+                  }`}>
+                    <div className="flex items-start space-x-3">
+                      <RadioGroupItem value="manual" className="mt-1" />
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <UserCheck className="h-4 w-4 text-blue-500" />
+                          <Label className="font-medium text-blue-700">Manually Set Order</Label>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          You can arrange the payout order from the Members tab. 
+                          Order becomes locked after the first payout is sent.
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </RadioGroup>
+
+                <Card className="p-3 bg-yellow-50 border-yellow-200">
+                  <div className="flex items-start space-x-2">
+                    <Settings className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-yellow-800">Order Policy</p>
+                      <p className="text-xs text-yellow-700">
+                        {formData.payoutOrder === 'randomized' 
+                          ? "The system will randomly assign payout positions after all members join."
+                          : "You'll be able to drag and drop members to set the payout sequence."
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
                 {formData.lockWithdrawals ? (
@@ -298,31 +367,16 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                     </div>
                   </Card>
                 </div>
-
-                <Card className="p-3 bg-blue-50 border-blue-200">
-                  <div className="flex items-start space-x-2">
-                    <Settings className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-blue-800">Policy Impact</p>
-                      <p className="text-xs text-blue-700">
-                        {formData.lockWithdrawals 
-                          ? "All payouts will be locked until every member has received their payout."
-                          : "Members can withdraw funds immediately after receiving their payout."
-                        }
-                      </p>
-                    </div>
-                  </div>
-                </Card>
               </div>
             </div>
           )}
 
-          {step === 4 && (
+          {step === 5 && (
             <div className="space-y-4">
               <div className="text-center mb-4">
                 <Key className="h-12 w-12 text-purple-500 mx-auto mb-2" />
-                <h3 className="text-lg font-semibold">Invite Code</h3>
-                <p className="text-gray-600 text-sm">Create a unique code for your group</p>
+                <h3 className="text-lg font-semibold">Invite Code & Review</h3>
+                <p className="text-gray-600 text-sm">Create your invite code and review settings</p>
               </div>
 
               <div className="space-y-4">
@@ -347,75 +401,44 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                       Generate
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Members will use this code to join your group
-                  </p>
                 </div>
 
-                <Card className="p-4 bg-yellow-50 border-yellow-200">
-                  <div className="flex items-start space-x-2">
-                    <Key className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-yellow-800">Admin Only</p>
-                      <p className="text-xs text-yellow-700">
-                        Only you can see this code. Share it carefully with trusted members only.
-                      </p>
-                    </div>
+                <Card className="p-4 space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Group Name:</span>
+                    <span className="font-semibold">{formData.groupName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Contribution:</span>
+                    <span className="font-semibold">${formData.contributionAmount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Frequency:</span>
+                    <Badge variant="secondary" className="capitalize">{formData.frequency}</Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Multiple Contributions:</span>
+                    <Badge variant={formData.allowMultipleContributions ? "default" : "outline"}>
+                      {formData.allowMultipleContributions ? "Allowed" : "Single Only"}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Payout Order:</span>
+                    <Badge variant="secondary" className="capitalize">{formData.payoutOrder}</Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Withdrawal Policy:</span>
+                    <Badge variant={formData.lockWithdrawals ? "outline" : "default"} className="flex items-center space-x-1">
+                      {formData.lockWithdrawals ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+                      <span>{formData.lockWithdrawals ? "Locked" : "Immediate"}</span>
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Invite Code:</span>
+                    <Badge variant="default" className="font-mono">{formData.inviteCode}</Badge>
                   </div>
                 </Card>
               </div>
-            </div>
-          )}
-
-          {step === 5 && (
-            <div className="space-y-4">
-              <div className="text-center mb-4">
-                <Settings className="h-12 w-12 text-purple-500 mx-auto mb-2" />
-                <h3 className="text-lg font-semibold">Review & Create</h3>
-                <p className="text-gray-600 text-sm">Confirm your group settings</p>
-              </div>
-
-              <Card className="p-4 space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Group Name:</span>
-                  <span className="font-semibold">{formData.groupName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Max Members:</span>
-                  <span className="font-semibold">{formData.memberLimit}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Contribution:</span>
-                  <span className="font-semibold">${formData.contributionAmount}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Frequency:</span>
-                  <Badge variant="secondary" className="capitalize">{formData.frequency}</Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Withdrawal Policy:</span>
-                  <Badge variant={formData.lockWithdrawals ? "outline" : "default"} className="flex items-center space-x-1">
-                    {formData.lockWithdrawals ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
-                    <span>{formData.lockWithdrawals ? "Locked" : "Immediate"}</span>
-                  </Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Invite Code:</span>
-                  <Badge variant="default" className="font-mono">{formData.inviteCode}</Badge>
-                </div>
-                <div className="flex justify-between border-t pt-2">
-                  <span className="text-gray-600">Pool Amount:</span>
-                  <span className="font-bold text-green-600">
-                    ${calculateEstimatedPayout().toLocaleString()}
-                  </span>
-                </div>
-              </Card>
-
-              <Card className="p-4 bg-blue-50 border-blue-200">
-                <p className="text-sm text-blue-800 text-center">
-                  🎯 You'll be first in the rotation and receive the initial payout when all members contribute!
-                </p>
-              </Card>
             </div>
           )}
 

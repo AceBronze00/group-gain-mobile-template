@@ -24,6 +24,11 @@ export interface Group {
   isComplete: boolean;
   allMembersPaidOut: boolean;
   lockWithdrawals: boolean;
+  allowMultipleContributions: boolean;
+  payoutOrder: 'randomized' | 'manual';
+  payoutSequence: string[];
+  hasStarted: boolean;
+  totalPayoutsSent: number;
 }
 
 export interface WalletEntry {
@@ -53,12 +58,14 @@ interface AppContextType {
   getLockedEntries: () => WalletEntry[];
   getUnlockedEntries: () => WalletEntry[];
   withdrawFunds: (amount: number) => void;
+  updatePayoutOrder: (groupId: number, newOrder: string[]) => void;
+  calculateLateJoinerAmount: (groupCode: string) => number;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize with a sample active group with lock setting
+  // Initialize with a sample active group
   const [groups, setGroups] = useState<Group[]>([
     {
       id: 1,
@@ -82,11 +89,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       createdAt: "2024-06-20T10:00:00.000Z",
       isComplete: false,
       allMembersPaidOut: false,
-      lockWithdrawals: true
+      lockWithdrawals: true,
+      allowMultipleContributions: false,
+      payoutOrder: 'randomized',
+      payoutSequence: ["sarah123", "mike456", "currentUser", "emma789", "james101", "lisa202"],
+      hasStarted: true,
+      totalPayoutsSent: 1200
     }
   ]);
 
-  // Initialize wallet entries with lock status
   const [walletEntries, setWalletEntries] = useState<WalletEntry[]>([
     {
       id: 1,
@@ -142,6 +153,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     ));
   };
 
+  const calculateLateJoinerAmount = (groupCode: string) => {
+    const group = groups.find(g => g.inviteCode === groupCode);
+    return group ? group.totalPayoutsSent : 0;
+  };
+
+  const updatePayoutOrder = (groupId: number, newOrder: string[]) => {
+    setGroups(prev => prev.map(group => 
+      group.id === groupId && !group.hasStarted
+        ? { ...group, payoutSequence: newOrder }
+        : group
+    ));
+  };
+
   const createGroup = (groupData: any) => {
     const groupId = Date.now();
     const memberLimit = parseInt(groupData.memberLimit);
@@ -186,7 +210,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       createdAt: new Date().toISOString(),
       isComplete: false,
       allMembersPaidOut: false,
-      lockWithdrawals: groupData.lockWithdrawals ?? true
+      lockWithdrawals: groupData.lockWithdrawals ?? true,
+      allowMultipleContributions: groupData.allowMultipleContributions ?? false,
+      payoutOrder: groupData.payoutOrder ?? 'randomized',
+      payoutSequence: [currentUserId],
+      hasStarted: false,
+      totalPayoutsSent: 0
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -201,7 +230,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const joinGroup = (groupCode: string) => {
+  const joinGroup = (groupCode: string, lateJoinerPayment?: number) => {
     // Check if already in a group with this code
     const existingGroup = groups.find(g => g.inviteCode === groupCode);
     if (existingGroup) {
@@ -213,10 +242,19 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // Create a mock group for the joined group
+    // Check if it's a late joiner scenario
+    const mockGroup = groups.find(g => g.inviteCode === groupCode.toUpperCase());
+    const isLateJoiner = mockGroup && mockGroup.hasStarted;
+    const requiredPayment = isLateJoiner ? calculateLateJoinerAmount(groupCode) : 100;
+
+    if (isLateJoiner && !lateJoinerPayment) {
+      // This will trigger the late joiner modal in the UI
+      return { isLateJoiner: true, requiredAmount: requiredPayment };
+    }
+
     const joinedGroupData = {
       groupName: `Group ${groupCode}`,
-      contributionAmount: 100,
+      contributionAmount: lateJoinerPayment || 100,
       frequency: 'weekly',
       memberLimit: 6,
       inviteCode: groupCode,
@@ -250,13 +288,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       createdAt: new Date().toISOString(),
       isComplete: false,
       allMembersPaidOut: false,
-      lockWithdrawals: joinedGroupData.lockWithdrawals
+      lockWithdrawals: joinedGroupData.lockWithdrawals,
+      allowMultipleContributions: false,
+      payoutOrder: 'randomized',
+      payoutSequence: ["member1", "member2", "member3", "member4", "member5", currentUserId],
+      hasStarted: true,
+      totalPayoutsSent: isLateJoiner ? requiredPayment : 0
     };
 
     setGroups(prev => [...prev, newGroup]);
+    
+    if (lateJoinerPayment) {
+      setWalletBalance(prev => prev - lateJoinerPayment);
+    }
+    
     toast({
       title: "Joined Group Successfully!",
-      description: `Welcome to "${joinedGroupData.groupName}"! Funds ${newGroup.lockWithdrawals ? 'will be locked until completion' : 'will be immediately withdrawable'}.`,
+      description: `Welcome to "${joinedGroupData.groupName}"! ${isLateJoiner ? `Paid catch-up amount of $${lateJoinerPayment}` : ''}`,
     });
   };
 
@@ -311,14 +359,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             myTurn: false,
             isComplete: allPaidOut,
             allMembersPaidOut: allPaidOut,
-            status: allPaidOut ? 'completed' as const : 'active' as const
+            status: allPaidOut ? 'completed' as const : 'active' as const,
+            hasStarted: true,
+            totalPayoutsSent: group.totalPayoutsSent + payoutAmount
           };
         }
         
         return {
           ...group,
           progress: newProgress,
-          membersPaid: newMembersPaid
+          membersPaid: newMembersPaid,
+          hasStarted: true
         };
       }
       return group;
@@ -431,7 +482,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       getPendingUnlockBalance,
       getLockedEntries,
       getUnlockedEntries,
-      withdrawFunds
+      withdrawFunds,
+      updatePayoutOrder,
+      calculateLateJoinerAmount
     }}>
       {children}
     </AppContext.Provider>
