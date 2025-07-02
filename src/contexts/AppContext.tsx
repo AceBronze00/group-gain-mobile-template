@@ -49,7 +49,7 @@ interface AppContextType {
   currentUserId: string;
   createGroup: (groupData: any) => void;
   makePayment: (groupId: number, amount: number) => void;
-  joinGroup: (groupCode: string) => void;
+  joinGroup: (groupCode: string, lateJoinerPayment?: number) => Promise<{ isLateJoiner: boolean; requiredAmount: number } | void>;
   joinGroupByUrl: (groupCode: string) => void;
   cashoutGroup: (groupId: number) => void;
   generateInviteUrl: (groupCode: string) => string;
@@ -230,7 +230,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const joinGroup = (groupCode: string, lateJoinerPayment?: number) => {
+  const joinGroup = async (groupCode: string, lateJoinerPayment?: number): Promise<{ isLateJoiner: boolean; requiredAmount: number } | void> => {
     // Check if already in a group with this code
     const existingGroup = groups.find(g => g.inviteCode === groupCode);
     if (existingGroup) {
