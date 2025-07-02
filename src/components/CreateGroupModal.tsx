@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key, Lock, Unlock } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
 interface CreateGroupModalProps {
@@ -23,7 +22,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     contributionAmount: '',
     frequency: 'weekly',
     memberLimit: '5',
-    allowDoubleContribution: false,
+    lockWithdrawals: true,
     inviteCode: ''
   });
 
@@ -48,7 +47,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       contributionAmount: '',
       frequency: 'weekly',
       memberLimit: '5',
-      allowDoubleContribution: false,
+      lockWithdrawals: true,
       inviteCode: ''
     });
     setStep(1);
@@ -163,7 +162,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
               <div className="text-center mb-4">
                 <DollarSign className="h-12 w-12 text-green-500 mx-auto mb-2" />
                 <h3 className="text-lg font-semibold">Financial Rules</h3>
-                <p className="text-gray-600 text-sm">Set contribution amounts and frequency</p>
+                <p className="text-gray-600 text-sm">Set contribution amounts and withdrawal rules</p>
               </div>
 
               <div className="space-y-4">
@@ -205,21 +204,22 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                 <Card className="p-4 bg-blue-50 border-blue-200">
                   <div className="flex items-start space-x-3">
                     <Checkbox
-                      id="allowDoubleContribution"
-                      checked={formData.allowDoubleContribution}
+                      id="lockWithdrawals"
+                      checked={formData.lockWithdrawals}
                       onCheckedChange={(checked) => 
-                        setFormData({...formData, allowDoubleContribution: !!checked})
+                        setFormData({...formData, lockWithdrawals: !!checked})
                       }
                     />
                     <div className="space-y-1">
                       <Label 
-                        htmlFor="allowDoubleContribution" 
-                        className="text-sm font-medium cursor-pointer"
+                        htmlFor="lockWithdrawals" 
+                        className="text-sm font-medium cursor-pointer flex items-center"
                       >
-                        Allow Double Contributions
+                        <Lock className="h-4 w-4 mr-1" />
+                        Lock funds until all members are paid out
                       </Label>
                       <p className="text-xs text-gray-600">
-                        Members can contribute 2x and receive 2x payouts
+                        When enabled, payouts are locked until the entire group cycle completes. When disabled, members can withdraw immediately after receiving their payout.
                       </p>
                     </div>
                   </div>
@@ -326,6 +326,22 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   <Badge variant={formData.allowDoubleContribution ? "default" : "secondary"}>
                     {formData.allowDoubleContribution ? "Enabled" : "Disabled"}
                   </Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Withdrawal Lock:</span>
+                  <div className="flex items-center">
+                    {formData.lockWithdrawals ? (
+                      <Badge variant="secondary" className="flex items-center">
+                        <Lock className="h-3 w-3 mr-1" />
+                        Locked until complete
+                      </Badge>
+                    ) : (
+                      <Badge variant="default" className="flex items-center">
+                        <Unlock className="h-3 w-3 mr-1" />
+                        Immediate withdrawal
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between border-t pt-2">
                   <span className="text-gray-600">Pool Amount:</span>
