@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,7 +24,6 @@ export interface Group {
   createdAt: string;
   isComplete: boolean;
   allMembersPaidOut: boolean;
-  lockWithdrawals: boolean; // New field for group lock option
 }
 
 export interface WalletEntry {
@@ -81,8 +81,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       membersList: ["currentUser", "sarah123", "mike456", "emma789", "james101", "lisa202"],
       createdAt: "2024-06-20T10:00:00.000Z",
       isComplete: false,
-      allMembersPaidOut: false,
-      lockWithdrawals: true // Default to locked withdrawals
+      allMembersPaidOut: false
     }
   ]);
 
@@ -134,9 +133,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const unlockGroupFunds = (groupId: number) => {
-    const group = groups.find(g => g.id === groupId);
-    if (!group || !group.lockWithdrawals) return; // Only unlock if group has lock setting enabled
-
     setWalletEntries(prev => prev.map(entry => {
       if (entry.groupId === groupId && entry.isLocked) {
         toast({
@@ -196,8 +192,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       membersList: [currentUserId],
       createdAt: new Date().toISOString(),
       isComplete: false,
-      allMembersPaidOut: false,
-      lockWithdrawals: groupData.lockWithdrawals ?? true // Use provided setting or default to true
+      allMembersPaidOut: false
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -260,8 +255,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       membersList: ["member1", "member2", "member3", "member4", "member5", currentUserId],
       createdAt: new Date().toISOString(),
       isComplete: false,
-      allMembersPaidOut: false,
-      lockWithdrawals: true // Default to locked for joined groups
+      allMembersPaidOut: false
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -290,32 +284,28 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         if (group.myTurn && newProgress >= 100) {
           const payoutAmount = group.totalAmount;
           
-          // Add wallet entry for this payout (locked based on group setting)
+          // Add wallet entry for this payout (locked initially)
           const newWalletEntry: WalletEntry = {
             id: Date.now(),
             userId: currentUserId,
             groupId: group.id,
             groupName: group.name,
             amount: payoutAmount,
-            isLocked: group.lockWithdrawals, // Lock based on group setting
+            isLocked: true, // Initially locked
             receivedDate: new Date().toISOString()
           };
           
           setWalletEntries(prevEntries => [...prevEntries, newWalletEntry]);
           
-          // Check if all members have been paid out to unlock funds (only if lock setting is enabled)
+          // Check if all members have been paid out to unlock funds
           const allPaidOut = newMembersPaid === group.members;
-          if (allPaidOut && group.lockWithdrawals) {
+          if (allPaidOut) {
             setTimeout(() => unlockGroupFunds(group.id), 1000); // Small delay for UX
           }
           
-          const lockMessage = group.lockWithdrawals 
-            ? (allPaidOut ? ' - Funds unlocked!' : ' - Funds locked until group completes')
-            : ' - Funds available for immediate withdrawal!';
-          
           toast({
             title: "Payment Complete - You Win!",
-            description: `You received $${payoutAmount.toLocaleString()} from "${group.name}"${lockMessage}`,
+            description: `You received $${payoutAmount.toLocaleString()} from "${group.name}"${allPaidOut ? ' - Funds unlocked!' : ' - Funds locked until group completes'}`,
           });
           
           // Update group status
