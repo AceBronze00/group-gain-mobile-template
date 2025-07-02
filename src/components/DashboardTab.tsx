@@ -1,20 +1,19 @@
+
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, Bell, DollarSign, Clock, ChevronRight, Star, AlertTriangle } from "lucide-react";
+import { Plus, Users, Calendar, Bell, DollarSign, Clock, ChevronRight } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
 import { useApp } from "@/contexts/AppContext";
-import { useToast } from "@/hooks/use-toast";
 
 const DashboardTab = () => {
-  const { groups: activeGroups, walletBalance, enableDoubleContribution } = useApp();
-  const { toast } = useToast();
+  const { groups: activeGroups, walletBalance } = useApp();
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -41,21 +40,6 @@ const DashboardTab = () => {
     return diffDays;
   };
 
-  const getDoubleContributionTimeLeft = (group: any) => {
-    if (!group.allowDoubleContribution || group.isDoubleContributor) return null;
-    
-    const now = new Date();
-    const deadline = new Date(group.doubleContributionDeadline || group.firstPaymentDate);
-    deadline.setDate(deadline.getDate() + 1);
-    
-    const diffTime = deadline.getTime() - now.getTime();
-    const hoursLeft = Math.ceil(diffTime / (1000 * 60 * 60));
-    
-    if (hoursLeft <= 0) return null;
-    
-    return hoursLeft;
-  };
-
   const handleGroupClick = (group: any) => {
     setSelectedGroup(group);
   };
@@ -63,11 +47,6 @@ const DashboardTab = () => {
   const handlePaymentClick = (e: React.MouseEvent, group: any) => {
     e.stopPropagation();
     setSelectedGroupForPayment(group);
-  };
-
-  const handleEnableDoubleContribution = (e: React.MouseEvent, groupId: number) => {
-    e.stopPropagation();
-    enableDoubleContribution(groupId);
   };
 
   return (
@@ -134,136 +113,80 @@ const DashboardTab = () => {
           </h3>
         </div>
         
-        {activeGroups.map((group) => {
-          const doubleContribTimeLeft = getDoubleContributionTimeLeft(group);
-          
-          return (
-            <Card 
-              key={group.id} 
-              className="p-5 bg-white/90 backdrop-blur-sm border-0 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
-              onClick={() => handleGroupClick(group)}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <h4 className="font-bold text-lg text-gray-800">{group.name}</h4>
-                    {group.isAdmin && (
-                      <Badge variant="outline" className="text-xs bg-purple-50 text-purple-600 border-purple-200">
-                        Admin
-                      </Badge>
-                    )}
-                    {group.isDoubleContributor && (
-                      <Badge className="text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
-                        <Star className="h-3 w-3 mr-1" />
-                        2x Contributor
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600 flex items-center mt-1">
-                    <Users className="h-4 w-4 mr-1" />
-                    {group.members} members
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-gray-800">
-                    {formatCurrency(group.totalAmount)}
-                  </div>
-                  {group.isDoubleContributor && group.doubleContributorPayouts && (
-                    <div className="text-sm text-orange-600 font-semibold">
-                      2 payouts: {formatCurrency(group.totalAmount)} each
-                    </div>
-                  )}
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Badge 
-                      variant={group.myTurn ? "default" : "secondary"}
-                      className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
-                    >
-                      {group.myTurn ? "Your Turn 🎯" : `Position ${group.position}`}
+        {activeGroups.map((group) => (
+          <Card 
+            key={group.id} 
+            className="p-5 bg-white/90 backdrop-blur-sm border-0 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
+            onClick={() => handleGroupClick(group)}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h4 className="font-bold text-lg text-gray-800">{group.name}</h4>
+                  {group.isAdmin && (
+                    <Badge variant="outline" className="text-xs bg-purple-50 text-purple-600 border-purple-200">
+                      Admin
                     </Badge>
-                    <Button
-                      onClick={(e) => handlePaymentClick(e, group)}
-                      className={`text-white text-xs px-3 py-1 h-7 ${
-                        group.myTurn 
-                          ? "bg-blue-600 hover:bg-blue-700" 
-                          : "bg-gray-600 hover:bg-gray-700"
-                      }`}
-                    >
-                      <DollarSign className="h-3 w-3 mr-1" />
-                      {group.isDoubleContributor ? `Pay $${group.contributionAmount * 2}` : "Pay Now"}
-                    </Button>
-                  </div>
+                  )}
                 </div>
+                <p className="text-sm text-gray-600 flex items-center mt-1">
+                  <Users className="h-4 w-4 mr-1" />
+                  {group.members} members
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-xl font-bold text-gray-800">
+                  {formatCurrency(group.totalAmount)}
+                </div>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Badge 
+                    variant={group.myTurn ? "default" : "secondary"}
+                    className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
+                  >
+                    {group.myTurn ? "Your Turn 🎯" : `Position ${group.position}`}
+                  </Badge>
+                  <Button
+                    onClick={(e) => handlePaymentClick(e, group)}
+                    className={`text-white text-xs px-3 py-1 h-7 ${
+                      group.myTurn 
+                        ? "bg-blue-600 hover:bg-blue-700" 
+                        : "bg-gray-600 hover:bg-gray-700"
+                    }`}
+                  >
+                    <DollarSign className="h-3 w-3 mr-1" />
+                    Pay Now
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600 font-medium">Progress</span>
+                <span className="font-bold text-blue-600">{group.progress}%</span>
+              </div>
+              <Progress value={group.progress} className="h-3 bg-gray-100" />
+              
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center text-sm text-gray-600">
+                  <Calendar className="h-4 w-4 mr-2 text-blue-500" />
+                  <span className="font-medium">Next: {new Date(group.nextPayout).toLocaleDateString()}</span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
               
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 font-medium">Progress</span>
-                  <span className="font-bold text-blue-600">{group.progress}%</span>
+              <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+                <div className="flex items-center text-xs text-gray-500">
+                  <Clock className="h-3 w-3 mr-1 text-green-500" />
+                  <span>My payout: {new Date(group.myPayoutDate).toLocaleDateString()}</span>
                 </div>
-                <Progress value={group.progress} className="h-3 bg-gray-100" />
-                
-                <div className="flex items-center justify-between pt-2">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-                    <span className="font-medium">Next: {new Date(group.nextPayout).toLocaleDateString()}</span>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-gray-400" />
-                </div>
-                
-                {group.isDoubleContributor && group.doubleContributorPayouts ? (
-                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-3 mt-2">
-                    <div className="flex items-center justify-between text-sm mb-2">
-                      <span className="text-orange-700 font-medium flex items-center">
-                        <Star className="h-4 w-4 mr-1 text-yellow-500" />
-                        Double Contribution Active
-                      </span>
-                    </div>
-                    <div className="text-xs text-orange-600 space-y-1">
-                      <div>1st Payout: Position #{group.doubleContributorPayouts.firstPayoutPosition} - {new Date(group.doubleContributorPayouts.firstPayoutDate).toLocaleDateString()}</div>
-                      <div>2nd Payout: Position #{group.doubleContributorPayouts.secondPayoutPosition} - {new Date(group.doubleContributorPayouts.secondPayoutDate).toLocaleDateString()}</div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Clock className="h-3 w-3 mr-1 text-green-500" />
-                      <span>My payout: {new Date(group.myPayoutDate).toLocaleDateString()}</span>
-                    </div>
-                    <span className="text-xs text-gray-400">
-                      {group.myTurn ? "Today!" : `${getDaysUntilPayout(group.myPayoutDate)} days`}
-                    </span>
-                  </div>
-                )}
-                
-                {/* Double Contribution Option */}
-                {doubleContribTimeLeft && (
-                  <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg p-3 mt-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <AlertTriangle className="h-4 w-4 text-amber-600 mr-2" />
-                        <div>
-                          <div className="text-sm font-semibold text-amber-700">
-                            Double Contribution Available
-                          </div>
-                          <div className="text-xs text-amber-600">
-                            {doubleContribTimeLeft}h left to opt-in
-                          </div>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={(e) => handleEnableDoubleContribution(e, group.id)}
-                        size="sm"
-                        className="bg-amber-600 hover:bg-amber-700 text-white text-xs"
-                      >
-                        Enable 2x
-                      </Button>
-                    </div>
-                  </div>
-                )}
+                <span className="text-xs text-gray-400">
+                  {group.myTurn ? "Today!" : `${getDaysUntilPayout(group.myPayoutDate)} days`}
+                </span>
               </div>
-            </Card>
-          );
-        })}
+            </div>
+          </Card>
+        ))}
       </div>
 
       {activeGroups.length === 0 && (

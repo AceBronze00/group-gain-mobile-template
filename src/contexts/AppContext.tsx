@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,21 +17,11 @@ export interface Group {
   myPayoutDate: string;
   membersPaid: number;
   status: 'active' | 'completed';
-  allowDoubleContribution?: boolean;
-  isDoubleContributor?: boolean;
   inviteCode: string;
   adminId: string;
   isAdmin: boolean;
   membersList: string[];
   createdAt: string;
-  firstPaymentDate?: string;
-  doubleContributionDeadline?: string;
-  doubleContributorPayouts?: {
-    firstPayoutPosition: number;
-    secondPayoutPosition: number;
-    firstPayoutDate: string;
-    secondPayoutDate: string;
-  };
 }
 
 interface AppContextType {
@@ -43,13 +34,12 @@ interface AppContextType {
   joinGroupByUrl: (groupCode: string) => void;
   cashoutGroup: (groupId: number) => void;
   generateInviteUrl: (groupCode: string) => string;
-  enableDoubleContribution: (groupId: number) => boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize with a sample active group showing double contribution
+  // Initialize with a sample active group
   const [groups, setGroups] = useState<Group[]>([
     {
       id: 1,
@@ -66,21 +56,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       myPayoutDate: "2024-07-19",
       membersPaid: 4,
       status: 'active',
-      allowDoubleContribution: true,
-      isDoubleContributor: true,
       inviteCode: "GETAWAY2024",
       adminId: "admin123",
       isAdmin: true,
       membersList: ["currentUser", "sarah123", "mike456", "emma789", "james101", "lisa202"],
-      createdAt: "2024-06-20T10:00:00.000Z",
-      firstPaymentDate: "2024-06-21T10:00:00.000Z",
-      doubleContributionDeadline: "2024-06-22T10:00:00.000Z",
-      doubleContributorPayouts: {
-        firstPayoutPosition: 2,
-        secondPayoutPosition: 5,
-        firstPayoutDate: "2024-07-12",
-        secondPayoutDate: "2024-08-02"
-      }
+      createdAt: "2024-06-20T10:00:00.000Z"
     }
   ]);
   const [walletBalance, setWalletBalance] = useState(500.00);
@@ -108,8 +88,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const nextPayoutDate = getNextPayoutDate(groupData.frequency);
-    const firstPaymentDate = new Date();
-    const doubleContributionDeadline = new Date(firstPaymentDate.getTime() + 24 * 60 * 60 * 1000);
 
     const newGroup: Group = {
       id: groupId,
@@ -126,15 +104,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       myPayoutDate: nextPayoutDate.toISOString().split('T')[0],
       membersPaid: 0,
       status: 'active',
-      allowDoubleContribution: groupData.allowDoubleContribution || false,
-      isDoubleContributor: false,
       inviteCode: groupData.inviteCode,
       adminId: currentUserId,
       isAdmin: true,
       membersList: [currentUserId],
-      createdAt: new Date().toISOString(),
-      firstPaymentDate: firstPaymentDate.toISOString(),
-      doubleContributionDeadline: doubleContributionDeadline.toISOString()
+      createdAt: new Date().toISOString()
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -148,79 +122,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       title: "Group Created Successfully!",
       description: `"${groupData.groupName}" is ready. Share invite code: ${groupData.inviteCode}`,
     });
-  };
-
-  const enableDoubleContribution = (groupId: number): boolean => {
-    const group = groups.find(g => g.id === groupId);
-    if (!group) return false;
-
-    // Check if group allows double contributions
-    if (!group.allowDoubleContribution) {
-      toast({
-        title: "Double Contribution Not Available",
-        description: "This group doesn't allow double contributions.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    // Check if user is already a double contributor
-    if (group.isDoubleContributor) {
-      toast({
-        title: "Already Enabled",
-        description: "You're already contributing double to this group.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    // Check if deadline has passed
-    const now = new Date();
-    const deadline = new Date(group.doubleContributionDeadline || group.firstPaymentDate!);
-    deadline.setDate(deadline.getDate() + 1); // Add 1 day to first payment date
-
-    if (now > deadline) {
-      toast({
-        title: "Deadline Passed",
-        description: "Double contribution must be enabled within the first day of payment collection.",
-        variant: "destructive"
-      });
-      return false;
-    }
-
-    // Enable double contribution
-    setGroups(prev => prev.map(g => {
-      if (g.id === groupId) {
-        // Calculate dual payout positions (spread them out)
-        const firstPosition = Math.floor(g.members / 3);
-        const secondPosition = Math.floor((g.members * 2) / 3);
-        
-        const firstPayoutDate = new Date(g.firstPaymentDate!);
-        firstPayoutDate.setDate(firstPayoutDate.getDate() + (firstPosition * 7));
-        
-        const secondPayoutDate = new Date(g.firstPaymentDate!);
-        secondPayoutDate.setDate(secondPayoutDate.getDate() + (secondPosition * 7));
-
-        return {
-          ...g,
-          isDoubleContributor: true,
-          doubleContributorPayouts: {
-            firstPayoutPosition: firstPosition,
-            secondPayoutPosition: secondPosition,
-            firstPayoutDate: firstPayoutDate.toISOString().split('T')[0],
-            secondPayoutDate: secondPayoutDate.toISOString().split('T')[0]
-          }
-        };
-      }
-      return g;
-    }));
-
-    toast({
-      title: "Double Contribution Enabled!",
-      description: "You'll now contribute double and receive two separate payouts.",
-    });
-
-    return true;
   };
 
   const joinGroup = (groupCode: string) => {
@@ -241,7 +142,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       contributionAmount: 100,
       frequency: 'weekly',
       memberLimit: 6,
-      allowDoubleContribution: Math.random() > 0.5,
       inviteCode: groupCode
     };
 
@@ -249,8 +149,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const nextPayoutDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const myPayoutPosition = Math.floor(Math.random() * 5) + 2; // Position 2-6
     const myPayoutDate = new Date(Date.now() + (myPayoutPosition * 7 * 24 * 60 * 60 * 1000));
-    const firstPaymentDate = new Date();
-    const doubleContributionDeadline = new Date(firstPaymentDate.getTime() + 24 * 60 * 60 * 1000);
 
     const newGroup: Group = {
       id: groupId,
@@ -267,15 +165,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       myPayoutDate: myPayoutDate.toISOString().split('T')[0],
       membersPaid: Math.floor(Math.random() * 4) + 1,
       status: 'active',
-      allowDoubleContribution: joinedGroupData.allowDoubleContribution,
-      isDoubleContributor: false,
       inviteCode: groupCode,
       adminId: "otherUser",
       isAdmin: false,
       membersList: ["member1", "member2", "member3", "member4", "member5", currentUserId],
-      createdAt: new Date().toISOString(),
-      firstPaymentDate: firstPaymentDate.toISOString(),
-      doubleContributionDeadline: doubleContributionDeadline.toISOString()
+      createdAt: new Date().toISOString()
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -302,7 +196,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         
         // If it's my turn and the group is complete, I receive the payout
         if (group.myTurn && newProgress >= 100) {
-          const payoutAmount = group.isDoubleContributor ? group.totalAmount * 2 : group.totalAmount;
+          const payoutAmount = group.totalAmount;
           setWalletBalance(prevBalance => prevBalance + payoutAmount - amount);
           
           toast({
@@ -344,7 +238,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const cashoutGroup = (groupId: number) => {
     const group = groups.find(g => g.id === groupId);
     if (group) {
-      const payoutAmount = group.isDoubleContributor ? group.totalAmount * 2 : group.totalAmount;
+      const payoutAmount = group.totalAmount;
       setWalletBalance(prev => prev + payoutAmount);
       
       // Mark group as completed
@@ -379,8 +273,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       joinGroup,
       joinGroupByUrl,
       cashoutGroup,
-      generateInviteUrl,
-      enableDoubleContribution
+      generateInviteUrl
     }}>
       {children}
     </AppContext.Provider>
