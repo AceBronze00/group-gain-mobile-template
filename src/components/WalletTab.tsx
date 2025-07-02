@@ -1,42 +1,31 @@
+
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Wallet, ArrowUpRight, Eye, EyeOff, Gift, Clock, CheckCircle, Users, ChevronRight } from "lucide-react";
+import { Wallet, ArrowUpRight, Eye, EyeOff, Gift, Clock, CheckCircle, Users, ChevronRight, Lock, Unlock } from "lucide-react";
 import CashoutModal from "./CashoutModal";
+import WithdrawModal from "./WithdrawModal";
 import { useApp } from "@/contexts/AppContext";
 
 const WalletTab = () => {
-  const { walletBalance, cashoutGroup } = useApp();
+  const { 
+    walletBalance, 
+    getWithdrawableBalance, 
+    getPendingUnlockBalance, 
+    getLockedEntries, 
+    getUnlockedEntries 
+  } = useApp();
+  
   const [showBalance, setShowBalance] = useState(true);
-  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [selectedGroupForCashout, setSelectedGroupForCashout] = useState(null);
   
-  // Mock wallet data
-  const pendingTransfers = 300.00;
-
-  // Mock completed groups ready for cashout
-  const completedGroups = [
-    {
-      id: 3,
-      name: "Emergency Fund",
-      members: 6,
-      totalAmount: 1800,
-      payoutAmount: 1800,
-      completedDate: "2024-06-20",
-      readyForCashout: true
-    },
-    {
-      id: 4,
-      name: "Holiday Shopping",
-      members: 4,
-      totalAmount: 1200,
-      payoutAmount: 1200,
-      completedDate: "2024-06-18",
-      readyForCashout: true
-    }
-  ];
+  const withdrawableBalance = getWithdrawableBalance();
+  const pendingUnlockBalance = getPendingUnlockBalance();
+  const lockedEntries = getLockedEntries();
+  const unlockedEntries = getUnlockedEntries();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -45,11 +34,8 @@ const WalletTab = () => {
     }).format(amount);
   };
 
-  const mockTransferGroup = {
-    id: 0,
-    name: "Wallet Transfer",
-    totalAmount: walletBalance,
-    payoutAmount: walletBalance
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
   };
 
   const handleCashoutClick = (group: any) => {
@@ -58,12 +44,12 @@ const WalletTab = () => {
 
   return (
     <div className="space-y-6 pb-20 px-2">
-      {/* Wallet Balance Card */}
+      {/* Withdrawable Balance Card */}
       <Card className="p-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             <Wallet className="h-6 w-6" />
-            <span className="font-bold text-lg">App Wallet</span>
+            <span className="font-bold text-lg">Withdrawable Balance</span>
           </div>
           <Button
             variant="ghost"
@@ -77,95 +63,68 @@ const WalletTab = () => {
         
         <div className="space-y-4 mb-6">
           <div className="text-center">
-            <p className="text-sm text-green-100 mb-2">Available Balance</p>
+            <p className="text-sm text-green-100 mb-2">Available for Withdrawal</p>
             <p className="text-3xl font-bold">
-              {showBalance ? formatCurrency(walletBalance) : "••••••"}
+              {showBalance ? formatCurrency(withdrawableBalance) : "••••••"}
             </p>
           </div>
           
-          {pendingTransfers > 0 && (
+          {pendingUnlockBalance > 0 && (
             <div className="flex items-center justify-center">
               <div className="flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
-                <span className="text-sm text-green-100">Pending Transfers</span>
+                <Lock className="h-4 w-4 text-green-100" />
+                <span className="text-sm text-green-100">Pending Unlock</span>
                 <Badge variant="outline" className="text-green-100 border-green-200 bg-white/10">
-                  {showBalance ? formatCurrency(pendingTransfers) : "••••"}
+                  {showBalance ? formatCurrency(pendingUnlockBalance) : "••••"}
                 </Badge>
               </div>
             </div>
           )}
         </div>
 
-        {walletBalance > 0 && (
+        {withdrawableBalance > 0 && (
           <Button
-            onClick={() => setShowTransferModal(true)}
+            onClick={() => setShowWithdrawModal(true)}
             className="w-full bg-white text-green-600 hover:bg-green-50 font-bold py-3 rounded-xl"
           >
             <ArrowUpRight className="h-5 w-5 mr-2" />
-            Transfer to Bank
+            Withdraw Funds
           </Button>
         )}
       </Card>
 
-      {/* Cashout Alert for Completed Groups */}
-      {completedGroups.length > 0 && (
-        <Card className="p-6 bg-gradient-to-r from-green-400 to-emerald-500 text-white border-0 shadow-lg rounded-2xl">
-          <div className="text-center">
-            <div className="mb-4">
-              <Gift className="h-8 w-8 mx-auto mb-2" />
-              <h3 className="font-bold text-xl">
-                💰 Ready to Cashout!
-              </h3>
-            </div>
-            <p className="text-green-100 mb-4">
-              {completedGroups.length} pool{completedGroups.length > 1 ? 's' : ''} completed - claim your payout
-            </p>
-            <Button
-              onClick={() => setSelectedGroupForCashout(completedGroups[0])}
-              className="bg-white text-green-600 hover:bg-green-50 font-bold px-6 py-2 rounded-xl"
-            >
-              View All
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Completed Groups Ready for Cashout */}
-      {completedGroups.length > 0 && (
+      {/* Unlocked Funds */}
+      {unlockedEntries.length > 0 && (
         <div className="space-y-4">
-          <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-800 flex items-center justify-center">
-              <Gift className="h-6 w-6 mr-2 text-green-500" />
-              Ready to Cashout ({completedGroups.length})
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-gray-800 flex items-center">
+              <Unlock className="h-5 w-5 mr-2 text-green-500" />
+              Available Funds ({unlockedEntries.length})
             </h3>
           </div>
           
-          {completedGroups.map((group) => (
-            <Card 
-              key={group.id} 
-              className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
-              onClick={() => handleCashoutClick(group)}
-            >
-              <div className="text-center mb-4">
-                <h4 className="font-bold text-xl text-gray-800 mb-2">{group.name}</h4>
-                <p className="text-sm text-gray-600 flex items-center justify-center">
-                  <Users className="h-4 w-4 mr-1" />
-                  {group.members} members • Completed {new Date(group.completedDate).toLocaleDateString()}
-                </p>
-              </div>
-              
-              <div className="text-center mb-4">
-                <div className="text-2xl font-bold text-green-600 mb-2">
-                  {formatCurrency(group.payoutAmount)}
+          {unlockedEntries.map((entry) => (
+            <Card key={entry.id} className="p-4 bg-green-50 border-green-200 rounded-xl">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-800">{entry.groupName}</h4>
+                  <p className="text-sm text-gray-600 flex items-center mt-1">
+                    <CheckCircle className="h-4 w-4 mr-1 text-green-500" />
+                    ✅ Completed • Received {formatDate(entry.receivedDate)}
+                  </p>
+                  {entry.unlockedDate && (
+                    <p className="text-xs text-green-600 mt-1">
+                      Unlocked {formatDate(entry.unlockedDate)}
+                    </p>
+                  )}
                 </div>
-                <Badge className="bg-green-500 hover:bg-green-600 px-4 py-1">
-                  Ready to Cashout 💰
-                </Badge>
-              </div>
-              
-              <div className="flex items-center justify-center pt-2">
-                <div className="text-sm text-green-700 font-medium flex items-center">
-                  🎉 Pool completed! Click to claim your payout
-                  <ChevronRight className="h-5 w-5 ml-2 text-green-500" />
+                <div className="text-right">
+                  <div className="text-xl font-bold text-green-600">
+                    {formatCurrency(entry.amount)}
+                  </div>
+                  <Badge className="bg-green-500 hover:bg-green-600 text-white">
+                    Available
+                  </Badge>
                 </div>
               </div>
             </Card>
@@ -173,11 +132,64 @@ const WalletTab = () => {
         </div>
       )}
 
+      {/* Locked Funds */}
+      {lockedEntries.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-gray-800 flex items-center">
+              <Lock className="h-5 w-5 mr-2 text-orange-500" />
+              Pending Unlock ({lockedEntries.length})
+            </h3>
+          </div>
+          
+          {lockedEntries.map((entry) => (
+            <Card key={entry.id} className="p-4 bg-orange-50 border-orange-200 rounded-xl">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-800">{entry.groupName}</h4>
+                  <p className="text-sm text-gray-600 flex items-center mt-1">
+                    <Lock className="h-4 w-4 mr-1 text-orange-500" />
+                    🔒 Still Active • Received {formatDate(entry.receivedDate)}
+                  </p>
+                  <p className="text-xs text-orange-600 mt-1">
+                    Funds will unlock when all group members receive their payouts
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold text-gray-800">
+                    {formatCurrency(entry.amount)}
+                  </div>
+                  <Badge variant="outline" className="text-orange-600 border-orange-300">
+                    <Lock className="h-3 w-3 mr-1" />
+                    Locked
+                  </Badge>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {unlockedEntries.length === 0 && lockedEntries.length === 0 && (
+        <Card className="p-8 text-center bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-2xl">
+          <div className="max-w-sm mx-auto">
+            <div className="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <Wallet className="h-10 w-10 text-blue-500" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">No Wallet Entries Yet</h3>
+            <p className="text-gray-600 mb-6">
+              Your payouts from completed groups will appear here. Join or create groups to start earning!
+            </p>
+          </div>
+        </Card>
+      )}
+
       {/* Modals */}
-      <CashoutModal
-        group={mockTransferGroup}
-        open={showTransferModal}
-        onOpenChange={setShowTransferModal}
+      <WithdrawModal
+        open={showWithdrawModal}
+        onOpenChange={setShowWithdrawModal}
+        maxAmount={withdrawableBalance}
       />
       {selectedGroupForCashout && (
         <CashoutModal
