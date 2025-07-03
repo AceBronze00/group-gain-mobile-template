@@ -23,7 +23,6 @@ interface GroupMember {
   name: string;
   avatar: string;
   trustScore: number;
-  position: number;
   hasReceived: boolean;
   joinedDate: string;
 }
@@ -42,7 +41,6 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       name: "You",
       avatar: "/placeholder.svg",
       trustScore: 85,
-      position: group.position,
       hasReceived: false,
       joinedDate: "2024-01-15"
     },
@@ -51,7 +49,6 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       name: "Sarah M.",
       avatar: "/placeholder.svg",
       trustScore: 92,
-      position: 1,
       hasReceived: true,
       joinedDate: "2024-01-10"
     },
@@ -60,7 +57,6 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       name: "Mike J.",
       avatar: "/placeholder.svg",
       trustScore: 78,
-      position: 2,
       hasReceived: true,
       joinedDate: "2024-01-12"
     },
@@ -69,7 +65,6 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       name: "Emma D.",
       avatar: "/placeholder.svg",
       trustScore: 88,
-      position: 4,
       hasReceived: false,
       joinedDate: "2024-01-18"
     },
@@ -78,7 +73,6 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       name: "James W.",
       avatar: "/placeholder.svg",
       trustScore: 71,
-      position: 5,
       hasReceived: false,
       joinedDate: "2024-01-20"
     }
@@ -159,63 +153,59 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                 </div>
               </Card>
 
-              {/* Your Position */}
+              {/* Your Payout Date */}
               <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-semibold">Your Position</h4>
+                    <h4 className="font-semibold">Your Payout Date</h4>
                     <p className="text-sm text-gray-600">
-                      You're #{group.position} in the payout queue
+                      When you'll receive the pool
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-blue-600">#{group.position}</div>
-                    <div className="text-xs text-gray-500">of {group.members}</div>
+                    <div className="text-lg font-bold text-blue-600">
+                      {new Date(group.myPayoutDate).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               </Card>
             </TabsContent>
 
             <TabsContent value="members" className="space-y-3">
-              {members
-                .sort((a, b) => a.position - b.position)
-                .map((member) => (
-                  <Card key={member.id} className="p-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={member.avatar} alt={member.name} />
-                          <AvatarFallback className="bg-blue-500 text-white text-sm">
-                            {member.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
+              {members.map((member) => (
+                <Card key={member.id} className="p-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={member.avatar} alt={member.name} />
+                        <AvatarFallback className="bg-blue-500 text-white text-sm">
+                          {member.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      {member.hasReceived && (
+                        <CheckCircle className="absolute -top-1 -right-1 h-4 w-4 text-green-500 bg-white rounded-full" />
+                      )}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold">{member.name}</h4>
                         {member.hasReceived && (
-                          <CheckCircle className="absolute -top-1 -right-1 h-4 w-4 text-green-500 bg-white rounded-full" />
+                          <Badge variant="outline" className="text-xs text-green-600">
+                            Received
+                          </Badge>
                         )}
                       </div>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold">{member.name}</h4>
-                          <Badge variant="outline" className="text-xs">
-                            #{member.position}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Shield className="h-3 w-3 text-blue-500" />
-                          <span className={`text-xs ${getTrustScoreColor(member.trustScore)}`}>
-                            Trust: {member.trustScore}
-                          </span>
-                          {member.hasReceived && (
-                            <Badge variant="outline" className="text-xs text-green-600">
-                              Received
-                            </Badge>
-                          )}
-                        </div>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <Shield className="h-3 w-3 text-blue-500" />
+                        <span className={`text-xs ${getTrustScoreColor(member.trustScore)}`}>
+                          Trust: {member.trustScore}
+                        </span>
                       </div>
                     </div>
-                  </Card>
-                ))}
+                  </div>
+                </Card>
+              ))}
             </TabsContent>
 
             <TabsContent value="history" className="space-y-3">

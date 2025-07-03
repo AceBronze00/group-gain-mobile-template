@@ -16,7 +16,6 @@ interface ActiveGroup {
   payoutRecipient: string;
   progress: number;
   myTurn: boolean;
-  position: number;
 }
 
 interface ActiveGroupCardProps {
@@ -40,7 +39,7 @@ const ActiveGroupCard = ({ group, onPayment, onFlagIssue }: ActiveGroupCardProps
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
           <h4 className="font-semibold">{group.name}</h4>
-          {group.position === 1 && <Crown className="h-4 w-4 text-yellow-500" />}
+          {group.myTurn && <Crown className="h-4 w-4 text-yellow-500" />}
         </div>
         <div className="flex items-center space-x-2">
           {group.myTurn && <Badge className="bg-green-500">Your Turn</Badge>}
