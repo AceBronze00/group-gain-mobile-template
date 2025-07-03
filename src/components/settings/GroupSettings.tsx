@@ -22,6 +22,7 @@ interface GroupSettingsProps {
     payoutRecipient: string;
     progress: number;
     myTurn: boolean;
+    position: number;
   }>;
 }
 

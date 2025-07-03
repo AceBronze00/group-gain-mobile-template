@@ -12,6 +12,7 @@ export interface Group {
   payoutRecipient: string;
   progress: number;
   myTurn: boolean;
+  position: number;
   myPayoutDate: string;
   membersPaid: number;
   status: 'active' | 'completed';
@@ -28,7 +29,6 @@ export interface Group {
   payoutSequence: string[];
   hasStarted: boolean;
   totalPayoutsSent: number;
-  myPosition?: number;
 }
 
 export interface WalletEntry {
@@ -65,7 +65,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize with sample groups (removed learning group)
+  // Initialize with sample groups including a learning group
   const [groups, setGroups] = useState<Group[]>([
     {
       id: 1,
@@ -78,6 +78,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       payoutRecipient: "Sarah M.",
       progress: 65,
       myTurn: false,
+      position: 3,
       myPayoutDate: "2024-07-19",
       membersPaid: 4,
       status: 'active',
@@ -93,8 +94,37 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       payoutOrder: 'randomized',
       payoutSequence: ["sarah123", "mike456", "currentUser", "emma789", "james101", "lisa202"],
       hasStarted: true,
-      totalPayoutsSent: 1200,
-      myPosition: 3
+      totalPayoutsSent: 1200
+    },
+    // Learning group - 5 people, 3 weeks in
+    {
+      id: 999,
+      name: "Tech Gadgets Savings Circle",
+      members: 5,
+      totalAmount: 2500,
+      contributionAmount: 500,
+      frequency: "weekly",
+      nextPayout: "2024-07-08",
+      payoutRecipient: "Marcus K.",
+      progress: 60,
+      myTurn: false,
+      position: 4,
+      myPayoutDate: "2024-07-22",
+      membersPaid: 3,
+      status: 'active',
+      inviteCode: "LEARN2024",
+      adminId: "marcus123",
+      isAdmin: false,
+      membersList: ["alice456", "bob789", "carol012", "marcus123", "diana345"],
+      createdAt: "2024-06-10T10:00:00.000Z",
+      isComplete: false,
+      allMembersPaidOut: false,
+      lockWithdrawals: true,
+      allowMultipleContributions: false,
+      payoutOrder: 'randomized',
+      payoutSequence: ["alice456", "bob789", "carol012", "marcus123", "diana345"],
+      hasStarted: true,
+      totalPayoutsSent: 1500 // 3 weeks * $500 = $1500 already paid out
     }
   ]);
 
@@ -199,6 +229,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       payoutRecipient: "You",
       progress: 0,
       myTurn: true,
+      position: 1,
       myPayoutDate: nextPayoutDate.toISOString().split('T')[0],
       membersPaid: 0,
       status: 'active',
@@ -214,8 +245,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       payoutOrder: groupData.payoutOrder ?? 'randomized',
       payoutSequence: [currentUserId],
       hasStarted: false,
-      totalPayoutsSent: 0,
-      myPosition: 1
+      totalPayoutsSent: 0
     };
 
     setGroups(prev => [...prev, newGroup]);
@@ -242,6 +272,39 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    // Special handling for the learning group
+    if (groupCode.toUpperCase() === "LEARN2024") {
+      const isLateJoiner = true;
+      const requiredPayment = calculateLateJoinerAmount(groupCode);
+
+      if (!lateJoinerPayment) {
+        // This will trigger the late joiner modal in the UI
+        return { isLateJoiner: true, requiredAmount: requiredPayment };
+      }
+
+      // Join the existing learning group
+      setGroups(prev => prev.map(group => 
+        group.inviteCode === "LEARN2024" 
+          ? {
+              ...group,
+              members: group.members + 1,
+              membersList: [...group.membersList, currentUserId],
+              payoutSequence: [...group.payoutSequence, currentUserId]
+            }
+          : group
+      ));
+
+      if (lateJoinerPayment) {
+        setWalletBalance(prev => prev - lateJoinerPayment);
+      }
+      
+      toast({
+        title: "Joined Learning Group Successfully!",
+        description: `Welcome to "Tech Gadgets Savings Circle"! You paid the catch-up amount of $${lateJoinerPayment} to join this group that's already 3 weeks in.`,
+      });
+      return;
+    }
+
     // Check if it's a late joiner scenario
     const mockGroup = groups.find(g => g.inviteCode === groupCode.toUpperCase());
     const isLateJoiner = mockGroup && mockGroup.hasStarted;
@@ -263,8 +326,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     const groupId = Date.now();
     const nextPayoutDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const myPayoutDate = new Date(Date.now() + (Math.floor(Math.random() * 5) + 2) * 7 * 24 * 60 * 60 * 1000);
-    const randomPosition = Math.floor(Math.random() * 6) + 1;
+    const myPayoutPosition = Math.floor(Math.random() * 5) + 2;
+    const myPayoutDate = new Date(Date.now() + (myPayoutPosition * 7 * 24 * 60 * 60 * 1000));
 
     const newGroup: Group = {
       id: groupId,
@@ -277,6 +340,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       payoutRecipient: "Member 1",
       progress: Math.floor(Math.random() * 60) + 10,
       myTurn: false,
+      position: myPayoutPosition,
       myPayoutDate: myPayoutDate.toISOString().split('T')[0],
       membersPaid: Math.floor(Math.random() * 4) + 1,
       status: 'active',
@@ -292,8 +356,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       payoutOrder: 'randomized',
       payoutSequence: ["member1", "member2", "member3", "member4", "member5", currentUserId],
       hasStarted: true,
-      totalPayoutsSent: isLateJoiner ? requiredPayment : 0,
-      myPosition: randomPosition
+      totalPayoutsSent: isLateJoiner ? requiredPayment : 0
     };
 
     setGroups(prev => [...prev, newGroup]);
