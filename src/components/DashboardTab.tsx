@@ -143,7 +143,7 @@ const DashboardTab = () => {
                     variant={group.myTurn ? "default" : "secondary"}
                     className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
                   >
-                    {group.myTurn ? "Your Turn 🎯" : `Position ${group.position}`}
+                    {group.myTurn ? "Your Turn 🎯" : "Waiting"}
                   </Badge>
                   <Button
                     onClick={(e) => handlePaymentClick(e, group)}
