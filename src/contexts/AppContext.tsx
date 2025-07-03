@@ -65,7 +65,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize with sample groups including a learning group
+  // Initialize with sample groups
   const [groups, setGroups] = useState<Group[]>([
     {
       id: 1,
@@ -95,36 +95,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       payoutSequence: ["sarah123", "mike456", "currentUser", "emma789", "james101", "lisa202"],
       hasStarted: true,
       totalPayoutsSent: 1200
-    },
-    // Learning group - 5 people, 3 weeks in
-    {
-      id: 999,
-      name: "Tech Gadgets Savings Circle",
-      members: 5,
-      totalAmount: 2500,
-      contributionAmount: 500,
-      frequency: "weekly",
-      nextPayout: "2024-07-08",
-      payoutRecipient: "Marcus K.",
-      progress: 60,
-      myTurn: false,
-      position: 4,
-      myPayoutDate: "2024-07-22",
-      membersPaid: 3,
-      status: 'active',
-      inviteCode: "LEARN2024",
-      adminId: "marcus123",
-      isAdmin: false,
-      membersList: ["alice456", "bob789", "carol012", "marcus123", "diana345"],
-      createdAt: "2024-06-10T10:00:00.000Z",
-      isComplete: false,
-      allMembersPaidOut: false,
-      lockWithdrawals: true,
-      allowMultipleContributions: false,
-      payoutOrder: 'randomized',
-      payoutSequence: ["alice456", "bob789", "carol012", "marcus123", "diana345"],
-      hasStarted: true,
-      totalPayoutsSent: 1500 // 3 weeks * $500 = $1500 already paid out
     }
   ]);
 
@@ -268,39 +238,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         title: "Already in Group!",
         description: `You're already part of "${existingGroup.name}"`,
         variant: "destructive"
-      });
-      return;
-    }
-
-    // Special handling for the learning group
-    if (groupCode.toUpperCase() === "LEARN2024") {
-      const isLateJoiner = true;
-      const requiredPayment = calculateLateJoinerAmount(groupCode);
-
-      if (!lateJoinerPayment) {
-        // This will trigger the late joiner modal in the UI
-        return { isLateJoiner: true, requiredAmount: requiredPayment };
-      }
-
-      // Join the existing learning group
-      setGroups(prev => prev.map(group => 
-        group.inviteCode === "LEARN2024" 
-          ? {
-              ...group,
-              members: group.members + 1,
-              membersList: [...group.membersList, currentUserId],
-              payoutSequence: [...group.payoutSequence, currentUserId]
-            }
-          : group
-      ));
-
-      if (lateJoinerPayment) {
-        setWalletBalance(prev => prev - lateJoinerPayment);
-      }
-      
-      toast({
-        title: "Joined Learning Group Successfully!",
-        description: `Welcome to "Tech Gadgets Savings Circle"! You paid the catch-up amount of $${lateJoinerPayment} to join this group that's already 3 weeks in.`,
       });
       return;
     }
