@@ -116,13 +116,14 @@ const DashboardTab = () => {
         {activeGroups.map((group) => (
           <Card 
             key={group.id} 
-            className="p-5 bg-white/90 backdrop-blur-sm border-0 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
+            className="p-6 bg-white/90 backdrop-blur-sm border-0 shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-102 hover:shadow-xl rounded-2xl"
             onClick={() => handleGroupClick(group)}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="flex items-center space-x-2">
-                  <h4 className="font-bold text-lg text-gray-800">{group.name}</h4>
+            {/* Header Section - Symmetrical */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex-1">
+                <div className="flex items-center space-x-3 mb-2">
+                  <h4 className="font-bold text-xl text-gray-800">{group.name}</h4>
                   {group.isAdmin && (
                     <Badge variant="outline" className="text-xs bg-purple-50 text-purple-600 border-purple-200">
                       Admin
@@ -134,16 +135,16 @@ const DashboardTab = () => {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 flex items-center mt-1">
-                  <Users className="h-4 w-4 mr-1" />
+                <p className="text-sm text-gray-600 flex items-center">
+                  <Users className="h-4 w-4 mr-2" />
                   {group.members} members
                 </p>
               </div>
-              <div className="text-right">
-                <div className="text-xl font-bold text-gray-800">
+              <div className="text-right flex-1 flex flex-col items-end">
+                <div className="text-2xl font-bold text-gray-800 mb-2">
                   {formatCurrency(group.totalAmount)}
                 </div>
-                <div className="flex items-center space-x-2 mt-1">
+                <div className="flex items-center space-x-2">
                   <Badge 
                     variant={group.myTurn ? "default" : "secondary"}
                     className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
@@ -165,29 +166,33 @@ const DashboardTab = () => {
               </div>
             </div>
             
-            <div className="space-y-3">
+            {/* Progress Section - Centered */}
+            <div className="space-y-4 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600 font-medium">Progress</span>
                 <span className="font-bold text-blue-600">{group.progress}%</span>
               </div>
               <Progress value={group.progress} className="h-3 bg-gray-100" />
-              
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center text-sm text-gray-600">
-                  <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-                  <span className="font-medium">Next: {new Date(group.nextPayout).toLocaleDateString()}</span>
+            </div>
+            
+            {/* Footer Section - Symmetrical */}
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+              <div className="flex items-center text-sm text-gray-600">
+                <Calendar className="h-4 w-4 mr-2 text-blue-500" />
+                <div>
+                  <span className="font-medium block">Next Payout</span>
+                  <span className="text-xs">{new Date(group.nextPayout).toLocaleDateString()}</span>
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
-              
-              <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-                <div className="flex items-center text-xs text-gray-500">
-                  <Clock className="h-3 w-3 mr-1 text-green-500" />
-                  <span>My payout: {new Date(group.myPayoutDate).toLocaleDateString()}</span>
+              <div className="flex items-center justify-end text-sm text-gray-600">
+                <div className="text-right">
+                  <span className="font-medium block">My Payout Date</span>
+                  <div className="flex items-center text-xs">
+                    <Clock className="h-3 w-3 mr-1 text-green-500" />
+                    <span>{new Date(group.myPayoutDate).toLocaleDateString()}</span>
+                  </div>
                 </div>
-                <span className="text-xs text-gray-400">
-                  {group.myTurn ? "Today!" : `${getDaysUntilPayout(group.myPayoutDate)} days`}
-                </span>
+                <ChevronRight className="h-5 w-5 text-gray-400 ml-2" />
               </div>
             </div>
           </Card>
