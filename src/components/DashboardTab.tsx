@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -121,18 +120,21 @@ const DashboardTab = () => {
           >
             <div className="flex items-center justify-between mb-4">
               <div>
+                <h4 className="font-bold text-lg text-gray-800 mb-1">{group.name}</h4>
                 <div className="flex items-center space-x-2">
-                  <h4 className="font-bold text-lg text-gray-800">{group.name}</h4>
+                  <p className="text-sm text-gray-600 flex items-center">
+                    <Users className="h-4 w-4 mr-1" />
+                    {group.members} members
+                  </p>
                   {group.isAdmin && (
                     <Badge variant="outline" className="text-xs bg-purple-50 text-purple-600 border-purple-200">
                       Admin
                     </Badge>
                   )}
+                  <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                    Position {group.position}
+                  </Badge>
                 </div>
-                <p className="text-sm text-gray-600 flex items-center mt-1">
-                  <Users className="h-4 w-4 mr-1" />
-                  {group.members} members
-                </p>
               </div>
               <div className="text-right">
                 <div className="text-xl font-bold text-gray-800">
@@ -143,7 +145,7 @@ const DashboardTab = () => {
                     variant={group.myTurn ? "default" : "secondary"}
                     className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
                   >
-                    {group.myTurn ? "Your Turn 🎯" : `Position ${group.position}`}
+                    {group.myTurn ? "Your Turn 🎯" : "Waiting"}
                   </Badge>
                   <Button
                     onClick={(e) => handlePaymentClick(e, group)}
