@@ -25,6 +25,7 @@ interface GroupMember {
   trustScore: number;
   hasReceived: boolean;
   joinedDate: string;
+  position: number;
 }
 
 interface GroupDetailsModalProps {
@@ -34,7 +35,7 @@ interface GroupDetailsModalProps {
 }
 
 const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps) => {
-  // Mock members data
+  // Mock members data with positions
   const members: GroupMember[] = [
     {
       id: 1,
@@ -42,7 +43,8 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       avatar: "/placeholder.svg",
       trustScore: 85,
       hasReceived: false,
-      joinedDate: "2024-01-15"
+      joinedDate: "2024-01-15",
+      position: group.myPosition || 3
     },
     {
       id: 2,
@@ -50,7 +52,8 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       avatar: "/placeholder.svg",
       trustScore: 92,
       hasReceived: true,
-      joinedDate: "2024-01-10"
+      joinedDate: "2024-01-10",
+      position: 1
     },
     {
       id: 3,
@@ -58,7 +61,8 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       avatar: "/placeholder.svg",
       trustScore: 78,
       hasReceived: true,
-      joinedDate: "2024-01-12"
+      joinedDate: "2024-01-12",
+      position: 2
     },
     {
       id: 4,
@@ -66,7 +70,8 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       avatar: "/placeholder.svg",
       trustScore: 88,
       hasReceived: false,
-      joinedDate: "2024-01-18"
+      joinedDate: "2024-01-18",
+      position: 4
     },
     {
       id: 5,
@@ -74,7 +79,8 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       avatar: "/placeholder.svg",
       trustScore: 71,
       hasReceived: false,
-      joinedDate: "2024-01-20"
+      joinedDate: "2024-01-20",
+      position: 5
     }
   ];
 
@@ -189,7 +195,12 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                     
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-semibold">{member.name}</h4>
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-semibold">{member.name}</h4>
+                          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600">
+                            #{member.position}
+                          </Badge>
+                        </div>
                         {member.hasReceived && (
                           <Badge variant="outline" className="text-xs text-green-600">
                             Received

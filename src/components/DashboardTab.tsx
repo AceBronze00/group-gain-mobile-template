@@ -128,6 +128,11 @@ const DashboardTab = () => {
                       Admin
                     </Badge>
                   )}
+                  {group.myPosition && (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
+                      Position #{group.myPosition}
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-sm text-gray-600 flex items-center mt-1">
                   <Users className="h-4 w-4 mr-1" />
