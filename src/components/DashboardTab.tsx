@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -131,8 +132,8 @@ const DashboardTab = () => {
                       Admin
                     </Badge>
                   )}
-                  <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600">
-                    Position {group.position}
+                  <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 rounded-full px-3 py-1">
+                    #{group.position}
                   </Badge>
                 </div>
               </div>
@@ -141,12 +142,14 @@ const DashboardTab = () => {
                   {formatCurrency(group.totalAmount)}
                 </div>
                 <div className="flex items-center space-x-2 mt-1">
-                  <Badge 
-                    variant={group.myTurn ? "default" : "secondary"}
-                    className={group.myTurn ? "bg-green-500 hover:bg-green-600" : "bg-gray-100 text-gray-600"}
-                  >
-                    {group.myTurn ? "Your Turn 🎯" : "Waiting"}
-                  </Badge>
+                  {group.myTurn && (
+                    <Badge 
+                      variant="default"
+                      className="bg-green-500 hover:bg-green-600"
+                    >
+                      Your Turn 🎯
+                    </Badge>
+                  )}
                   <Button
                     onClick={(e) => handlePaymentClick(e, group)}
                     className={`text-white text-xs px-3 py-1 h-7 ${
