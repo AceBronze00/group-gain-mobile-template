@@ -12,6 +12,7 @@ import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
 
 import { useApp } from "@/contexts/AppContext";
+import GroupContributionsTable from "@/components/GroupContributionsTable";
 
 const DashboardTab = () => {
   const { groups: activeGroups, walletBalance } = useApp();
@@ -224,6 +225,8 @@ const DashboardTab = () => {
         </Card>
       )}
 
+      {/* Group Contributions Example */}
+      <GroupContributionsTable />
 
       {/* Modals */}
       <CreateGroupModal 
