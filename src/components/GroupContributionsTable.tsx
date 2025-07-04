@@ -65,9 +65,9 @@ const GroupContributionsTable = () => {
           <div>
             <CardTitle className="text-2xl font-bold text-gray-800 flex items-center">
               <Users className="h-6 w-6 mr-2 text-blue-500" />
-              Travel Fund Savings Group
+              Weekend Getaway Fund
             </CardTitle>
-            <p className="text-sm text-gray-600 mt-1">Monthly contributions for group travel fund</p>
+            <p className="text-sm text-gray-600 mt-1">Monthly contributions for weekend getaway fund</p>
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-green-600">{formatCurrency(totalContributions)}</div>
