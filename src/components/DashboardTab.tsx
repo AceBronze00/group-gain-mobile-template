@@ -10,9 +10,8 @@ import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
-
+import BaliTripExpensesTable from "@/components/BaliTripExpensesTable";
 import { useApp } from "@/contexts/AppContext";
-import GroupContributionsTable from "@/components/GroupContributionsTable";
 
 const DashboardTab = () => {
   const { groups: activeGroups, walletBalance } = useApp();
@@ -225,8 +224,8 @@ const DashboardTab = () => {
         </Card>
       )}
 
-      {/* Group Contributions Example */}
-      <GroupContributionsTable />
+      {/* Example Table */}
+      <BaliTripExpensesTable />
 
       {/* Modals */}
       <CreateGroupModal 
