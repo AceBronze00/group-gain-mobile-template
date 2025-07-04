@@ -10,6 +10,7 @@ import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
+import BaliTripExpensesTable from "@/components/BaliTripExpensesTable";
 import { useApp } from "@/contexts/AppContext";
 
 const DashboardTab = () => {
@@ -222,6 +223,9 @@ const DashboardTab = () => {
           </div>
         </Card>
       )}
+
+      {/* Example Table */}
+      <BaliTripExpensesTable />
 
       {/* Modals */}
       <CreateGroupModal 
