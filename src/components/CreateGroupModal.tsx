@@ -32,6 +32,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
   const frequencies = [
     { value: 'daily', label: 'Daily' },
     { value: 'weekly', label: 'Weekly' },
+    { value: 'biweekly', label: 'Biweekly' },
     { value: 'monthly', label: 'Monthly' }
   ];
 
@@ -182,7 +183,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
 
                 <div>
                   <Label>Contribution Frequency *</Label>
-                  <div className="grid grid-cols-3 gap-2 mt-2">
+                  <div className="grid grid-cols-2 gap-2 mt-2">
                     {frequencies.map((freq) => (
                       <Button
                         key={freq.value}
