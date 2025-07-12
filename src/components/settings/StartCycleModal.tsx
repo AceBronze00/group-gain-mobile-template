@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -99,6 +99,9 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
             <Play className="h-5 w-5 text-green-500" />
             Manage {group.name}
           </DialogTitle>
+          <DialogDescription>
+            Start the group cycle or manage payout order and contribution amounts.
+          </DialogDescription>
         </DialogHeader>
         
         <Tabs defaultValue="start" className="w-full">

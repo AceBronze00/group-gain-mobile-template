@@ -33,6 +33,11 @@ const DashboardTab = () => {
     }).format(amount);
   };
 
+  // Calculate total monthly contributions across all groups
+  const totalContributions = activeGroups.reduce((total, group) => {
+    return total + group.contributionAmount;
+  }, 0);
+
   const getDaysUntilPayout = (date: string) => {
     const today = new Date();
     const payoutDate = new Date(date);
@@ -67,10 +72,10 @@ const DashboardTab = () => {
           </div>
           <div className="flex items-center space-x-3 text-white">
             <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
-              <span className="text-xs font-medium">{formatCurrency(walletBalance)}</span>
+              <span className="text-xs font-medium">{activeGroups.length} Group{activeGroups.length !== 1 ? 's' : ''}</span>
             </div>
             <div className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
-              <span className="text-xs font-medium">{activeGroups.length} Groups</span>
+              <span className="text-xs font-medium">{formatCurrency(totalContributions)}/mo</span>
             </div>
             <div className="relative">
               <Bell className="h-5 w-5 text-white/80 hover:text-white transition-colors cursor-pointer" />
