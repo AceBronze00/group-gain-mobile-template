@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import PaymentModal from "@/components/PaymentModal";
 import ActiveGroupCard from "./ActiveGroupCard";
 import GroupManagementOptions from "./GroupManagementOptions";
-import GroupPreferences from "./GroupPreferences";
 import GroupStatistics from "./GroupStatistics";
 import DangerZone from "./DangerZone";
 
@@ -62,7 +61,6 @@ const GroupSettings = ({ activeGroups }: GroupSettingsProps) => {
       </Card>
 
       <GroupManagementOptions />
-      <GroupPreferences />
       <GroupStatistics />
       <DangerZone />
 
