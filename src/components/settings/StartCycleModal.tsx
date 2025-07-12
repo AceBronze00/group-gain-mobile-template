@@ -5,8 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Play, Users, DollarSign, ArrowUpDown, GripVertical, Bell } from "lucide-react";
+import { Calendar as CalendarIcon, Play, Users, DollarSign, ArrowUpDown, GripVertical, Bell, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -33,6 +34,10 @@ interface StartCycleModalProps {
 const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) => {
   const { toast } = useToast();
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
+  const [contributionAmount, setContributionAmount] = useState(group?.contributionAmount || 0);
+  
+  // Mock: in real app, check if any payments have been made
+  const hasPaymentsStarted = false; // This would come from backend data
   
   // Mock member data - in real app this would come from group data
   const [payoutOrder, setPayoutOrder] = useState([
@@ -83,6 +88,23 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
     });
   };
 
+  const handleContributionChange = () => {
+    if (!group) return;
+
+    toast({
+      title: "Contribution Amount Updated",
+      description: `Contribution amount changed from $${group.contributionAmount} to $${contributionAmount}. All members have been notified.`,
+      action: (
+        <div className="flex items-center gap-1 text-xs">
+          <Bell className="h-3 w-3" />
+          Notifications sent
+        </div>
+      )
+    });
+    
+    onOpenChange(false);
+  };
+
   if (!group) return null;
 
   return (
@@ -96,9 +118,10 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
         </DialogHeader>
         
         <Tabs defaultValue="start" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="start">Start Cycle</TabsTrigger>
             <TabsTrigger value="order">Payout Order</TabsTrigger>
+            <TabsTrigger value="settings">Contribution</TabsTrigger>
           </TabsList>
           
           <TabsContent value="start" className="space-y-4 mt-4">
@@ -229,6 +252,73 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
               >
                 <ArrowUpDown className="h-4 w-4 mr-2" />
                 Update Order
+              </Button>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Contribution Amount Settings</label>
+              <p className="text-xs text-gray-600">
+                {hasPaymentsStarted 
+                  ? "Cannot change contribution amount after payments have been made."
+                  : "Adjust the contribution amount. All members will be notified of changes."
+                }
+              </p>
+            </div>
+
+            {/* Current vs New Amount */}
+            <Card className="p-4 bg-gray-50">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-blue-500" />
+                  <span>Current: ${group.contributionAmount}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Settings className="h-4 w-4 text-green-500" />
+                  <span>Frequency: {group.frequency}</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Contribution Amount Input */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">New Contribution Amount</label>
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-gray-500" />
+                <Input
+                  type="number"
+                  value={contributionAmount}
+                  onChange={(e) => setContributionAmount(Number(e.target.value))}
+                  disabled={hasPaymentsStarted}
+                  className="flex-1"
+                  min="1"
+                  step="1"
+                />
+              </div>
+              {contributionAmount !== group.contributionAmount && !hasPaymentsStarted && (
+                <p className="text-xs text-amber-600">
+                  This will change the amount from ${group.contributionAmount} to ${contributionAmount}
+                </p>
+              )}
+            </div>
+
+            {/* Contribution Settings Buttons */}
+            <div className="flex gap-2 pt-2">
+              <Button 
+                variant="outline" 
+                onClick={() => onOpenChange(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleContributionChange}
+                disabled={hasPaymentsStarted || contributionAmount === group.contributionAmount || contributionAmount < 1}
+                className="flex-1"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Update Amount
               </Button>
             </div>
           </TabsContent>
