@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Crown, AlertTriangle, Settings, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import StartCycleModal from "./StartCycleModal";
 
 interface ActiveGroup {
   id: number;
@@ -27,12 +29,10 @@ interface ActiveGroupCardProps {
 
 const ActiveGroupCard = ({ group, onPayment, onFlagIssue }: ActiveGroupCardProps) => {
   const { toast } = useToast();
+  const [showStartCycleModal, setShowStartCycleModal] = useState(false);
 
   const handleManageGroup = () => {
-    toast({
-      title: "Group Management",
-      description: `Opening management options for "${group.name}"`,
-    });
+    setShowStartCycleModal(true);
   };
 
   return (
@@ -101,6 +101,12 @@ const ActiveGroupCard = ({ group, onPayment, onFlagIssue }: ActiveGroupCardProps
           </Button>
         </div>
       </div>
+
+      <StartCycleModal
+        group={group}
+        open={showStartCycleModal}
+        onOpenChange={setShowStartCycleModal}
+      />
     </div>
   );
 };
