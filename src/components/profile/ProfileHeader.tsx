@@ -61,7 +61,7 @@ const ProfileHeader = ({ user, activeGroups, onTrustScoreClick }: ProfileHeaderP
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-blue-600">{activeGroups.length}</div>
-          <div className="text-sm text-gray-600">Active Groups</div>
+          <div className="text-sm text-gray-600">Active Nests</div>
         </div>
       </div>
     </Card>

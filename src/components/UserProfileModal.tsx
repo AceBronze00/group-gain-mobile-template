@@ -78,7 +78,7 @@ const UserProfileModal = ({ open, onOpenChange, user }: UserProfileModalProps) =
                 </div>
                 <div>
                   <div className="font-bold text-green-600 text-lg">{user.activeGroups}</div>
-                  <div className="text-gray-500 text-xs">Active Groups</div>
+                  <div className="text-gray-500 text-xs">Active Nests</div>
                 </div>
                 <div>
                   <div className="font-bold text-purple-600 text-lg">{formatCurrency(user.totalContributed)}</div>

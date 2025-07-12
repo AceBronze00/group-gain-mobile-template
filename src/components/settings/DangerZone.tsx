@@ -11,21 +11,21 @@ const DangerZone = () => {
   const handleLeaveAllGroups = () => {
     if (groups.length === 0) {
       toast({
-        title: "No Active Groups",
-        description: "You are not currently in any groups to leave",
+        title: "No Active Nests",
+        description: "You are not currently in any nests to leave",
         variant: "destructive",
       });
       return;
     }
 
     const confirmLeave = window.confirm(
-      `Are you sure you want to leave all ${groups.length} active groups? This action cannot be undone.`
+      `Are you sure you want to leave all ${groups.length} active nests? This action cannot be undone.`
     );
 
     if (confirmLeave) {
       toast({
-        title: "Left All Groups",
-        description: `You have been removed from ${groups.length} group(s)`,
+        title: "Left All Nests",
+        description: `You have been removed from ${groups.length} nest(s)`,
         variant: "destructive",
       });
       // In a real app, this would call a function to leave all groups
@@ -39,8 +39,8 @@ const DangerZone = () => {
       <div className="space-y-3">
         <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
           <div>
-            <p className="font-medium text-red-800">Leave All Groups</p>
-            <p className="text-sm text-red-600">This will remove you from all active groups</p>
+            <p className="font-medium text-red-800">Leave All Nests</p>
+            <p className="text-sm text-red-600">This will remove you from all active nests</p>
           </div>
           <Button variant="destructive" onClick={handleLeaveAllGroups}>
             Leave All

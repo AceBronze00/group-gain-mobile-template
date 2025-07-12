@@ -42,11 +42,11 @@ const GroupSettings = ({ activeGroups }: GroupSettingsProps) => {
 
   return (
     <div className="space-y-6">
-      {/* My Active Groups */}
+      {/* My Active Nests */}
       <Card className="p-6">
         <h3 className="text-lg font-semibold mb-4 flex items-center">
           <Users className="h-5 w-5 mr-2 text-blue-500" />
-          My Active Groups ({activeGroups.length})
+          My Active Nests ({activeGroups.length})
         </h3>
         <div className="space-y-4">
           {activeGroups.map((group) => (
