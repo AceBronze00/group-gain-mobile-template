@@ -8,7 +8,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar, Settings, Key, Lock, Unlock, RefreshCw, UserCheck } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronLeft, ChevronRight, Users, DollarSign, Calendar as CalendarIcon, Settings, Key, Lock, Unlock, RefreshCw, UserCheck, Play, Clock } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { useApp } from "@/contexts/AppContext";
 
 interface CreateGroupModalProps {
@@ -26,7 +30,9 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     lockWithdrawals: true,
     allowMultipleContributions: false,
     payoutOrder: 'randomized',
-    inviteCode: ''
+    inviteCode: '',
+    startDate: undefined as Date | undefined,
+    isAutoStart: false
   });
 
   const frequencies = [
@@ -35,6 +41,27 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     { value: 'biweekly', label: 'Biweekly' },
     { value: 'monthly', label: 'Monthly' }
   ];
+
+  const getNextContributionDate = () => {
+    if (!formData.startDate) return null;
+    
+    const next = new Date(formData.startDate);
+    switch (formData.frequency) {
+      case 'daily':
+        next.setDate(next.getDate() + 1);
+        break;
+      case 'weekly':
+        next.setDate(next.getDate() + 7);
+        break;
+      case 'biweekly':
+        next.setDate(next.getDate() + 14);
+        break;
+      case 'monthly':
+        next.setMonth(next.getMonth() + 1);
+        break;
+    }
+    return next;
+  };
 
   const generateRandomCode = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -53,7 +80,9 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       lockWithdrawals: true,
       allowMultipleContributions: false,
       payoutOrder: 'randomized',
-      inviteCode: ''
+      inviteCode: '',
+      startDate: undefined,
+      isAutoStart: false
     });
     setStep(1);
   };
@@ -71,7 +100,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       case 1:
         return formData.groupName.trim() !== '';
       case 2:
-        return parseFloat(formData.contributionAmount) > 0;
+        return parseFloat(formData.contributionAmount) > 0 && 
+               (!formData.isAutoStart || (formData.isAutoStart && formData.startDate));
       case 3:
         return true;
       case 4:
@@ -196,6 +226,85 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                       </Button>
                     ))}
                   </div>
+                </div>
+
+                {/* Cycle Start Configuration */}
+                <div className="space-y-4 pt-4 border-t border-gray-200">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Clock className="h-5 w-5 text-blue-500" />
+                    <Label className="text-base font-semibold">Cycle Start Configuration</Label>
+                  </div>
+
+                  <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                    <Switch
+                      id="auto-start"
+                      checked={formData.isAutoStart}
+                      onCheckedChange={(checked) => setFormData({...formData, isAutoStart: checked})}
+                    />
+                    <Label htmlFor="auto-start" className="flex-1">
+                      <div className="font-medium">Automatic Start</div>
+                      <div className="text-sm text-gray-500">
+                        Cycle begins automatically on the selected start date
+                      </div>
+                    </Label>
+                  </div>
+
+                  {formData.isAutoStart && (
+                    <div className="space-y-3">
+                      <Label>Start Date *</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !formData.startDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.startDate ? format(formData.startDate, "PPP") : <span>Pick a start date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={formData.startDate}
+                            onSelect={(date) => setFormData({...formData, startDate: date})}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+
+                      {formData.startDate && getNextContributionDate() && (
+                        <Card className="p-3 bg-blue-50 border-blue-200">
+                          <div className="flex items-start space-x-2">
+                            <CalendarIcon className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium text-blue-800">Next Contribution Due</p>
+                              <p className="text-xs text-blue-700">
+                                {format(getNextContributionDate()!, "PPP")}
+                              </p>
+                            </div>
+                          </div>
+                        </Card>
+                      )}
+                    </div>
+                  )}
+
+                  {!formData.isAutoStart && (
+                    <Card className="p-3 bg-gray-50 border-gray-200">
+                      <div className="flex items-start space-x-2">
+                        <Play className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">Manual Start</p>
+                          <p className="text-xs text-gray-600">
+                            You can manually trigger the cycle start after group creation
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
@@ -434,6 +543,19 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                       <span>{formData.lockWithdrawals ? "Locked" : "Immediate"}</span>
                     </Badge>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Cycle Start:</span>
+                    <Badge variant={formData.isAutoStart ? "default" : "secondary"} className="flex items-center space-x-1">
+                      {formData.isAutoStart ? <CalendarIcon className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                      <span>{formData.isAutoStart ? "Automatic" : "Manual"}</span>
+                    </Badge>
+                  </div>
+                  {formData.isAutoStart && formData.startDate && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Start Date:</span>
+                      <span className="font-semibold text-sm">{format(formData.startDate, "MMM dd, yyyy")}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-gray-600">Invite Code:</span>
                     <Badge variant="default" className="font-mono">{formData.inviteCode}</Badge>
