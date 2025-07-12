@@ -133,7 +133,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center">
-            Create New Group
+            Create New Nest
           </DialogTitle>
           <div className="flex justify-center space-x-2 mt-4">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -152,15 +152,15 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
             <div className="space-y-4">
               <div className="text-center mb-4">
                 <Users className="h-12 w-12 text-blue-500 mx-auto mb-2" />
-                <h3 className="text-lg font-semibold">Group Details</h3>
+                <h3 className="text-lg font-semibold">Nest Details</h3>
                 <p className="text-gray-600 text-sm">Set up your money pool basics</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="groupName">Group Name *</Label>
+                  <Label htmlFor="nestName">Nest Name *</Label>
                   <Input
-                    id="groupName"
+                    id="nestName"
                     placeholder="e.g., Coffee Fund, Vacation Pool"
                     value={formData.groupName}
                     onChange={(e) => setFormData({...formData, groupName: e.target.value})}
@@ -279,7 +279,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   {!formData.isAutoStart && (
                     <div className="p-2 bg-white rounded text-xs text-gray-600 border">
                       <Play className="h-3 w-3 inline mr-1" />
-                      Manual start after group creation
+                      Manual start after nest creation
                     </div>
                   )}
                 </div>
@@ -410,14 +410,14 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           <Lock className="h-4 w-4 text-orange-500" />
-                          <Label className="font-medium text-orange-700">Lock Until Group Completes</Label>
+                          <Label className="font-medium text-orange-700">Lock Until Nest Completes</Label>
                           <Badge variant="outline" className="text-xs bg-orange-100 text-orange-600 border-orange-200">
                             Recommended
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600">
                           Payouts stay locked in member wallets until all members have received their turn. 
-                          This ensures everyone stays committed to the group.
+                          This ensures everyone stays committed to the nest.
                         </p>
                       </div>
                     </div>
@@ -448,7 +448,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                         </div>
                         <p className="text-sm text-gray-600">
                           Members can withdraw their payouts immediately after receiving them. 
-                          More flexible but may reduce group commitment.
+                          More flexible but may reduce nest commitment.
                         </p>
                       </div>
                     </div>
@@ -468,7 +468,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
 
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="inviteCode">Group Invite Code *</Label>
+                  <Label htmlFor="inviteCode">Nest Invite Code *</Label>
                   <div className="flex space-x-2 mt-1">
                     <Input
                       id="inviteCode"
@@ -492,7 +492,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
 
                 <Card className="p-4 space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Group Name:</span>
+                    <span className="text-gray-600">Nest Name:</span>
                     <span className="font-semibold">{formData.groupName}</span>
                   </div>
                   <div className="flex justify-between">
@@ -558,7 +558,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
               className="flex items-center"
               disabled={!validateStep(step)}
             >
-              {step === 5 ? 'Create Group' : 'Next'}
+              {step === 5 ? 'Create Nest' : 'Next'}
               {step !== 5 && <ChevronRight className="h-4 w-4 ml-1" />}
             </Button>
           </div>
