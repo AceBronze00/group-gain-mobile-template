@@ -42,7 +42,7 @@ const InviteLinkTemplate = ({ group }: InviteLinkTemplateProps) => {
     setTimeout(() => setCopied(null), 2000);
     toast({
       title: "Invite URL Copied!",
-      description: "Share this link for others to join your group",
+      description: "Share this link for others to join your nest",
     });
   };
 

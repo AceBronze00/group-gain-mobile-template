@@ -79,8 +79,8 @@ const SettingsSection = ({ isSettingsOpen, setIsSettingsOpen, onSettingClick }: 
           >
             <Users className="h-6 w-6 mr-4 text-purple-500" />
             <div>
-              <div className="font-semibold">Group Settings</div>
-              <div className="text-sm text-gray-500">Manage your groups</div>
+              <div className="font-semibold">Nest Settings</div>
+              <div className="text-sm text-gray-500">Manage your nests</div>
             </div>
           </Button>
 

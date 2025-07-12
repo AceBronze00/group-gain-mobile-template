@@ -7,7 +7,7 @@ import { useApp } from "@/contexts/AppContext";
 const SettingsTab = () => {
   const { groups } = useApp();
   
-  // Filter active groups for the settings
+  // Filter active nests for the settings
   const activeGroups = groups.filter(group => group.status === 'active');
 
   return (

@@ -115,7 +115,7 @@ const DashboardTab = () => {
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold text-gray-800 flex items-center">
             <Users className="h-5 w-5 mr-2 text-blue-500" />
-            Your Groups ({activeGroups.length})
+            Your Nests ({activeGroups.length})
           </h3>
         </div>
         

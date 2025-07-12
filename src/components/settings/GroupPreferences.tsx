@@ -38,7 +38,7 @@ const GroupPreferences = () => {
 
   return (
     <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-4">Group Preferences</h3>
+      <h3 className="text-lg font-semibold mb-4">Nest Preferences</h3>
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -68,7 +68,7 @@ const GroupPreferences = () => {
         
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium">Default Group Settings</p>
+            <p className="font-medium">Default Nest Settings</p>
             <p className="text-sm text-gray-600">Set your preferred group rules</p>
           </div>
           <Button variant="outline" onClick={handleDefaultSettings}>

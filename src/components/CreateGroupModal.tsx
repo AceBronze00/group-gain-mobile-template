@@ -175,7 +175,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                     <div>
                       <p className="text-sm font-medium text-blue-800">No Participant Limit</p>
                       <p className="text-xs text-blue-700">
-                        Members can join your group at any time, even after it has started.
+                        Members can join your nest at any time, even after it has started.
                       </p>
                     </div>
                   </div>
