@@ -219,7 +219,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                         key={freq.value}
                         variant={formData.frequency === freq.value ? "default" : "outline"}
                         onClick={() => setFormData({...formData, frequency: freq.value})}
-                        className="h-10"
+                        className="h-9 text-sm"
                         type="button"
                       >
                         {freq.label}
@@ -228,41 +228,33 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   </div>
                 </div>
 
-                {/* Cycle Start Configuration */}
-                <div className="space-y-4 pt-4 border-t border-gray-200">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Clock className="h-5 w-5 text-blue-500" />
-                    <Label className="text-base font-semibold">Cycle Start Configuration</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                {/* Cycle Start Configuration - Compact */}
+                <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium flex items-center">
+                      <Clock className="h-4 w-4 text-blue-500 mr-2" />
+                      Auto-Start Cycle
+                    </Label>
                     <Switch
-                      id="auto-start"
                       checked={formData.isAutoStart}
                       onCheckedChange={(checked) => setFormData({...formData, isAutoStart: checked})}
                     />
-                    <Label htmlFor="auto-start" className="flex-1">
-                      <div className="font-medium">Automatic Start</div>
-                      <div className="text-sm text-gray-500">
-                        Cycle begins automatically on the selected start date
-                      </div>
-                    </Label>
                   </div>
-
+                  
                   {formData.isAutoStart && (
-                    <div className="space-y-3">
-                      <Label>Start Date *</Label>
+                    <div className="space-y-2">
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
+                            size="sm"
                             className={cn(
-                              "w-full justify-start text-left font-normal",
+                              "w-full justify-start text-left font-normal h-9",
                               !formData.startDate && "text-muted-foreground"
                             )}
                           >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {formData.startDate ? format(formData.startDate, "PPP") : <span>Pick a start date</span>}
+                            <CalendarIcon className="mr-2 h-3 w-3" />
+                            {formData.startDate ? format(formData.startDate, "MMM dd, yyyy") : "Pick start date"}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
@@ -277,41 +269,26 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                       </Popover>
 
                       {formData.startDate && getNextContributionDate() && (
-                        <Card className="p-3 bg-blue-50 border-blue-200">
-                          <div className="flex items-start space-x-2">
-                            <CalendarIcon className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                            <div>
-                              <p className="text-sm font-medium text-blue-800">Next Contribution Due</p>
-                              <p className="text-xs text-blue-700">
-                                {format(getNextContributionDate()!, "PPP")}
-                              </p>
-                            </div>
-                          </div>
-                        </Card>
+                        <div className="p-2 bg-blue-50 rounded text-xs text-blue-700">
+                          <strong>Next due:</strong> {format(getNextContributionDate()!, "MMM dd")}
+                        </div>
                       )}
                     </div>
                   )}
 
                   {!formData.isAutoStart && (
-                    <Card className="p-3 bg-gray-50 border-gray-200">
-                      <div className="flex items-start space-x-2">
-                        <Play className="h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">Manual Start</p>
-                          <p className="text-xs text-gray-600">
-                            You can manually trigger the cycle start after group creation
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
+                    <div className="p-2 bg-white rounded text-xs text-gray-600 border">
+                      <Play className="h-3 w-3 inline mr-1" />
+                      Manual start after group creation
+                    </div>
                   )}
                 </div>
 
-                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                   <div className="flex-1">
-                    <Label className="font-medium">Allow Multiple Contributions</Label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Members can contribute multiple shares for multiple payouts
+                    <Label className="text-sm font-medium">Multiple Contributions</Label>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Allow multiple shares per member
                     </p>
                   </div>
                   <Switch
