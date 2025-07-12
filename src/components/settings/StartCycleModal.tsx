@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Play, Users, DollarSign } from "lucide-react";
+import { Calendar as CalendarIcon, Play, Users, DollarSign, ArrowUpDown, GripVertical, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -32,6 +33,14 @@ interface StartCycleModalProps {
 const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) => {
   const { toast } = useToast();
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
+  
+  // Mock member data - in real app this would come from group data
+  const [payoutOrder, setPayoutOrder] = useState([
+    { id: 1, name: "John Doe", position: 1, isCurrentUser: false },
+    { id: 2, name: "You", position: 2, isCurrentUser: true },
+    { id: 3, name: "Jane Smith", position: 3, isCurrentUser: false },
+    { id: 4, name: "Mike Johnson", position: 4, isCurrentUser: false },
+  ]);
 
   const handleStartCycle = () => {
     if (!group || !startDate) return;
@@ -45,79 +54,185 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
     setStartDate(new Date());
   };
 
+  const moveUp = (index: number) => {
+    if (index === 0) return;
+    const newOrder = [...payoutOrder];
+    [newOrder[index], newOrder[index - 1]] = [newOrder[index - 1], newOrder[index]];
+    newOrder.forEach((member, i) => member.position = i + 1);
+    setPayoutOrder(newOrder);
+  };
+
+  const moveDown = (index: number) => {
+    if (index === payoutOrder.length - 1) return;
+    const newOrder = [...payoutOrder];
+    [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+    newOrder.forEach((member, i) => member.position = i + 1);
+    setPayoutOrder(newOrder);
+  };
+
+  const handleOrderChange = () => {
+    toast({
+      title: "Payout Order Updated",
+      description: "All group members have been notified of the order change.",
+      action: (
+        <div className="flex items-center gap-1 text-xs">
+          <Bell className="h-3 w-3" />
+          Notifications sent
+        </div>
+      )
+    });
+  };
+
   if (!group) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Play className="h-5 w-5 text-green-500" />
-            Start Cycle for {group.name}
+            Manage {group.name}
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
-          {/* Group Summary */}
-          <Card className="p-4 bg-gray-50">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-blue-500" />
-                <span>{group.members} Members</span>
+        <Tabs defaultValue="start" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="start">Start Cycle</TabsTrigger>
+            <TabsTrigger value="order">Payout Order</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="start" className="space-y-4 mt-4">
+            {/* Group Summary */}
+            <Card className="p-4 bg-gray-50">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-blue-500" />
+                  <span>{group.members} Members</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-green-500" />
+                  <span>${group.contributionAmount} {group.frequency}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-green-500" />
-                <span>${group.contributionAmount} {group.frequency}</span>
-              </div>
+            </Card>
+
+            {/* Start Date Selection */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Select Cycle Start Date</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-          </Card>
 
-          {/* Start Date Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Select Cycle Start Date</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !startDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? format(startDate, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  initialFocus
-                  className="p-3 pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+            {/* Start Cycle Buttons */}
+            <div className="flex gap-2 pt-2">
+              <Button 
+                variant="outline" 
+                onClick={() => onOpenChange(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleStartCycle}
+                disabled={!startDate}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                Start Cycle
+              </Button>
+            </div>
+          </TabsContent>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-2">
-            <Button 
-              variant="outline" 
-              onClick={() => onOpenChange(false)}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleStartCycle}
-              disabled={!startDate}
-              className="flex-1 bg-green-600 hover:bg-green-700"
-            >
-              Start Cycle
-            </Button>
-          </div>
-        </div>
+          <TabsContent value="order" className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Payout Order (Emergency Adjustment)</label>
+              <p className="text-xs text-gray-600">Drag to reorder or use arrows. All members will be notified.</p>
+            </div>
+
+            {/* Payout Order List */}
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {payoutOrder.map((member, index) => (
+                <Card key={member.id} className="p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <GripVertical className="h-4 w-4 text-gray-400" />
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full text-xs flex items-center justify-center font-medium">
+                          {member.position}
+                        </span>
+                        <span className={cn(
+                          "text-sm font-medium",
+                          member.isCurrentUser && "text-blue-600"
+                        )}>
+                          {member.name}
+                          {member.isCurrentUser && " (You)"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveUp(index)}
+                        disabled={index === 0}
+                        className="h-6 w-6 p-0"
+                      >
+                        ↑
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveDown(index)}
+                        disabled={index === payoutOrder.length - 1}
+                        className="h-6 w-6 p-0"
+                      >
+                        ↓
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Order Management Buttons */}
+            <div className="flex gap-2 pt-2">
+              <Button 
+                variant="outline" 
+                onClick={() => onOpenChange(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleOrderChange}
+                className="flex-1"
+              >
+                <ArrowUpDown className="h-4 w-4 mr-2" />
+                Update Order
+              </Button>
+            </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
