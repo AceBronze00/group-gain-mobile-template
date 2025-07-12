@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppProvider } from "@/contexts/AppContext";
 import Index from "./pages/Index";
-import FinancialRulesPage from "./components/FinancialRulesPage";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +16,6 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/financial-rules" element={<FinancialRulesPage />} />
           </Routes>
         </BrowserRouter>
       </AppProvider>
