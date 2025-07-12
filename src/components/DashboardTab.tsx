@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Users, Calendar, Bell, DollarSign, Clock, ChevronRight } from "lucide-react";
+import { Plus, Users, Calendar, Bell, DollarSign, Clock, ChevronRight, Settings } from "lucide-react";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import JoinGroupModal from "@/components/JoinGroupModal";
 import GroupDetailsModal from "@/components/GroupDetailsModal";
 import PaymentModal from "@/components/PaymentModal";
+import FinancialRulesPage from "@/components/FinancialRulesPage";
 
 import { useApp } from "@/contexts/AppContext";
 
@@ -19,6 +20,7 @@ const DashboardTab = () => {
   const [showJoinGroup, setShowJoinGroup] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedGroupForPayment, setSelectedGroupForPayment] = useState(null);
+  const [showFinancialRules, setShowFinancialRules] = useState(false);
 
   const user = {
     name: "Alex Johnson",
@@ -49,6 +51,10 @@ const DashboardTab = () => {
     e.stopPropagation();
     setSelectedGroupForPayment(group);
   };
+
+  if (showFinancialRules) {
+    return <FinancialRulesPage onBack={() => setShowFinancialRules(false)} />;
+  }
 
   return (
     <div className="space-y-6 pb-20">
@@ -87,21 +93,29 @@ const DashboardTab = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-3">
         <Button 
           onClick={() => setShowCreateGroup(true)}
-          className="h-20 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 flex flex-col items-center justify-center space-y-2"
+          className="h-20 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 flex flex-col items-center justify-center space-y-1"
         >
-          <Plus className="h-6 w-6" />
-          <span>Create Group</span>
+          <Plus className="h-5 w-5" />
+          <span className="text-xs">Create Group</span>
         </Button>
         <Button 
           onClick={() => setShowJoinGroup(true)}
           variant="outline"
-          className="h-20 border-2 border-blue-200 text-blue-600 font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 hover:bg-blue-50 flex flex-col items-center justify-center space-y-2"
+          className="h-20 border-2 border-blue-200 text-blue-600 font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 hover:bg-blue-50 flex flex-col items-center justify-center space-y-1"
         >
-          <Users className="h-6 w-6" />
-          <span>Join Group</span>
+          <Users className="h-5 w-5" />
+          <span className="text-xs">Join Group</span>
+        </Button>
+        <Button 
+          onClick={() => setShowFinancialRules(true)}
+          variant="outline"
+          className="h-20 border-2 border-purple-200 text-purple-600 font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 hover:bg-purple-50 flex flex-col items-center justify-center space-y-1"
+        >
+          <Settings className="h-5 w-5" />
+          <span className="text-xs">Financial Rules</span>
         </Button>
       </div>
 
