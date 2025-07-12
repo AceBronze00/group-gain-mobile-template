@@ -1,11 +1,13 @@
 
 import { Card } from "@/components/ui/card";
-import { Settings, User, Bell, Shield, CreditCard } from "lucide-react";
+import { Settings, User, Bell, Shield, CreditCard, DollarSign } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import GroupSettings from "@/components/settings/GroupSettings";
 import { useApp } from "@/contexts/AppContext";
 
 const SettingsTab = () => {
   const { groups } = useApp();
+  const navigate = useNavigate();
   
   // Filter active groups for the settings
   const activeGroups = groups.filter(group => group.status === 'active');
@@ -40,6 +42,13 @@ const SettingsTab = () => {
           <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50 cursor-pointer">
             <CreditCard className="h-5 w-5 text-orange-500" />
             <span className="text-sm">Payment</span>
+          </div>
+          <div 
+            className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50 cursor-pointer col-span-2"
+            onClick={() => navigate('/financial-rules')}
+          >
+            <DollarSign className="h-5 w-5 text-emerald-500" />
+            <span className="text-sm">Financial Rules</span>
           </div>
         </div>
       </Card>
