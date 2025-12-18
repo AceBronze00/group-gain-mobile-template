@@ -55,7 +55,9 @@ const TrustScoreProfile = ({ user }: TrustScoreProfileProps) => {
       }
     ],
     disputes: profileData.disputes,
-    latePayments: profileData.latePayments
+    latePayments: profileData.latePayments,
+    isVerified: true, // Example: user is verified
+    accountAgeDays: 365 // Example: 1 year old account
   });
 
   return (

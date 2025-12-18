@@ -16,6 +16,9 @@ interface TrustScoreData {
   peerRatings: PeerRating[];
   disputes: number;
   latePayments: number;
+  // New bonus factors
+  isVerified?: boolean;
+  accountAgeDays?: number;
 }
 
 export const calculateTrustScore = (data: TrustScoreData): number => {
@@ -76,7 +79,22 @@ export const calculateTrustScore = (data: TrustScoreData): number => {
     score += 11.25; // 75% of 15
   }
 
-  // Negative factors
+  // === BONUS FACTORS (up to 15 points) ===
+  
+  // Verification Status Bonus (up to 8 points)
+  if (data.isVerified) {
+    score += 8;
+  }
+
+  // Account Age Bonus (up to 7 points)
+  // 1 point per 90 days, max 7 points (630+ days / ~21 months)
+  if (data.accountAgeDays !== undefined) {
+    const ageBonus = Math.min(Math.floor(data.accountAgeDays / 90), 7);
+    score += ageBonus;
+  }
+
+  // === NEGATIVE FACTORS ===
+  
   // Disputes penalty (up to -10 points)
   const disputesPenalty = Math.min(data.disputes * 5, 10);
   score -= disputesPenalty;
