@@ -219,7 +219,8 @@ const ActivityTab = () => {
             totalRaters: 6,
             totalGroups: 5,
             latePayments: 0,
-            disputes: 0
+            groupsLeftActive: 0,
+            groupsLeftInactive: 0
           }}
         />
       </div>

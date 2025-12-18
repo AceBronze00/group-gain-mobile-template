@@ -17,7 +17,8 @@ interface TrustScoreProfileProps {
     totalRaters: number;
     totalGroups: number;
     latePayments: number;
-    disputes: number;
+    groupsLeftActive: number;
+    groupsLeftInactive: number;
   };
 }
 
@@ -35,7 +36,8 @@ const TrustScoreProfile = ({ user }: TrustScoreProfileProps) => {
     totalRaters: 5,
     totalGroups: 4,
     latePayments: 0,
-    disputes: 1
+    groupsLeftActive: 0,
+    groupsLeftInactive: 0
   };
 
   // Calculate trust score using the algorithm
@@ -54,10 +56,11 @@ const TrustScoreProfile = ({ user }: TrustScoreProfileProps) => {
         daysAgo: 30
       }
     ],
-    disputes: profileData.disputes,
+    groupsLeftActive: profileData.groupsLeftActive,
+    groupsLeftInactive: profileData.groupsLeftInactive,
     latePayments: profileData.latePayments,
-    isVerified: true, // Example: user is verified
-    accountAgeDays: 365 // Example: 1 year old account
+    isVerified: true,
+    accountAgeDays: 365
   });
 
   return (
@@ -73,7 +76,8 @@ const TrustScoreProfile = ({ user }: TrustScoreProfileProps) => {
           totalRaters={profileData.totalRaters}
           totalGroups={profileData.totalGroups}
           latePayments={profileData.latePayments}
-          disputes={profileData.disputes}
+          groupsLeftActive={profileData.groupsLeftActive}
+          groupsLeftInactive={profileData.groupsLeftInactive}
         />
 
         <Button 

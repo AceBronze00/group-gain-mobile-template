@@ -11,7 +11,8 @@ interface TrustScoreBreakdownProps {
   totalRaters: number;
   totalGroups: number;
   latePayments: number;
-  disputes: number;
+  groupsLeftActive: number;
+  groupsLeftInactive: number;
 }
 
 const TrustScoreBreakdown = ({
@@ -22,7 +23,8 @@ const TrustScoreBreakdown = ({
   totalRaters,
   totalGroups,
   latePayments,
-  disputes
+  groupsLeftActive,
+  groupsLeftInactive
 }: TrustScoreBreakdownProps) => {
   return (
     <Card className="p-6">
@@ -88,21 +90,24 @@ const TrustScoreBreakdown = ({
           </Badge>
         </div>
 
-        <div className="flex items-center justify-between py-2">
+        <div className="flex items-center justify-between py-2 border-b border-gray-100">
           <div className="flex items-center space-x-2">
             <AlertTriangle className="h-4 w-4 text-red-500" />
-            <span className="text-gray-700">Disputes</span>
+            <span className="text-gray-700">Nests Left (Active)</span>
           </div>
+          <Badge variant="outline" className="text-red-600 bg-red-50">
+            {groupsLeftActive}
+          </Badge>
+        </div>
+
+        <div className="flex items-center justify-between py-2">
           <div className="flex items-center space-x-2">
-            <Badge variant="outline" className="text-red-600 bg-red-50">
-              {disputes}
-            </Badge>
-            {disputes > 0 && (
-              <Badge variant="outline" className="text-green-600 bg-green-50 text-xs">
-                Resolved
-              </Badge>
-            )}
+            <X className="h-4 w-4 text-orange-400" />
+            <span className="text-gray-700">Nests Left (Before Start)</span>
           </div>
+          <Badge variant="outline" className="text-orange-500 bg-orange-50">
+            {groupsLeftInactive}
+          </Badge>
         </div>
       </div>
     </Card>
