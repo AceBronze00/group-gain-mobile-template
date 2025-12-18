@@ -14,7 +14,8 @@ interface TrustScoreData {
   onTimePaymentRate: number;
   organizerRoles: number;
   peerRatings: PeerRating[];
-  disputes: number;
+  groupsLeftActive: number; // Groups left while cycle was ongoing (payments in progress)
+  groupsLeftInactive: number; // Groups left before cycle started
   latePayments: number;
   // New bonus factors
   isVerified?: boolean;
@@ -95,9 +96,15 @@ export const calculateTrustScore = (data: TrustScoreData): number => {
 
   // === NEGATIVE FACTORS ===
   
-  // Disputes penalty (up to -10 points)
-  const disputesPenalty = Math.min(data.disputes * 5, 10);
-  score -= disputesPenalty;
+  // Groups Left (Active) penalty (up to -15 points)
+  // Leaving a group during an active cycle is a serious offense
+  const activeGroupsLeftPenalty = Math.min(data.groupsLeftActive * 7.5, 15);
+  score -= activeGroupsLeftPenalty;
+
+  // Groups Left (Inactive) penalty (up to -3 points)
+  // Leaving before cycle starts is less severe but still tracked
+  const inactiveGroupsLeftPenalty = Math.min(data.groupsLeftInactive * 1, 3);
+  score -= inactiveGroupsLeftPenalty;
 
   // Late payments penalty (up to -5 points)
   const latePaymentsPenalty = Math.min(data.latePayments * 2, 5);
