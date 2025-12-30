@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
-  const { joinGroupByUrl } = useApp();
+  const { joinGroupByUrl, pendingSettingsTab, setPendingSettingsTab } = useApp();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,10 +37,25 @@ const Index = () => {
     }
   }, [joinGroupByUrl, toast]);
 
+  // Handle navigation to settings tabs from other components
+  useEffect(() => {
+    if (pendingSettingsTab) {
+      setActiveTab("profile");
+    }
+  }, [pendingSettingsTab]);
+
+  const handleTabChange = (tab: string) => {
+    // Clear pending settings when leaving profile tab
+    if (tab !== "profile" && pendingSettingsTab) {
+      setPendingSettingsTab(null);
+    }
+    setActiveTab(tab);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md mx-auto">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full max-w-md mx-auto">
           <div className="space-y-6">
             <TabsContent value="dashboard" className="mt-0">
               <DashboardTab />
