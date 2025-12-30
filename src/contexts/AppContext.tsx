@@ -60,6 +60,10 @@ interface AppContextType {
   withdrawFunds: (amount: number) => void;
   updatePayoutOrder: (groupId: number, newOrder: string[]) => void;
   calculateLateJoinerAmount: (groupCode: string) => number;
+  // Navigation state for settings
+  pendingSettingsTab: string | null;
+  setPendingSettingsTab: (tab: string | null) => void;
+  navigateToSettings: (tab: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -122,8 +126,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   ]);
 
   const [walletBalance, setWalletBalance] = useState(500.00);
+  const [pendingSettingsTab, setPendingSettingsTab] = useState<string | null>(null);
   const currentUserId = "currentUser";
   const { toast } = useToast();
+
+  const navigateToSettings = (tab: string) => {
+    setPendingSettingsTab(tab);
+  };
 
   const getWithdrawableBalance = () => {
     return walletEntries
@@ -484,7 +493,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       getUnlockedEntries,
       withdrawFunds,
       updatePayoutOrder,
-      calculateLateJoinerAmount
+      calculateLateJoinerAmount,
+      pendingSettingsTab,
+      setPendingSettingsTab,
+      navigateToSettings
     }}>
       {children}
     </AppContext.Provider>

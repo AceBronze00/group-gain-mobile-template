@@ -1,15 +1,25 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import TrustScoreProfile from "@/components/TrustScoreProfile";
 import ProfileSettings from "./ProfileSettings";
 import ProfileContent from "./ProfileContent";
 import { mockUser, mockActiveGroups } from "@/data/mockUserData";
+import { useApp } from "@/contexts/AppContext";
 
 const ProfileTab = () => {
+  const { pendingSettingsTab, setPendingSettingsTab } = useApp();
   const [activeSettingsTab, setActiveSettingsTab] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showTrustScore, setShowTrustScore] = useState(false);
+
+  // Handle navigation from other components (like SettingsTab)
+  useEffect(() => {
+    if (pendingSettingsTab) {
+      setActiveSettingsTab(pendingSettingsTab);
+      setPendingSettingsTab(null);
+    }
+  }, [pendingSettingsTab, setPendingSettingsTab]);
 
   if (showTrustScore) {
     return (
