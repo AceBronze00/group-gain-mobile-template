@@ -260,8 +260,8 @@ const NotificationSettings = () => {
           options={dueDateOptions}
           icon={Calendar}
           iconColor="text-blue-500"
-          title="Due Date Reminder"
-          description="How many days before payment is due?"
+          title="Contribution Reminder"
+          description="Get reminded before your contribution is due"
         />
       </Card>
 
@@ -273,8 +273,8 @@ const NotificationSettings = () => {
           options={payoutOptions}
           icon={DollarSign}
           iconColor="text-green-500"
-          title="Payout Reminder"
-          description="When should we notify you about your payout?"
+          title="Upcoming Payout Alert"
+          description="Get notified before your payout arrives"
         />
         <div className="p-3 bg-muted/50 rounded-lg mt-4">
           <p className="text-sm text-muted-foreground">
