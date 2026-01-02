@@ -5,42 +5,48 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Bell, BellOff, Mail, MessageSquare, Smartphone, Clock, Calendar, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const dueDateOptions = [
+  { value: 0, label: 'Off' },
+  { value: 1, label: '1 day' },
+  { value: 2, label: '2 days' },
+  { value: 3, label: '3 days' },
+  { value: 4, label: '5 days' },
+  { value: 5, label: '7 days' },
+];
+
+const payoutOptions = [
+  { value: 0, label: 'Off' },
+  { value: 1, label: 'Day of' },
+  { value: 2, label: '1 day' },
+  { value: 3, label: '2 days' },
+  { value: 4, label: '3 days' },
+];
 
 const NotificationSettings = () => {
   const { toast } = useToast();
   const [settings, setSettings] = useState({
-    // Payment Due Reminders
     paymentDuePush: true,
     paymentDueEmail: true,
     paymentDueSMS: false,
-    
-    // Pool Update Alerts
     poolUpdatesPush: true,
     poolUpdatesEmail: false,
     poolUpdatesSMS: false,
-    
-    // Next Payout Alerts
     payoutAlertsPush: true,
     payoutAlertsEmail: true,
     payoutAlertsSMS: true,
-    
-    // Failed Payment Alerts
     failedPaymentPush: true,
     failedPaymentEmail: true,
     failedPaymentSMS: true,
-    
-    // Mute All Notifications
     muteAll: false
   });
 
   const [reminderTiming, setReminderTiming] = useState({
-    dueDateFirst: '3days',
-    dueDateSecond: '1day',
-    dueDateFinal: 'dayof',
-    payoutReminder: '1day'
+    dueDate: 3,
+    payout: 2
   });
 
   const handleSave = () => {
@@ -106,6 +112,75 @@ const NotificationSettings = () => {
       </div>
     </div>
   );
+
+  const TimingDial = ({ 
+    value, 
+    onChange, 
+    options,
+    icon: Icon,
+    iconColor,
+    title,
+    description
+  }: { 
+    value: number; 
+    onChange: (val: number) => void;
+    options: { value: number; label: string }[];
+    icon: any;
+    iconColor: string;
+    title: string;
+    description: string;
+  }) => {
+    const currentLabel = options.find(o => o.value === value)?.label || 'Off';
+    
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center space-x-3">
+          <Icon className={`h-5 w-5 ${iconColor}`} />
+          <div>
+            <h3 className="text-lg font-semibold">{title}</h3>
+            <p className="text-sm text-muted-foreground">{description}</p>
+          </div>
+        </div>
+        
+        <div className="relative pt-4 pb-2">
+          {/* Current value display */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 border-4 border-primary">
+              <div className="text-center">
+                <Clock className="h-5 w-5 mx-auto text-primary mb-1" />
+                <span className="text-sm font-bold text-primary">{currentLabel}</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Slider */}
+          <div className="px-2">
+            <Slider
+              value={[value]}
+              onValueChange={(vals) => onChange(vals[0])}
+              max={options.length - 1}
+              min={0}
+              step={1}
+              disabled={settings.muteAll}
+              className="w-full"
+            />
+          </div>
+          
+          {/* Labels below slider */}
+          <div className="flex justify-between mt-2 px-1">
+            {options.map((option, idx) => (
+              <span 
+                key={option.value}
+                className={`text-xs ${value === option.value ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
+              >
+                {option.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -177,126 +252,34 @@ const NotificationSettings = () => {
         />
       </Card>
 
-      {/* Due Date Reminder Timing */}
+      {/* Due Date Reminder Timing - Dial */}
       <Card className="p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <Calendar className="h-5 w-5 text-blue-500" />
-          <h3 className="text-lg font-semibold">Due Date Reminder Timing</h3>
-        </div>
-        <p className="text-sm text-muted-foreground mb-4">
-          Choose when you want to be reminded about upcoming payment due dates
-        </p>
-        
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <Label className="text-sm">First Reminder</Label>
-            </div>
-            <Select 
-              value={reminderTiming.dueDateFirst} 
-              onValueChange={(value) => setReminderTiming(prev => ({ ...prev, dueDateFirst: value }))}
-              disabled={settings.muteAll}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7days">7 days before</SelectItem>
-                <SelectItem value="5days">5 days before</SelectItem>
-                <SelectItem value="3days">3 days before</SelectItem>
-                <SelectItem value="2days">2 days before</SelectItem>
-                <SelectItem value="none">Don't remind</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <Label className="text-sm">Second Reminder</Label>
-            </div>
-            <Select 
-              value={reminderTiming.dueDateSecond} 
-              onValueChange={(value) => setReminderTiming(prev => ({ ...prev, dueDateSecond: value }))}
-              disabled={settings.muteAll}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2days">2 days before</SelectItem>
-                <SelectItem value="1day">1 day before</SelectItem>
-                <SelectItem value="12hours">12 hours before</SelectItem>
-                <SelectItem value="none">Don't remind</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <Label className="text-sm">Final Reminder</Label>
-            </div>
-            <Select 
-              value={reminderTiming.dueDateFinal} 
-              onValueChange={(value) => setReminderTiming(prev => ({ ...prev, dueDateFinal: value }))}
-              disabled={settings.muteAll}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dayof">Day of deadline</SelectItem>
-                <SelectItem value="6hours">6 hours before</SelectItem>
-                <SelectItem value="3hours">3 hours before</SelectItem>
-                <SelectItem value="1hour">1 hour before</SelectItem>
-                <SelectItem value="none">Don't remind</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <TimingDial
+          value={reminderTiming.dueDate}
+          onChange={(val) => setReminderTiming(prev => ({ ...prev, dueDate: val }))}
+          options={dueDateOptions}
+          icon={Calendar}
+          iconColor="text-blue-500"
+          title="Due Date Reminder"
+          description="How many days before payment is due?"
+        />
       </Card>
 
-      {/* Payout Notification Timing */}
+      {/* Payout Notification Timing - Dial */}
       <Card className="p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <DollarSign className="h-5 w-5 text-green-500" />
-          <h3 className="text-lg font-semibold">Payout Notification Timing</h3>
-        </div>
-        <p className="text-sm text-muted-foreground mb-4">
-          Choose when you want to be notified about your upcoming payout
-        </p>
-        
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <Label className="text-sm">When it's your payout turn</Label>
-            </div>
-            <Select 
-              value={reminderTiming.payoutReminder} 
-              onValueChange={(value) => setReminderTiming(prev => ({ ...prev, payoutReminder: value }))}
-              disabled={settings.muteAll}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="3days">3 days before</SelectItem>
-                <SelectItem value="2days">2 days before</SelectItem>
-                <SelectItem value="1day">1 day before</SelectItem>
-                <SelectItem value="dayof">Day of payout</SelectItem>
-                <SelectItem value="immediately">When payment clears</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="p-3 bg-muted/50 rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Tip:</span> You'll always receive a notification when your payout has been processed and funds are available.
-            </p>
-          </div>
+        <TimingDial
+          value={reminderTiming.payout}
+          onChange={(val) => setReminderTiming(prev => ({ ...prev, payout: val }))}
+          options={payoutOptions}
+          icon={DollarSign}
+          iconColor="text-green-500"
+          title="Payout Reminder"
+          description="When should we notify you about your payout?"
+        />
+        <div className="p-3 bg-muted/50 rounded-lg mt-4">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Tip:</span> You'll always receive a notification when your payout has been processed.
+          </p>
         </div>
       </Card>
 
