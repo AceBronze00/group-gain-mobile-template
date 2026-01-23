@@ -137,9 +137,9 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
         <Tabs defaultValue="overview" className="flex-1 overflow-hidden">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="members">Members</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
           </TabsList>
 
           <div className="mt-4 overflow-y-auto max-h-96">
