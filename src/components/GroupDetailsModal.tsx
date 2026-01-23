@@ -28,6 +28,7 @@ interface GroupMember {
   trustScore: number;
   position: number;
   hasReceived: boolean;
+  hasPaid: boolean;
   joinedDate: string;
 }
 
@@ -72,6 +73,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       trustScore: 85,
       position: group.position,
       hasReceived: false,
+      hasPaid: true,
       joinedDate: "2024-01-15"
     },
     {
@@ -81,6 +83,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       trustScore: 92,
       position: 1,
       hasReceived: true,
+      hasPaid: true,
       joinedDate: "2024-01-10"
     },
     {
@@ -90,6 +93,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       trustScore: 78,
       position: 2,
       hasReceived: true,
+      hasPaid: true,
       joinedDate: "2024-01-12"
     },
     {
@@ -99,6 +103,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       trustScore: 88,
       position: 4,
       hasReceived: false,
+      hasPaid: true,
       joinedDate: "2024-01-18"
     },
     {
@@ -108,6 +113,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       trustScore: 71,
       position: 5,
       hasReceived: false,
+      hasPaid: false,
       joinedDate: "2024-01-20"
     }
   ];
@@ -226,6 +232,20 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
             </TabsContent>
 
             <TabsContent value="members" className="space-y-3">
+              {/* Payment Summary */}
+              <Card className="p-3 bg-muted/50">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">This Cycle</span>
+                  <span className="text-sm text-muted-foreground">
+                    {members.filter(m => m.hasPaid).length} of {members.length} paid
+                  </span>
+                </div>
+                <Progress 
+                  value={(members.filter(m => m.hasPaid).length / members.length) * 100} 
+                  className="h-2 mt-2" 
+                />
+              </Card>
+
               {members
                 .sort((a, b) => a.position - b.position)
                 .map((member) => (
@@ -250,14 +270,30 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                             #{member.position}
                           </Badge>
                         </div>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <Shield className="h-3 w-3 text-blue-500" />
-                          <span className={`text-xs ${getTrustScoreColor(member.trustScore)}`}>
-                            Trust: {member.trustScore}
-                          </span>
+                        <div className="flex items-center flex-wrap gap-2 mt-1">
+                          <div className="flex items-center">
+                            <Shield className="h-3 w-3 text-blue-500 mr-1" />
+                            <span className={`text-xs ${getTrustScoreColor(member.trustScore)}`}>
+                              Trust: {member.trustScore}
+                            </span>
+                          </div>
+                          {/* Payment Status */}
+                          {member.hasPaid ? (
+                            <Badge className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-100">
+                              <DollarSign className="h-3 w-3 mr-1" />
+                              Paid
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">
+                              <Clock className="h-3 w-3 mr-1" />
+                              Pending
+                            </Badge>
+                          )}
+                          {/* Payout Status */}
                           {member.hasReceived && (
-                            <Badge variant="outline" className="text-xs text-green-600">
-                              Received
+                            <Badge className="text-xs bg-green-100 text-green-700 hover:bg-green-100">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Received Payout
                             </Badge>
                           )}
                         </div>
