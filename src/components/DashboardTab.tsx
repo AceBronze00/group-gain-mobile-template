@@ -181,7 +181,7 @@ const DashboardTab = () => {
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center text-sm text-gray-600">
                   <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-                  <span className="font-medium">Next: {new Date(nest.nextPayout).toLocaleDateString()}</span>
+                  <span className="font-medium">Payment Due: {new Date(nest.nextPayout).toLocaleDateString()}</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-gray-400" />
               </div>
