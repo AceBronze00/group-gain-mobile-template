@@ -1,5 +1,3 @@
-
-import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +5,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { 
   Users, 
   DollarSign, 
@@ -17,9 +14,11 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  MessageCircle,
-  Send
+  Info,
+  Copy,
+  RefreshCw
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface GroupMember {
   id: number;
@@ -39,30 +38,7 @@ interface GroupDetailsModalProps {
 }
 
 const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps) => {
-  const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: "Sarah M.",
-      message: "Looking forward to our weekend getaway! 🌴",
-      timestamp: "2024-03-20 10:30 AM",
-      isMe: false
-    },
-    {
-      id: 2,
-      sender: "You",
-      message: "Same here! Any suggestions for activities?",
-      timestamp: "2024-03-20 11:15 AM",
-      isMe: true
-    },
-    {
-      id: 3,
-      sender: "Mike J.",
-      message: "I found some great hiking spots nearby!",
-      timestamp: "2024-03-20 02:45 PM",
-      isMe: false
-    }
-  ]);
+  const { toast } = useToast();
 
   // Mock members data
   const members: GroupMember[] = [
@@ -139,23 +115,13 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
     return diffDays;
   };
 
-  const sendMessage = () => {
-    if (newMessage.trim()) {
-      const newMsg = {
-        id: messages.length + 1,
-        sender: "You",
-        message: newMessage.trim(),
-        timestamp: new Date().toLocaleString(),
-        isMe: true
-      };
-      setMessages([...messages, newMsg]);
-      setNewMessage('');
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      sendMessage();
+  const copyInviteCode = () => {
+    if (group.inviteCode) {
+      navigator.clipboard.writeText(group.inviteCode);
+      toast({
+        title: "Copied!",
+        description: "Invite code copied to clipboard",
+      });
     }
   };
 
@@ -173,7 +139,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="members">Members</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
-            <TabsTrigger value="chat">Chat</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
           </TabsList>
 
           <div className="mt-4 overflow-y-auto max-h-96">
@@ -347,55 +313,86 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
               </Card>
             </TabsContent>
 
-            <TabsContent value="chat" className="space-y-3 h-full flex flex-col">
-              {/* Messages */}
-              <div className="flex-1 space-y-3 overflow-y-auto max-h-60">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[75%] rounded-lg p-3 ${
-                        msg.isMe 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      <div className="font-medium text-sm mb-1">
-                        {msg.sender}
-                      </div>
-                      <div className="text-sm">
-                        {msg.message}
-                      </div>
-                      <div className={`text-xs mt-1 ${
-                        msg.isMe ? 'text-blue-100' : 'text-gray-500'
-                      }`}>
-                        {msg.timestamp}
-                      </div>
-                    </div>
+            <TabsContent value="details" className="space-y-3">
+              {/* Group Info */}
+              <Card className="p-4">
+                <h4 className="font-semibold mb-3 flex items-center">
+                  <Info className="h-4 w-4 mr-2 text-blue-500" />
+                  Group Information
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Start Date</span>
+                    <span className="text-sm font-medium">
+                      {group.startDate ? new Date(group.startDate).toLocaleDateString() : 'Not started'}
+                    </span>
                   </div>
-                ))}
-              </div>
-              
-              {/* Message Input */}
-              <div className="flex items-center space-x-2 mt-4">
-                <Input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type a message..."
-                  className="flex-1"
-                />
-                <Button
-                  onClick={sendMessage}
-                  size="sm"
-                  className="px-3"
-                  disabled={!newMessage.trim()}
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">End Date</span>
+                    <span className="text-sm font-medium">
+                      {group.endDate ? new Date(group.endDate).toLocaleDateString() : 'TBD'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Frequency</span>
+                    <Badge variant="secondary" className="capitalize">
+                      {group.frequency || 'Monthly'}
+                    </Badge>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Cycle Info */}
+              <Card className="p-4">
+                <h4 className="font-semibold mb-3 flex items-center">
+                  <RefreshCw className="h-4 w-4 mr-2 text-green-500" />
+                  Cycle Information
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Total Cycles</span>
+                    <span className="text-sm font-medium">{group.members || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Current Cycle</span>
+                    <Badge variant="outline">
+                      {group.currentCycle || 1} of {group.members || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Contribution</span>
+                    <span className="text-sm font-semibold text-green-600">
+                      {formatCurrency(group.contributionAmount || 0)}
+                    </span>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Invite Code - Admin Only */}
+              {group.isAdmin && (
+                <Card className="p-4 border-primary/20 bg-primary/5">
+                  <h4 className="font-semibold mb-3 flex items-center">
+                    <Shield className="h-4 w-4 mr-2 text-primary" />
+                    Admin: Invite Code
+                  </h4>
+                  <div className="flex items-center space-x-2">
+                    <code className="flex-1 bg-background px-3 py-2 rounded-md text-sm font-mono border">
+                      {group.inviteCode || 'N/A'}
+                    </code>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={copyInviteCode}
+                      disabled={!group.inviteCode}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Share this code with others to invite them to join
+                  </p>
+                </Card>
+              )}
             </TabsContent>
           </div>
         </Tabs>
