@@ -247,7 +247,13 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
               </Card>
 
               {members
-                .sort((a, b) => a.position - b.position)
+                .sort((a, b) => {
+                  // Members who received payout go to the bottom
+                  if (a.hasReceived && !b.hasReceived) return 1;
+                  if (!a.hasReceived && b.hasReceived) return -1;
+                  // Among remaining, sort by position (next to receive at top)
+                  return a.position - b.position;
+                })
                 .map((member) => (
                   <Card key={member.id} className="p-3">
                     <div className="flex items-center space-x-3">
