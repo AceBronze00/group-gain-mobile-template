@@ -351,12 +351,22 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Total Cycles</span>
-                    <span className="text-sm font-medium">{group.totalRounds || group.members || 0}</span>
+                    <span className="text-sm font-medium">{group.totalCycles || 2}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Current Cycle</span>
                     <Badge variant="secondary" className="font-medium">
-                      {group.currentCycle || 1} of {group.totalRounds || group.members || 0}
+                      {group.currentCycle || 1} of {group.totalCycles || 2}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Rounds per Cycle</span>
+                    <span className="text-sm font-medium">{group.roundsPerCycle || group.members || 5}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Current Round</span>
+                    <Badge variant="outline" className="font-medium">
+                      {group.currentRound || 1} of {group.roundsPerCycle || group.members || 5}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
