@@ -350,7 +350,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Current Position</span>
+                    <span className="text-sm text-muted-foreground">Cycle Status</span>
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="font-medium">
                         Cycle {group.currentCycle || 1}/{group.totalCycles || 2}
