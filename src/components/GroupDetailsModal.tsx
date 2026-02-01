@@ -356,7 +356,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Current Cycle</span>
                     <Badge variant="outline">
-                      Cy{group.currentCycle || 1} Rd{group.currentRound || 1}
+                      Cyc{group.currentCycle || 1} of Rd{group.currentRound || 1}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
