@@ -344,8 +344,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
 
               {/* Cycle Info */}
               <Card className="p-4">
-                <h4 className="font-semibold mb-3 flex items-center">
-                  <RefreshCw className="h-4 w-4 mr-2 text-green-500" />
+                <h4 className="font-semibold mb-3">
                   Cycle Information
                 </h4>
                 <div className="space-y-3">
