@@ -27,6 +27,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     groupName: '',
     contributionAmount: '',
     frequency: 'weekly',
+    numberOfPeriods: '',
     lockWithdrawals: true,
     allowMultipleContributions: false,
     payoutOrder: 'randomized',
@@ -77,6 +78,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       groupName: '',
       contributionAmount: '',
       frequency: 'weekly',
+      numberOfPeriods: '',
       lockWithdrawals: true,
       allowMultipleContributions: false,
       payoutOrder: 'randomized',
@@ -226,6 +228,25 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                       </Button>
                     ))}
                   </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="numberOfPeriods">Pay Frequency (Number of Periods)</Label>
+                  <div className="relative mt-1">
+                    <RefreshCw className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="numberOfPeriods"
+                      type="number"
+                      min="1"
+                      placeholder="e.g., 12"
+                      value={formData.numberOfPeriods}
+                      onChange={(e) => setFormData({...formData, numberOfPeriods: e.target.value})}
+                      className="pl-10"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Total number of contribution cycles for this nest
+                  </p>
                 </div>
 
                 {/* Cycle Start Configuration - Compact */}
