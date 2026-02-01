@@ -344,35 +344,23 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
 
               {/* Cycle Info */}
               <Card className="p-4">
-                <h4 className="font-semibold mb-4 flex items-center">
+                <h4 className="font-semibold mb-3 flex items-center">
                   <RefreshCw className="h-4 w-4 mr-2 text-green-500" />
                   Cycle Information
                 </h4>
                 
-                {/* Current Position Display */}
-                <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4 mb-4">
-                  <div className="flex items-center justify-center gap-6">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-primary">
-                        {group.currentCycle || 1}
-                      </div>
-                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                        Cycle
-                      </div>
-                    </div>
-                    <div className="text-2xl text-muted-foreground/50 font-light">of</div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-primary">
-                        {group.currentRound || 1}
-                      </div>
-                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                        Round
-                      </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Current Position</span>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-primary/10 text-primary hover:bg-primary/10">
+                        Cycle {group.currentCycle || 1}
+                      </Badge>
+                      <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                        Round {group.currentRound || 1}
+                      </Badge>
                     </div>
                   </div>
-                </div>
-
-                <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Total Cycles per Round</span>
                     <span className="text-sm font-medium">{group.members || 0}</span>
