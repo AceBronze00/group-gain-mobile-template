@@ -27,7 +27,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
     groupName: '',
     contributionAmount: '',
     frequency: 'weekly',
-    numberOfPeriods: '',
+    maxMembers: '',
+    numberOfCycles: '',
     lockWithdrawals: true,
     allowMultipleContributions: false,
     payoutOrder: 'randomized',
@@ -78,7 +79,8 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
       groupName: '',
       contributionAmount: '',
       frequency: 'weekly',
-      numberOfPeriods: '',
+      maxMembers: '',
+      numberOfCycles: '',
       lockWithdrawals: true,
       allowMultipleContributions: false,
       payoutOrder: 'randomized',
@@ -230,24 +232,41 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="maxMembers">Max Members *</Label>
-                  <div className="relative mt-1">
-                    <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="maxMembers"
-                      type="number"
-                      min="2"
-                      placeholder="e.g., 6"
-                      value={formData.numberOfPeriods}
-                      onChange={(e) => setFormData({...formData, numberOfPeriods: e.target.value})}
-                      className="pl-10"
-                    />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="maxMembers">Max Members *</Label>
+                    <div className="relative mt-1">
+                      <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="maxMembers"
+                        type="number"
+                        min="2"
+                        placeholder="e.g., 4"
+                        value={formData.maxMembers}
+                        onChange={(e) => setFormData({...formData, maxMembers: e.target.value})}
+                        className="pl-10"
+                      />
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Each member receives one payout, so max members = number of cycles
-                  </p>
+                  <div>
+                    <Label htmlFor="numberOfCycles">Payout Rounds *</Label>
+                    <div className="relative mt-1">
+                      <RefreshCw className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="numberOfCycles"
+                        type="number"
+                        min="1"
+                        placeholder="e.g., 4"
+                        value={formData.numberOfCycles}
+                        onChange={(e) => setFormData({...formData, numberOfCycles: e.target.value})}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  With multiple contributions enabled, members can receive multiple payouts. E.g., 4 members × 4 rounds = 16 total payouts.
+                </p>
 
                 {/* Cycle Start Configuration - Compact */}
                 <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
