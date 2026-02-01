@@ -350,24 +350,15 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Total Cycles</span>
-                    <span className="text-sm font-medium">{group.totalCycles || 2}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Current Cycle</span>
-                    <Badge variant="secondary" className="font-medium">
-                      {group.currentCycle || 1} of {group.totalCycles || 2}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Rounds per Cycle</span>
-                    <span className="text-sm font-medium">{group.roundsPerCycle || group.members || 5}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Current Round</span>
-                    <Badge variant="outline" className="font-medium">
-                      {group.currentRound || 1} of {group.roundsPerCycle || group.members || 5}
-                    </Badge>
+                    <span className="text-sm text-muted-foreground">Current Position</span>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="font-medium">
+                        Cycle {group.currentCycle || 1}/{group.totalCycles || 2}
+                      </Badge>
+                      <Badge variant="outline" className="font-medium">
+                        Round {group.currentRound || 1}/{group.roundsPerCycle || group.members || 5}
+                      </Badge>
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Contribution</span>
