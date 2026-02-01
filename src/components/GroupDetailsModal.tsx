@@ -348,22 +348,16 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   <RefreshCw className="h-4 w-4 mr-2 text-green-500" />
                   Cycle Information
                 </h4>
-                
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Current Position</span>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-primary/10 text-primary hover:bg-primary/10">
-                        Cycle {group.currentCycle || 1}
-                      </Badge>
-                      <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                        Round {group.currentRound || 1}
-                      </Badge>
-                    </div>
+                    <span className="text-sm text-muted-foreground">Total Cycles</span>
+                    <span className="text-sm font-medium">{group.totalRounds || group.members || 0}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Total Cycles per Round</span>
-                    <span className="text-sm font-medium">{group.members || 0}</span>
+                    <span className="text-sm text-muted-foreground">Current Cycle</span>
+                    <Badge variant="secondary" className="font-medium">
+                      {group.currentCycle || 1} of {group.totalRounds || group.members || 0}
+                    </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Contribution</span>
