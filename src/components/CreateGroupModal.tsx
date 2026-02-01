@@ -175,9 +175,9 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   <div className="flex items-start space-x-2">
                     <Users className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-blue-800">No Participant Limit</p>
+                      <p className="text-sm font-medium text-blue-800">Member Limit</p>
                       <p className="text-xs text-blue-700">
-                        Members can join your nest at any time, even after it has started.
+                        You'll set the max members in the next step. Each member gets one payout cycle.
                       </p>
                     </div>
                   </div>
@@ -231,21 +231,21 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                 </div>
 
                 <div>
-                  <Label htmlFor="numberOfPeriods">Pay Frequency (Number of Periods)</Label>
+                  <Label htmlFor="maxMembers">Max Members *</Label>
                   <div className="relative mt-1">
-                    <RefreshCw className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      id="numberOfPeriods"
+                      id="maxMembers"
                       type="number"
-                      min="1"
-                      placeholder="e.g., 12"
+                      min="2"
+                      placeholder="e.g., 6"
                       value={formData.numberOfPeriods}
                       onChange={(e) => setFormData({...formData, numberOfPeriods: e.target.value})}
                       className="pl-10"
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Total number of contribution cycles for this nest
+                    Each member receives one payout, so max members = number of cycles
                   </p>
                 </div>
 
