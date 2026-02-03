@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Wallet, ArrowUpRight, Eye, EyeOff, Gift, Clock, CheckCircle, Users, ChevronRight, Lock, Unlock, Shield } from "lucide-react";
 import CashoutModal from "./CashoutModal";
 import WithdrawModal from "./WithdrawModal";
+import SavingsGoalCard from "./wallet/SavingsGoalCard";
 import { useApp } from "@/contexts/AppContext";
 
 const WalletTab = () => {
@@ -16,7 +17,10 @@ const WalletTab = () => {
     getPendingUnlockBalance,
     getLockedEntries,
     getUnlockedEntries,
-    currentUserId
+    currentUserId,
+    savingsGoal,
+    updateSavingsGoal,
+    getTotalSavings
   } = useApp();
   
   const [showBalance, setShowBalance] = useState(true);
@@ -27,6 +31,7 @@ const WalletTab = () => {
   const pendingUnlockBalance = getPendingUnlockBalance();
   const lockedEntries = getLockedEntries();
   const unlockedEntries = getUnlockedEntries();
+  const totalSavings = getTotalSavings();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -45,6 +50,14 @@ const WalletTab = () => {
 
   return (
     <div className="space-y-6 pb-20 px-2">
+      {/* Savings Goal Card */}
+      <SavingsGoalCard
+        goalAmount={savingsGoal.targetAmount}
+        currentSavings={totalSavings}
+        goalName={savingsGoal.name}
+        onUpdateGoal={updateSavingsGoal}
+      />
+
       {/* Withdrawable Balance Card */}
       <Card className="p-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl">
         <div className="flex items-center justify-between mb-4">
