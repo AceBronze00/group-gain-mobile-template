@@ -3,35 +3,29 @@ import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Wallet, ArrowUpRight, Eye, EyeOff, Gift, Clock, CheckCircle, Users, ChevronRight, Lock, Unlock, Shield } from "lucide-react";
+import { Wallet, ArrowUpRight, Eye, EyeOff, Clock, CheckCircle, Lock, Unlock, Shield, Target } from "lucide-react";
 import CashoutModal from "./CashoutModal";
 import WithdrawModal from "./WithdrawModal";
-import SavingsGoalCard from "./wallet/SavingsGoalCard";
+import SavingsGoalModal from "./wallet/SavingsGoalModal";
 import { useApp } from "@/contexts/AppContext";
 
 const WalletTab = () => {
   const { 
-    walletBalance, 
     getWithdrawableBalance, 
     getPendingUnlockBalance,
     getLockedEntries,
     getUnlockedEntries,
-    currentUserId,
-    savingsGoal,
-    updateSavingsGoal,
-    getTotalSavings
   } = useApp();
   
   const [showBalance, setShowBalance] = useState(true);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showSavingsGoalModal, setShowSavingsGoalModal] = useState(false);
   const [selectedGroupForCashout, setSelectedGroupForCashout] = useState(null);
   
   const withdrawableBalance = getWithdrawableBalance();
   const pendingUnlockBalance = getPendingUnlockBalance();
   const lockedEntries = getLockedEntries();
   const unlockedEntries = getUnlockedEntries();
-  const totalSavings = getTotalSavings();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -50,13 +44,20 @@ const WalletTab = () => {
 
   return (
     <div className="space-y-6 pb-20 px-2">
-      {/* Savings Goal Card */}
-      <SavingsGoalCard
-        goalAmount={savingsGoal.targetAmount}
-        currentSavings={totalSavings}
-        goalName={savingsGoal.name}
-        onUpdateGoal={updateSavingsGoal}
-      />
+      {/* Savings Goal Button */}
+      <Button
+        onClick={() => setShowSavingsGoalModal(true)}
+        variant="outline"
+        className="w-full h-14 justify-between bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 hover:from-purple-100 hover:to-indigo-100 rounded-xl"
+      >
+        <div className="flex items-center space-x-3">
+          <div className="bg-purple-100 rounded-full p-2">
+            <Target className="h-5 w-5 text-purple-600" />
+          </div>
+          <span className="font-semibold text-gray-800">Savings Goal</span>
+        </div>
+        <span className="text-purple-600 text-sm">View Progress →</span>
+      </Button>
 
       {/* Withdrawable Balance Card */}
       <Card className="p-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl">
@@ -71,7 +72,7 @@ const WalletTab = () => {
             onClick={() => setShowBalance(!showBalance)}
             className="text-white hover:bg-white/20 p-2 h-auto rounded-full"
           >
-            {showBalance ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            {showBalance ? <Eye className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
           </Button>
         </div>
         
@@ -211,6 +212,10 @@ const WalletTab = () => {
         open={showWithdrawModal}
         onOpenChange={setShowWithdrawModal}
         maxAmount={withdrawableBalance}
+      />
+      <SavingsGoalModal
+        open={showSavingsGoalModal}
+        onOpenChange={setShowSavingsGoalModal}
       />
       {selectedGroupForCashout && (
         <CashoutModal
