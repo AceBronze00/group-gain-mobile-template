@@ -489,57 +489,6 @@ const SavingsGoalModal = ({ open, onOpenChange }: SavingsGoalModalProps) => {
                   </motion.div>
                 </Card>
 
-                {/* Savings Growth Chart */}
-                {savingsHistory.length > 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <Card className="p-4">
-                      <h4 className="font-semibold text-gray-800 flex items-center mb-3">
-                        <TrendingUp className="h-4 w-4 mr-2 text-green-500" />
-                        Your Savings Journey
-                      </h4>
-                      <div className="h-32">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={savingsHistory}>
-                            <defs>
-                              <linearGradient id="savingsGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
-                              </linearGradient>
-                            </defs>
-                            <XAxis 
-                              dataKey="date" 
-                              axisLine={false} 
-                              tickLine={false} 
-                              tick={{ fontSize: 10, fill: '#9ca3af' }}
-                            />
-                            <YAxis hide />
-                            <Tooltip 
-                              formatter={(value: number) => [formatCurrency(value), 'Total Saved']}
-                              contentStyle={{ 
-                                backgroundColor: 'white', 
-                                border: '1px solid #e5e7eb',
-                                borderRadius: '8px',
-                                fontSize: '12px'
-                              }}
-                            />
-                            <Area 
-                              type="monotone" 
-                              dataKey="amount" 
-                              stroke="#8b5cf6" 
-                              strokeWidth={2}
-                              fill="url(#savingsGradient)" 
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </Card>
-                  </motion.div>
-                )}
-
                 {/* Group Contributions with staggered animation */}
                 <motion.div
                   initial={{ opacity: 0 }}
