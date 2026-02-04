@@ -45,6 +45,8 @@ export interface WalletEntry {
 interface SavingsGoal {
   name: string;
   targetAmount: number;
+  timeframeMonths: number;
+  startDate: string;
 }
 
 interface AppContextType {
@@ -71,7 +73,7 @@ interface AppContextType {
   navigateToSettings: (tab: string) => void;
   // Savings goal
   savingsGoal: SavingsGoal;
-  updateSavingsGoal: (name: string, amount: number) => void;
+  updateSavingsGoal: (name: string, amount: number, timeframeMonths?: number) => void;
   getTotalSavings: () => number;
 }
 
@@ -136,7 +138,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [walletBalance, setWalletBalance] = useState(500.00);
   const [pendingSettingsTab, setPendingSettingsTab] = useState<string | null>(null);
-  const [savingsGoal, setSavingsGoal] = useState<SavingsGoal>({ name: '', targetAmount: 0 });
+  const [savingsGoal, setSavingsGoal] = useState<SavingsGoal>({ name: '', targetAmount: 0, timeframeMonths: 12, startDate: new Date().toISOString() });
   const currentUserId = "currentUser";
   const { toast } = useToast();
 
@@ -144,11 +146,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setPendingSettingsTab(tab);
   };
 
-  const updateSavingsGoal = (name: string, amount: number) => {
-    setSavingsGoal({ name, targetAmount: amount });
+  const updateSavingsGoal = (name: string, amount: number, timeframeMonths: number = 12) => {
+    setSavingsGoal({ name, targetAmount: amount, timeframeMonths, startDate: new Date().toISOString() });
     toast({
       title: "Savings Goal Updated",
-      description: `Your goal "${name}" has been set to $${amount.toLocaleString()}.`,
+      description: `Your goal "${name}" has been set to $${amount.toLocaleString()} over ${timeframeMonths} month${timeframeMonths > 1 ? 's' : ''}.`,
     });
   };
 
