@@ -4,15 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Target, Edit2, Sparkles, TrendingUp, Users, CheckCircle, Flame, PartyPopper } from "lucide-react";
+import { Target, Edit2, Sparkles, TrendingUp, Users, CheckCircle, Flame, Clock, Calendar } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Slider } from "@/components/ui/slider";
 
 interface SavingsGoalModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+const TIMEFRAME_OPTIONS = [
+  { months: 1, label: '1 month' },
+  { months: 3, label: '3 months' },
+  { months: 6, label: '6 months' },
+  { months: 12, label: '1 year' },
+  { months: 24, label: '2 years' },
+];
 
 // Animated counter component
 const AnimatedNumber = ({ value, duration = 1000 }: { value: number; duration?: number }) => {
@@ -141,6 +150,7 @@ const SavingsGoalModal = ({ open, onOpenChange }: SavingsGoalModalProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(savingsGoal.name || 'My Savings Goal');
   const [editAmount, setEditAmount] = useState(savingsGoal.targetAmount.toString());
+  const [editTimeframe, setEditTimeframe] = useState(savingsGoal.timeframeMonths || 12);
   const [showConfetti, setShowConfetti] = useState(false);
 
   const totalSavedFromGroups = walletEntries.reduce((total, entry) => total + entry.amount, 0);
@@ -174,6 +184,58 @@ const SavingsGoalModal = ({ open, onOpenChange }: SavingsGoalModalProps) => {
   const remaining = Math.max(goalAmount - totalSavedFromGroups, 0);
   const isComplete = progress >= 100;
 
+  // Calculate time-related metrics
+  const getTimeToGoal = () => {
+    if (isComplete) return { text: "Goal reached!", subtext: "Congratulations!" };
+    if (walletEntries.length < 2 || remaining <= 0) return { text: "Keep saving!", subtext: "More data needed" };
+    
+    // Calculate average monthly savings rate
+    const sortedDates = walletEntries.map(e => new Date(e.receivedDate).getTime()).sort((a, b) => a - b);
+    const firstDate = sortedDates[0];
+    const lastDate = sortedDates[sortedDates.length - 1];
+    const monthsElapsed = Math.max((lastDate - firstDate) / (1000 * 60 * 60 * 24 * 30), 1);
+    const avgMonthlyRate = totalSavedFromGroups / monthsElapsed;
+    
+    if (avgMonthlyRate <= 0) return { text: "Keep saving!", subtext: "More data needed" };
+    
+    const monthsToGoal = Math.ceil(remaining / avgMonthlyRate);
+    
+    if (monthsToGoal >= 12) {
+      const years = Math.floor(monthsToGoal / 12);
+      const months = monthsToGoal % 12;
+      return { 
+        text: months > 0 ? `~${years}y ${months}mo` : `~${years} year${years > 1 ? 's' : ''}`,
+        subtext: "estimated"
+      };
+    }
+    return { text: `~${monthsToGoal} month${monthsToGoal > 1 ? 's' : ''}`, subtext: "estimated" };
+  };
+
+  const getTargetDate = () => {
+    if (!savingsGoal.startDate || !savingsGoal.timeframeMonths) return null;
+    const start = new Date(savingsGoal.startDate);
+    start.setMonth(start.getMonth() + savingsGoal.timeframeMonths);
+    return start;
+  };
+
+  const getTimeRemaining = () => {
+    const target = getTargetDate();
+    if (!target) return null;
+    const now = new Date();
+    const diffMs = target.getTime() - now.getTime();
+    if (diffMs <= 0) return { text: "Deadline passed", urgent: true };
+    
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays > 30) {
+      const months = Math.floor(diffDays / 30);
+      return { text: `${months} month${months > 1 ? 's' : ''} left`, urgent: false };
+    }
+    return { text: `${diffDays} day${diffDays > 1 ? 's' : ''} left`, urgent: diffDays <= 7 };
+  };
+
+  const timeToGoal = getTimeToGoal();
+  const timeRemaining = getTimeRemaining();
+
   // Trigger confetti on goal completion
   useEffect(() => {
     if (isComplete && open) {
@@ -195,9 +257,17 @@ const SavingsGoalModal = ({ open, onOpenChange }: SavingsGoalModalProps) => {
   const handleSave = () => {
     const amount = parseFloat(editAmount) || 0;
     if (amount > 0 && editName.trim()) {
-      updateSavingsGoal(editName.trim(), amount);
+      updateSavingsGoal(editName.trim(), amount, editTimeframe);
       setIsEditing(false);
     }
+  };
+
+  const getTimeframeLabel = (months: number) => {
+    if (months === 1) return '1 month';
+    if (months < 12) return `${months} months`;
+    if (months === 12) return '1 year';
+    const years = months / 12;
+    return years === Math.floor(years) ? `${years} years` : `${months} months`;
   };
 
   const hasGoal = goalAmount > 0;
@@ -267,6 +337,28 @@ const SavingsGoalModal = ({ open, onOpenChange }: SavingsGoalModalProps) => {
                         value={editAmount}
                         onChange={(e) => setEditAmount(e.target.value)}
                       />
+                    </div>
+                    <div>
+                      <Label className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Timeframe: {getTimeframeLabel(editTimeframe)}
+                      </Label>
+                      <div className="pt-3 pb-2 px-1">
+                        <Slider
+                          value={[editTimeframe]}
+                          onValueChange={(value) => setEditTimeframe(value[0])}
+                          min={1}
+                          max={24}
+                          step={1}
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>1 mo</span>
+                        <span>6 mo</span>
+                        <span>1 yr</span>
+                        <span>2 yrs</span>
+                      </div>
                     </div>
                     <div className="flex space-x-2">
                       <Button onClick={handleSave} className="flex-1 bg-purple-600 hover:bg-purple-700">
@@ -338,12 +430,43 @@ const SavingsGoalModal = ({ open, onOpenChange }: SavingsGoalModalProps) => {
                         transition={{ delay: 0.3 + index * 0.1 }}
                         className="text-center"
                       >
-                        <p className="text-lg font-bold text-gray-800">
+                        <p className="text-lg font-bold text-foreground">
                           <AnimatedNumber value={stat.value} />
                         </p>
-                        <p className="text-xs text-gray-500">{stat.label}</p>
+                        <p className="text-xs text-muted-foreground">{stat.label}</p>
                       </motion.div>
                     ))}
+                  </div>
+
+                  {/* Time-based metrics */}
+                  <div className="grid grid-cols-2 gap-3 mt-4">
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="bg-white/60 rounded-lg p-3 text-center border border-border"
+                    >
+                      <Clock className="h-4 w-4 mx-auto mb-1 text-primary" />
+                      <p className="text-sm font-bold text-foreground">{timeToGoal.text}</p>
+                      <p className="text-xs text-muted-foreground">{timeToGoal.subtext}</p>
+                    </motion.div>
+                    
+                    {timeRemaining && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.6 }}
+                        className={`bg-white/60 rounded-lg p-3 text-center border ${timeRemaining.urgent ? 'border-destructive' : 'border-border'}`}
+                      >
+                        <Calendar className="h-4 w-4 mx-auto mb-1 text-primary" />
+                        <p className={`text-sm font-bold ${timeRemaining.urgent ? 'text-destructive' : 'text-foreground'}`}>
+                          {timeRemaining.text}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {getTimeframeLabel(savingsGoal.timeframeMonths)} goal
+                        </p>
+                      </motion.div>
+                    )}
                   </div>
 
                   {/* Motivational Message */}
