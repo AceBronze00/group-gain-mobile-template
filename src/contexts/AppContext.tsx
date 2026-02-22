@@ -42,13 +42,6 @@ export interface WalletEntry {
   groupLockPolicy: boolean;
 }
 
-interface SavingsGoal {
-  name: string;
-  targetAmount: number;
-  timeframeMonths: number;
-  startDate: string;
-}
-
 interface AppContextType {
   groups: Group[];
   walletBalance: number;
@@ -71,10 +64,6 @@ interface AppContextType {
   pendingSettingsTab: string | null;
   setPendingSettingsTab: (tab: string | null) => void;
   navigateToSettings: (tab: string) => void;
-  // Savings goal
-  savingsGoal: SavingsGoal;
-  updateSavingsGoal: (name: string, amount: number, timeframeMonths?: number) => void;
-  getTotalSavings: () => number;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -138,7 +127,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [walletBalance, setWalletBalance] = useState(500.00);
   const [pendingSettingsTab, setPendingSettingsTab] = useState<string | null>(null);
-  const [savingsGoal, setSavingsGoal] = useState<SavingsGoal>({ name: '', targetAmount: 0, timeframeMonths: 12, startDate: new Date().toISOString() });
+  
   const currentUserId = "currentUser";
   const { toast } = useToast();
 
@@ -146,18 +135,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setPendingSettingsTab(tab);
   };
 
-  const updateSavingsGoal = (name: string, amount: number, timeframeMonths: number = 12) => {
-    setSavingsGoal({ name, targetAmount: amount, timeframeMonths, startDate: new Date().toISOString() });
-    toast({
-      title: "Savings Goal Updated",
-      description: `Your goal "${name}" has been set to $${amount.toLocaleString()} over ${timeframeMonths} month${timeframeMonths > 1 ? 's' : ''}.`,
-    });
-  };
-
-  const getTotalSavings = () => {
-    // Total savings = withdrawable balance + pending unlock balance
-    return getWithdrawableBalance() + getPendingUnlockBalance();
-  };
 
   const getWithdrawableBalance = () => {
     return walletEntries
@@ -522,9 +499,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       pendingSettingsTab,
       setPendingSettingsTab,
       navigateToSettings,
-      savingsGoal,
-      updateSavingsGoal,
-      getTotalSavings
     }}>
       {children}
     </AppContext.Provider>
