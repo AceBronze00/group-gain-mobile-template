@@ -1,12 +1,13 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Wallet, ArrowUpRight, Eye, EyeOff, Lock, Clock, CircleDollarSign, ChevronRight } from "lucide-react";
+import { Wallet, ArrowUpRight, ArrowDownLeft, Eye, EyeOff, Lock, Clock, CircleDollarSign, ChevronRight } from "lucide-react";
 import CashoutModal from "./CashoutModal";
 import WithdrawModal from "./WithdrawModal";
 import AvailableFundsSheet from "./wallet/AvailableFundsSheet";
 import PendingFundsSheet from "./wallet/PendingFundsSheet";
 import LockedFundsSheet from "./wallet/LockedFundsSheet";
+import DepositModal from "./wallet/DepositModal";
 import { useApp } from "@/contexts/AppContext";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -26,6 +27,7 @@ const WalletTab = () => {
   const [showAvailableSheet, setShowAvailableSheet] = useState(false);
   const [showPendingSheet, setShowPendingSheet] = useState(false);
   const [showLockedSheet, setShowLockedSheet] = useState(false);
+  const [showDepositModal, setShowDepositModal] = useState(false);
   
   const withdrawableBalance = getWithdrawableBalance();
   const pendingUnlockBalance = getPendingUnlockBalance();
@@ -127,18 +129,26 @@ const WalletTab = () => {
             )}
           </div>
 
-          {/* Action button */}
-          {availableTotal > 0 && (
-            <div className="mt-6">
+          {/* Action buttons */}
+          <div className="mt-6 flex gap-3">
+            <Button
+              onClick={() => setShowDepositModal(true)}
+              variant="outline"
+              className="flex-1 border-white/20 text-white hover:bg-white/10 font-semibold h-11 rounded-xl"
+            >
+              <ArrowDownLeft className="h-4 w-4 mr-1.5" />
+              Deposit
+            </Button>
+            {availableTotal > 0 && (
               <Button
                 onClick={() => setShowWithdrawModal(true)}
-                className="w-full bg-white text-gray-900 hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
+                className="flex-1 bg-white text-gray-900 hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
               >
                 <ArrowUpRight className="h-4 w-4 mr-1.5" />
-                Withdraw Funds
+                Withdraw
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </motion.div>
 
@@ -286,6 +296,10 @@ const WalletTab = () => {
         totalLocked={pendingUnlockBalance}
         formatCurrency={formatCurrency}
         showBalance={showBalance}
+      />
+      <DepositModal
+        open={showDepositModal}
+        onOpenChange={setShowDepositModal}
       />
     </div>
   );
