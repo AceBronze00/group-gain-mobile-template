@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Lock } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -24,22 +24,22 @@ const LockedFundsSheet = ({ open, onOpenChange, lockedEntries, totalLocked, form
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto">
-        <SheetHeader className="text-left pb-4">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm mx-auto max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center">
               <Lock className="h-4 w-4 text-amber-600" />
             </div>
             <div>
-              <SheetTitle>Locked Funds</SheetTitle>
-              <SheetDescription>Held until your group cycle completes</SheetDescription>
+              <DialogTitle>Locked Funds</DialogTitle>
+              <DialogDescription>Held until your group cycle completes</DialogDescription>
             </div>
           </div>
           <p className="text-2xl font-bold text-amber-600 mt-2">
             {showBalance ? formatCurrency(totalLocked) : '••••••'}
           </p>
-        </SheetHeader>
+        </DialogHeader>
 
         <div className="space-y-3 pt-2">
           {lockedEntries.map((entry, index) => (
@@ -79,8 +79,8 @@ const LockedFundsSheet = ({ open, onOpenChange, lockedEntries, totalLocked, form
             </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };
 
