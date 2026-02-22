@@ -1,13 +1,13 @@
 
 import { useState } from 'react';
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, ArrowUpRight, Eye, EyeOff, Clock, CheckCircle, Lock, Unlock, Shield, Target } from "lucide-react";
+import { Wallet, ArrowUpRight, Eye, EyeOff, Lock, Unlock, Shield, Target, ChevronRight, TrendingUp } from "lucide-react";
 import CashoutModal from "./CashoutModal";
 import WithdrawModal from "./WithdrawModal";
 import SavingsGoalModal from "./wallet/SavingsGoalModal";
 import { useApp } from "@/contexts/AppContext";
+import { motion, AnimatePresence } from 'framer-motion';
 
 const WalletTab = () => {
   const { 
@@ -26,185 +26,190 @@ const WalletTab = () => {
   const pendingUnlockBalance = getPendingUnlockBalance();
   const lockedEntries = getLockedEntries();
   const unlockedEntries = getUnlockedEntries();
+  const totalBalance = withdrawableBalance + pendingUnlockBalance;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
-  const handleCashoutClick = (group: any) => {
-    setSelectedGroupForCashout(group);
+    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   return (
-    <div className="space-y-6 pb-20 px-2">
-      {/* Savings Goal Button */}
-      <Button
-        onClick={() => setShowSavingsGoalModal(true)}
-        variant="outline"
-        className="w-full h-14 justify-between bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 hover:from-purple-100 hover:to-indigo-100 rounded-xl"
+    <div className="space-y-5 pb-24 px-3">
+      {/* Total Balance Hero */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[hsl(240,20%,10%)] to-[hsl(250,30%,18%)] p-6 text-white shadow-2xl"
       >
-        <div className="flex items-center space-x-3">
-          <div className="bg-purple-100 rounded-full p-2">
-            <Target className="h-5 w-5 text-purple-600" />
-          </div>
-          <span className="font-semibold text-gray-800">Savings Goal</span>
-        </div>
-        <span className="text-purple-600 text-sm">View Progress →</span>
-      </Button>
-
-      {/* Withdrawable Balance Card */}
-      <Card className="p-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <Wallet className="h-6 w-6" />
-            <span className="font-bold text-lg">Withdrawable Balance</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowBalance(!showBalance)}
-            className="text-white hover:bg-white/20 p-2 h-auto rounded-full"
-          >
-            {showBalance ? <Eye className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-          </Button>
-        </div>
+        {/* Decorative orbs */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-purple-500/20 blur-3xl" />
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-emerald-500/15 blur-3xl" />
         
-        <div className="space-y-4 mb-6">
-          <div className="text-center">
-            <p className="text-sm text-green-100 mb-2">Available for Withdrawal</p>
-            <p className="text-3xl font-bold">
-              {showBalance ? formatCurrency(withdrawableBalance) : "••••••"}
-            </p>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <Wallet className="h-4 w-4" />
+              </div>
+              <span className="text-sm font-medium text-white/70">Total Balance</span>
+            </div>
+            <button
+              onClick={() => setShowBalance(!showBalance)}
+              className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+            >
+              {showBalance ? <Eye className="h-4 w-4 text-white/70" /> : <EyeOff className="h-4 w-4 text-white/70" />}
+            </button>
+          </div>
+          
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={showBalance ? 'show' : 'hide'}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="text-4xl font-bold tracking-tight mb-1"
+            >
+              {showBalance ? formatCurrency(totalBalance) : '••••••'}
+            </motion.p>
+          </AnimatePresence>
+
+          {/* Balance breakdown pills */}
+          <div className="flex gap-3 mt-4">
+            <div className="flex items-center gap-1.5 bg-emerald-500/15 rounded-full px-3 py-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="text-xs text-emerald-300">
+                {showBalance ? formatCurrency(withdrawableBalance) : '••••'} available
+              </span>
+            </div>
+            {pendingUnlockBalance > 0 && (
+              <div className="flex items-center gap-1.5 bg-amber-500/15 rounded-full px-3 py-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className="text-xs text-amber-300">
+                  {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'} locked
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-3 mt-6">
+            {withdrawableBalance > 0 && (
+              <Button
+                onClick={() => setShowWithdrawModal(true)}
+                className="flex-1 bg-white text-gray-900 hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
+              >
+                <ArrowUpRight className="h-4 w-4 mr-1.5" />
+                Withdraw
+              </Button>
+            )}
+            <Button
+              onClick={() => setShowSavingsGoalModal(true)}
+              variant="outline"
+              className="flex-1 border-white/20 text-white hover:bg-white/10 font-semibold h-11 rounded-xl bg-white/5"
+            >
+              <Target className="h-4 w-4 mr-1.5" />
+              Savings Goal
+            </Button>
           </div>
         </div>
+      </motion.div>
 
-        {withdrawableBalance > 0 && (
-          <Button
-            onClick={() => setShowWithdrawModal(true)}
-            className="w-full bg-white text-green-600 hover:bg-green-50 font-bold py-3 rounded-xl"
-          >
-            <ArrowUpRight className="h-5 w-5 mr-2" />
-            Withdraw Funds
-          </Button>
-        )}
-      </Card>
+      {/* Funds List */}
+      {(unlockedEntries.length > 0 || lockedEntries.length > 0) && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="space-y-3"
+        >
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider px-1">
+            Your Funds
+          </h3>
 
-      {/* Pending Unlock Balance */}
-      {pendingUnlockBalance > 0 && (
-        <Card className="p-6 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-2xl">
-          <div className="flex items-center space-x-3 mb-4">
-            <Lock className="h-6 w-6" />
-            <span className="font-bold text-lg">Pending Unlock</span>
-          </div>
-          
-          <div className="text-center">
-            <p className="text-sm text-orange-100 mb-2">Locked Until Group Completion</p>
-            <p className="text-3xl font-bold">
-              {showBalance ? formatCurrency(pendingUnlockBalance) : "••••••"}
-            </p>
-          </div>
-        </Card>
-      )}
-
-      {/* Unlocked Wallet Entries */}
-      {unlockedEntries.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-gray-800 flex items-center">
-              <Unlock className="h-5 w-5 mr-2 text-green-500" />
-              Available Funds ({unlockedEntries.length})
-            </h3>
-          </div>
-          
-          {unlockedEntries.map((entry) => (
-            <Card key={entry.id} className="p-4 bg-green-50 border-green-200 rounded-xl">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h4 className="font-semibold text-gray-800">{entry.groupName}</h4>
-                  <p className="text-sm text-gray-600 flex items-center mt-1">
-                    <CheckCircle className="h-4 w-4 mr-1 text-green-500" />
-                    Received {formatDate(entry.receivedDate)}
-                  </p>
-                  <p className="text-xs text-gray-500 flex items-center mt-1">
-                    <Shield className="h-3 w-3 mr-1" />
-                    {entry.groupLockPolicy ? 'Group completed - funds unlocked' : 'Immediate withdrawal policy'}
-                  </p>
+          {/* Unlocked entries */}
+          {unlockedEntries.map((entry, index) => (
+            <motion.div
+              key={entry.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.05 * index }}
+              className="group flex items-center justify-between p-4 rounded-2xl bg-card border border-border/50 hover:border-emerald-200 hover:shadow-sm transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                  <Unlock className="h-4 w-4 text-emerald-600" />
                 </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-green-600">
-                    {formatCurrency(entry.amount)}
-                  </div>
-                  <Badge className="bg-green-500 hover:bg-green-600 text-white">
-                    Available
-                  </Badge>
+                <div>
+                  <p className="font-semibold text-sm text-foreground">{entry.groupName}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {formatDate(entry.receivedDate)} · {entry.groupLockPolicy ? 'Completed' : 'Instant access'}
+                  </p>
                 </div>
               </div>
-            </Card>
+              <div className="text-right">
+                <p className="font-bold text-emerald-600 text-sm">{formatCurrency(entry.amount)}</p>
+                <span className="inline-flex items-center text-[10px] font-medium text-emerald-700 bg-emerald-50 rounded-full px-2 py-0.5 mt-1">
+                  Available
+                </span>
+              </div>
+            </motion.div>
           ))}
-        </div>
-      )}
 
-      {/* Locked Wallet Entries */}
-      {lockedEntries.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-gray-800 flex items-center">
-              <Lock className="h-5 w-5 mr-2 text-orange-500" />
-              Locked Funds ({lockedEntries.length})
-            </h3>
-          </div>
-          
-          {lockedEntries.map((entry) => (
-            <Card key={entry.id} className="p-4 bg-orange-50 border-orange-200 rounded-xl">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h4 className="font-semibold text-gray-800 flex items-center">
-                    {entry.groupName}
-                    <Lock className="h-4 w-4 ml-2 text-orange-500" />
-                  </h4>
-                  <p className="text-sm text-gray-600 flex items-center mt-1">
-                    <Clock className="h-4 w-4 mr-1 text-orange-500" />
-                    Received {formatDate(entry.receivedDate)}
-                  </p>
-                  <p className="text-xs text-orange-600 flex items-center mt-1">
-                    <Shield className="h-3 w-3 mr-1" />
-                    🔒 Still Active - Funds locked until group completes
-                  </p>
+          {/* Locked entries */}
+          {lockedEntries.map((entry, index) => (
+            <motion.div
+              key={entry.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.05 * (unlockedEntries.length + index) }}
+              className="group flex items-center justify-between p-4 rounded-2xl bg-card border border-border/50 hover:border-amber-200 hover:shadow-sm transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                  <Lock className="h-4 w-4 text-amber-600" />
                 </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-orange-600">
-                    {formatCurrency(entry.amount)}
-                  </div>
-                  <Badge variant="outline" className="border-orange-300 text-orange-600">
-                    Locked
-                  </Badge>
+                <div>
+                  <p className="font-semibold text-sm text-foreground">{entry.groupName}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {formatDate(entry.receivedDate)} · Unlocks on completion
+                  </p>
                 </div>
               </div>
-            </Card>
+              <div className="text-right">
+                <p className="font-bold text-amber-600 text-sm">{formatCurrency(entry.amount)}</p>
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 rounded-full px-2 py-0.5 mt-1">
+                  <Lock className="h-2.5 w-2.5" />
+                  Locked
+                </span>
+              </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {/* Empty State */}
       {unlockedEntries.length === 0 && lockedEntries.length === 0 && (
-        <Card className="p-8 text-center bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-2xl">
-          <div className="max-w-sm mx-auto">
-            <div className="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-              <Wallet className="h-10 w-10 text-blue-500" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">No Wallet Entries Yet</h3>
-            <p className="text-gray-600 mb-6">
-              Your payouts from groups will appear here. Join or create groups to start earning!
-            </p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center justify-center py-16 px-6"
+        >
+          <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+            <Wallet className="h-8 w-8 text-muted-foreground" />
           </div>
-        </Card>
+          <h3 className="text-lg font-bold text-foreground mb-1">No Funds Yet</h3>
+          <p className="text-sm text-muted-foreground text-center max-w-[250px]">
+            Your payouts from groups will appear here. Join or create groups to start earning!
+          </p>
+        </motion.div>
       )}
 
       {/* Modals */}
