@@ -58,6 +58,7 @@ interface AppContextType {
   getLockedEntries: () => WalletEntry[];
   getUnlockedEntries: () => WalletEntry[];
   withdrawFunds: (amount: number) => void;
+  depositFunds: (amount: number) => void;
   updatePayoutOrder: (groupId: number, newOrder: string[]) => void;
   calculateLateJoinerAmount: (groupCode: string) => number;
   // Navigation state for settings
@@ -468,6 +469,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const depositFunds = (amount: number) => {
+    setWalletBalance(prev => prev + amount);
+    toast({
+      title: "Deposit Successful!",
+      description: `$${amount.toLocaleString()} has been added to your wallet.`,
+    });
+  };
+
   const generateInviteUrl = (groupCode: string) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/?invite=${groupCode}`;
@@ -494,6 +503,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       getLockedEntries,
       getUnlockedEntries,
       withdrawFunds,
+      depositFunds,
       updatePayoutOrder,
       calculateLateJoinerAmount,
       pendingSettingsTab,
