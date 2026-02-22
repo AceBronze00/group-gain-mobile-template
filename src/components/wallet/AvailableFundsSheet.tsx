@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Wallet, Unlock, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -24,22 +24,22 @@ const AvailableFundsSheet = ({ open, onOpenChange, walletBalance, unlockedEntrie
   const total = walletBalance + unlockedEntries.reduce((sum, e) => sum + e.amount, 0);
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto">
-        <SheetHeader className="text-left pb-4">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm mx-auto max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center">
               <Wallet className="h-4 w-4 text-emerald-600" />
             </div>
             <div>
-              <SheetTitle>Available Funds</SheetTitle>
-              <SheetDescription>Ready to withdraw or use as payment</SheetDescription>
+              <DialogTitle>Available Funds</DialogTitle>
+              <DialogDescription>Ready to withdraw or use as payment</DialogDescription>
             </div>
           </div>
           <p className="text-2xl font-bold text-emerald-600 mt-2">
             {showBalance ? formatCurrency(total) : '••••••'}
           </p>
-        </SheetHeader>
+        </DialogHeader>
 
         <div className="space-y-3 pt-2">
           {walletBalance > 0 && (
@@ -94,8 +94,8 @@ const AvailableFundsSheet = ({ open, onOpenChange, walletBalance, unlockedEntrie
             </div>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };
 
