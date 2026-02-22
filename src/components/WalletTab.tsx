@@ -1,9 +1,12 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Wallet, ArrowUpRight, Eye, EyeOff, Lock, Unlock, Clock, CircleDollarSign, ArrowDownLeft, ChevronRight } from "lucide-react";
+import { Wallet, ArrowUpRight, Eye, EyeOff, Lock, Clock, CircleDollarSign, ChevronRight } from "lucide-react";
 import CashoutModal from "./CashoutModal";
 import WithdrawModal from "./WithdrawModal";
+import AvailableFundsSheet from "./wallet/AvailableFundsSheet";
+import PendingFundsSheet from "./wallet/PendingFundsSheet";
+import LockedFundsSheet from "./wallet/LockedFundsSheet";
 import { useApp } from "@/contexts/AppContext";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -20,6 +23,9 @@ const WalletTab = () => {
   const [showBalance, setShowBalance] = useState(true);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [selectedGroupForCashout, setSelectedGroupForCashout] = useState(null);
+  const [showAvailableSheet, setShowAvailableSheet] = useState(false);
+  const [showPendingSheet, setShowPendingSheet] = useState(false);
+  const [showLockedSheet, setShowLockedSheet] = useState(false);
   
   const withdrawableBalance = getWithdrawableBalance();
   const pendingUnlockBalance = getPendingUnlockBalance();
@@ -136,163 +142,97 @@ const WalletTab = () => {
         </div>
       </motion.div>
 
-      {/* === AVAILABLE FUNDS SECTION === */}
-      {(unlockedEntries.length > 0 || walletBalance > 0) && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="space-y-3"
-        >
-          <div className="flex items-center gap-2 px-1">
-            <div className="w-5 h-5 rounded-md bg-emerald-100 flex items-center justify-center">
-              <CircleDollarSign className="h-3 w-3 text-emerald-600" />
+      {/* === SUMMARY CARDS === */}
+      <div className="space-y-3">
+        {/* Available */}
+        {(unlockedEntries.length > 0 || walletBalance > 0) && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            onClick={() => setShowAvailableSheet(true)}
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-emerald-200/50 hover:border-emerald-300 transition-all text-left"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                <CircleDollarSign className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-sm text-foreground">Available</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {walletBalance > 0 && unlockedEntries.length > 0
+                    ? `Bank deposit + ${unlockedEntries.length} group${unlockedEntries.length > 1 ? 's' : ''}`
+                    : walletBalance > 0 ? 'Bank deposit' : `${unlockedEntries.length} completed group${unlockedEntries.length > 1 ? 's' : ''}`}
+                </p>
+              </div>
             </div>
-            <h3 className="text-sm font-semibold text-foreground">Available</h3>
-            <span className="text-xs text-muted-foreground ml-auto">{formatCurrency(availableTotal)}</span>
-          </div>
-          <p className="text-xs text-muted-foreground px-1 -mt-1">Withdraw or use as payment to another group</p>
-
-          {walletBalance > 0 && (
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-card border border-emerald-100 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                  <Wallet className="h-4 w-4 text-emerald-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-foreground">Cash Balance</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Ready to use</p>
-                </div>
-              </div>
-              <p className="font-bold text-emerald-600 text-sm">{formatCurrency(walletBalance)}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-emerald-600 text-sm">
+                {showBalance ? formatCurrency(availableTotal) : '••••'}
+              </p>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </div>
-          )}
+          </motion.button>
+        )}
 
-          {unlockedEntries.map((entry, index) => (
-            <motion.div
-              key={entry.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.05 * index }}
-              className="flex items-center justify-between p-4 rounded-2xl bg-card border border-emerald-100 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                  <Unlock className="h-4 w-4 text-emerald-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-foreground">{entry.groupName}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Received {formatDate(entry.receivedDate)}
-                  </p>
-                </div>
+        {/* Pending */}
+        {pendingPayouts.length > 0 && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            onClick={() => setShowPendingSheet(true)}
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-blue-200/50 hover:border-blue-300 transition-all text-left"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-blue-600" />
               </div>
-              <div className="text-right">
-                <p className="font-bold text-emerald-600 text-sm">{formatCurrency(entry.amount)}</p>
-                <span className="inline-flex items-center text-[10px] font-medium text-emerald-700 bg-emerald-50 rounded-full px-2 py-0.5 mt-1">
-                  Available
-                </span>
+              <div>
+                <p className="font-semibold text-sm text-foreground">Pending</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {pendingPayouts.length} active group{pendingPayouts.length > 1 ? 's' : ''}
+                </p>
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
-
-      {/* === PENDING FUNDS SECTION === */}
-      {pendingPayouts.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="space-y-3"
-        >
-          <div className="flex items-center gap-2 px-1">
-            <div className="w-5 h-5 rounded-md bg-blue-100 flex items-center justify-center">
-              <Clock className="h-3 w-3 text-blue-600" />
             </div>
-            <h3 className="text-sm font-semibold text-foreground">Pending</h3>
-            <span className="text-xs text-muted-foreground ml-auto">{formatCurrency(totalPendingPayouts)}</span>
-          </div>
-          <p className="text-xs text-muted-foreground px-1 -mt-1">Upcoming payouts from your active groups</p>
-
-          {pendingPayouts.map((payout, index) => (
-            <motion.div
-              key={payout.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.05 * index }}
-              className="flex items-center justify-between p-4 rounded-2xl bg-card border border-blue-100 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                  <ArrowDownLeft className="h-4 w-4 text-blue-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-foreground">{payout.groupName}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Position #{payout.position} · Est. {formatDate(payout.expectedDate)}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-blue-600 text-sm">{formatCurrency(payout.amount)}</p>
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-blue-700 bg-blue-50 rounded-full px-2 py-0.5 mt-1">
-                  <Clock className="h-2.5 w-2.5" />
-                  Pending
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
-
-      {/* === LOCKED FUNDS SECTION === */}
-      {lockedEntries.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-3"
-        >
-          <div className="flex items-center gap-2 px-1">
-            <div className="w-5 h-5 rounded-md bg-amber-100 flex items-center justify-center">
-              <Lock className="h-3 w-3 text-amber-600" />
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-blue-600 text-sm">
+                {showBalance ? formatCurrency(totalPendingPayouts) : '••••'}
+              </p>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </div>
-            <h3 className="text-sm font-semibold text-foreground">Locked</h3>
-            <span className="text-xs text-muted-foreground ml-auto">{formatCurrency(pendingUnlockBalance)}</span>
-          </div>
-          <p className="text-xs text-muted-foreground px-1 -mt-1">Held until your group cycle completes</p>
+          </motion.button>
+        )}
 
-          {lockedEntries.map((entry, index) => (
-            <motion.div
-              key={entry.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.05 * index }}
-              className="flex items-center justify-between p-4 rounded-2xl bg-card border border-amber-100 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                  <Lock className="h-4 w-4 text-amber-600" />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-foreground">{entry.groupName}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Received {formatDate(entry.receivedDate)} · Unlocks on completion
-                  </p>
-                </div>
+        {/* Locked */}
+        {lockedEntries.length > 0 && (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            onClick={() => setShowLockedSheet(true)}
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-amber-200/50 hover:border-amber-300 transition-all text-left"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                <Lock className="h-5 w-5 text-amber-600" />
               </div>
-              <div className="text-right">
-                <p className="font-bold text-amber-600 text-sm">{formatCurrency(entry.amount)}</p>
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 rounded-full px-2 py-0.5 mt-1">
-                  <Lock className="h-2.5 w-2.5" />
-                  Locked
-                </span>
+              <div>
+                <p className="font-semibold text-sm text-foreground">Locked</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {lockedEntries.length} group{lockedEntries.length > 1 ? 's' : ''} · Unlocks on completion
+                </p>
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="font-bold text-amber-600 text-sm">
+                {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'}
+              </p>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </motion.button>
+        )}
+      </div>
 
       {/* Empty State */}
       {unlockedEntries.length === 0 && lockedEntries.length === 0 && pendingPayouts.length === 0 && walletBalance <= 0 && (
@@ -311,7 +251,7 @@ const WalletTab = () => {
         </motion.div>
       )}
 
-      {/* Modals */}
+      {/* Modals & Sheets */}
       <WithdrawModal
         open={showWithdrawModal}
         onOpenChange={setShowWithdrawModal}
@@ -324,6 +264,29 @@ const WalletTab = () => {
           onOpenChange={(open) => !open && setSelectedGroupForCashout(null)}
         />
       )}
+      <AvailableFundsSheet
+        open={showAvailableSheet}
+        onOpenChange={setShowAvailableSheet}
+        walletBalance={walletBalance}
+        unlockedEntries={unlockedEntries}
+        formatCurrency={formatCurrency}
+        showBalance={showBalance}
+      />
+      <PendingFundsSheet
+        open={showPendingSheet}
+        onOpenChange={setShowPendingSheet}
+        pendingPayouts={pendingPayouts}
+        formatCurrency={formatCurrency}
+        showBalance={showBalance}
+      />
+      <LockedFundsSheet
+        open={showLockedSheet}
+        onOpenChange={setShowLockedSheet}
+        lockedEntries={lockedEntries}
+        totalLocked={pendingUnlockBalance}
+        formatCurrency={formatCurrency}
+        showBalance={showBalance}
+      />
     </div>
   );
 };
