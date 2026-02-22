@@ -2,10 +2,9 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, ArrowUpRight, Eye, EyeOff, Lock, Unlock, Shield, Target, ChevronRight, TrendingUp } from "lucide-react";
+import { Wallet, ArrowUpRight, Eye, EyeOff, Lock, Unlock } from "lucide-react";
 import CashoutModal from "./CashoutModal";
 import WithdrawModal from "./WithdrawModal";
-import SavingsGoalModal from "./wallet/SavingsGoalModal";
 import { useApp } from "@/contexts/AppContext";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,7 +18,6 @@ const WalletTab = () => {
   
   const [showBalance, setShowBalance] = useState(true);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [showSavingsGoalModal, setShowSavingsGoalModal] = useState(false);
   const [selectedGroupForCashout, setSelectedGroupForCashout] = useState(null);
   
   const withdrawableBalance = getWithdrawableBalance();
@@ -110,14 +108,6 @@ const WalletTab = () => {
                 Withdraw
               </Button>
             )}
-            <Button
-              onClick={() => setShowSavingsGoalModal(true)}
-              variant="outline"
-              className="flex-1 border-white/20 text-white hover:bg-white/10 font-semibold h-11 rounded-xl bg-white/5"
-            >
-              <Target className="h-4 w-4 mr-1.5" />
-              Savings Goal
-            </Button>
           </div>
         </div>
       </motion.div>
@@ -217,10 +207,6 @@ const WalletTab = () => {
         open={showWithdrawModal}
         onOpenChange={setShowWithdrawModal}
         maxAmount={withdrawableBalance}
-      />
-      <SavingsGoalModal
-        open={showSavingsGoalModal}
-        onOpenChange={setShowSavingsGoalModal}
       />
       {selectedGroupForCashout && (
         <CashoutModal
