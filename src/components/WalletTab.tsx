@@ -105,7 +105,13 @@ const WalletTab = () => {
           </AnimatePresence>
 
           {/* Mini breakdown pills */}
-          <div className="flex flex-wrap gap-2 mt-2 mb-5">
+          <div className="flex flex-wrap gap-2 mt-3 mb-5">
+            <div className="flex items-center gap-1.5 bg-emerald-500/15 rounded-full px-2.5 py-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="text-[11px] text-emerald-300">
+                {showBalance ? formatCurrency(availableTotal) : '••••'} available
+              </span>
+            </div>
             {totalPendingPayouts > 0 && (
               <div className="flex items-center gap-1.5 bg-blue-500/15 rounded-full px-2.5 py-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
@@ -124,42 +130,23 @@ const WalletTab = () => {
             )}
           </div>
 
-          {/* Divider */}
-          <div className="border-t border-white/10 pt-4">
-            {/* Available Balance - separated */}
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-xs font-medium text-emerald-400 uppercase tracking-wider">Available to Use</span>
-                <p className="text-2xl font-bold text-white mt-0.5">
-                  {showBalance ? formatCurrency(availableTotal) : '••••••'}
-                </p>
-              </div>
-              <div className="flex items-center gap-1.5 bg-emerald-500/15 rounded-full px-3 py-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span className="text-xs text-emerald-300">Withdrawable</span>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="mt-4 flex gap-3">
-              <Button
-                onClick={() => setShowDepositModal(true)}
-                variant="outline"
-                className="flex-1 border-white/20 text-white hover:bg-white/10 font-semibold h-11 rounded-xl"
-              >
-                <ArrowDownLeft className="h-4 w-4 mr-1.5" />
-                Deposit
-              </Button>
-              {availableTotal > 0 && (
-                <Button
-                  onClick={() => setShowWithdrawModal(true)}
-                  className="flex-1 bg-white text-gray-900 hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
-                >
-                  <ArrowUpRight className="h-4 w-4 mr-1.5" />
-                  Withdraw
-                </Button>
-              )}
-            </div>
+          {/* Action buttons */}
+          <div className="flex gap-3">
+            <Button
+              onClick={() => setShowDepositModal(true)}
+              variant="outline"
+              className="flex-1 border-white/20 text-white hover:bg-white/10 font-semibold h-11 rounded-xl"
+            >
+              <ArrowDownLeft className="h-4 w-4 mr-1.5" />
+              Deposit
+            </Button>
+            <Button
+              onClick={() => setShowWithdrawModal(true)}
+              className="flex-1 bg-white text-gray-900 hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
+            >
+              <ArrowUpRight className="h-4 w-4 mr-1.5" />
+              Withdraw
+            </Button>
           </div>
         </div>
       </motion.div>
