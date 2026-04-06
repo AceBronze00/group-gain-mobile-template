@@ -35,8 +35,8 @@ const TransactionItem = ({ transaction }: TransactionItemProps) => {
             {transaction.type === 'transfer' && <Clock className="h-4 w-4 text-orange-600" />}
           </div>
           <div>
-            <p className="font-medium text-gray-800 text-sm">{transaction.description}</p>
-            <p className="text-xs text-gray-600">{new Date(transaction.date).toLocaleDateString()}</p>
+            <p className="font-semibold text-foreground text-base">{transaction.description}</p>
+            <p className="text-sm text-muted-foreground">{new Date(transaction.date).toLocaleDateString()}</p>
           </div>
         </div>
         <div className="text-right">
