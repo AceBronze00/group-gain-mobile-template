@@ -166,7 +166,6 @@ const WalletTab = () => {
             </div>
           </div>
         </div>
-        </div>
       </motion.div>
 
       {/* === SUMMARY CARDS === */}
