@@ -39,7 +39,7 @@ const PoolHistory = ({ history, onRateMember }: PoolHistoryProps) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-bold text-gray-800">Pool History</h3>
+      <h3 className="text-xl font-bold text-foreground">Pool History</h3>
       {history.map((pool) => (
         <PoolHistoryItem
           key={pool.id}
