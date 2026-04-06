@@ -49,7 +49,7 @@ const PoolHistoryItem = ({ pool, onRateMember }: PoolHistoryItemProps) => {
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="font-semibold text-gray-800 text-sm">{pool.groupName}</h4>
+            <h4 className="font-bold text-foreground">{pool.groupName}</h4>
             <Badge 
               className={`text-xs ${
                 pool.status === 'completed' 
