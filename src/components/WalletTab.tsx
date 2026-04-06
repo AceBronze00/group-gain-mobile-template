@@ -76,13 +76,13 @@ const WalletTab = () => {
         <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-emerald-500/15 blur-3xl" />
         
         <div className="relative z-10">
-          {/* Total Balance - top section */}
+          {/* Available to Use - top section */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                <Wallet className="h-4 w-4" />
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 backdrop-blur-sm flex items-center justify-center">
+                <CircleDollarSign className="h-4 w-4 text-emerald-400" />
               </div>
-              <span className="text-sm font-medium text-white/70">Total Balance</span>
+              <span className="text-sm font-medium text-emerald-400">Available to Use</span>
             </div>
             <button
               onClick={() => setShowBalance(!showBalance)}
@@ -94,73 +94,78 @@ const WalletTab = () => {
           
           <AnimatePresence mode="wait">
             <motion.p
-              key={showBalance ? 'show' : 'hide'}
+              key={showBalance ? 'show-avail' : 'hide-avail'}
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
-              className="text-3xl font-bold tracking-tight text-white/90"
+              className="text-3xl font-bold tracking-tight text-white"
             >
-              {showBalance ? formatCurrency(totalBalance) : '••••••'}
+              {showBalance ? formatCurrency(availableTotal) : '••••••'}
             </motion.p>
           </AnimatePresence>
 
-          {/* Mini breakdown pills */}
-          <div className="flex flex-wrap gap-2 mt-2 mb-5">
-            {totalPendingPayouts > 0 && (
-              <div className="flex items-center gap-1.5 bg-blue-500/15 rounded-full px-2.5 py-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                <span className="text-[11px] text-blue-300">
-                  {showBalance ? formatCurrency(totalPendingPayouts) : '••••'} pending
-                </span>
-              </div>
-            )}
-            {pendingUnlockBalance > 0 && (
-              <div className="flex items-center gap-1.5 bg-amber-500/15 rounded-full px-2.5 py-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <span className="text-[11px] text-amber-300">
-                  {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'} locked
-                </span>
-              </div>
+          <div className="flex items-center gap-1.5 bg-emerald-500/15 rounded-full px-3 py-1.5 w-fit mt-2 mb-5">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="text-xs text-emerald-300">Withdrawable</span>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-3 mb-5">
+            <Button
+              onClick={() => setShowDepositModal(true)}
+              variant="outline"
+              className="flex-1 border-white/20 text-white hover:bg-white/10 font-semibold h-11 rounded-xl"
+            >
+              <ArrowDownLeft className="h-4 w-4 mr-1.5" />
+              Deposit
+            </Button>
+            {availableTotal > 0 && (
+              <Button
+                onClick={() => setShowWithdrawModal(true)}
+                className="flex-1 bg-white text-gray-900 hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
+              >
+                <ArrowUpRight className="h-4 w-4 mr-1.5" />
+                Withdraw
+              </Button>
             )}
           </div>
 
           {/* Divider */}
           <div className="border-t border-white/10 pt-4">
-            {/* Available Balance - separated */}
+            {/* Total Balance - bottom section */}
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-medium text-emerald-400 uppercase tracking-wider">Available to Use</span>
-                <p className="text-2xl font-bold text-white mt-0.5">
-                  {showBalance ? formatCurrency(availableTotal) : '••••••'}
+                <span className="text-xs font-medium text-white/50 uppercase tracking-wider">Total Balance</span>
+                <p className="text-2xl font-bold text-white/90 mt-0.5">
+                  {showBalance ? formatCurrency(totalBalance) : '••••••'}
                 </p>
               </div>
-              <div className="flex items-center gap-1.5 bg-emerald-500/15 rounded-full px-3 py-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span className="text-xs text-emerald-300">Withdrawable</span>
+              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
+                <Wallet className="h-4 w-4 text-white/50" />
               </div>
             </div>
 
-            {/* Action buttons */}
-            <div className="mt-4 flex gap-3">
-              <Button
-                onClick={() => setShowDepositModal(true)}
-                variant="outline"
-                className="flex-1 border-white/20 text-white hover:bg-white/10 font-semibold h-11 rounded-xl"
-              >
-                <ArrowDownLeft className="h-4 w-4 mr-1.5" />
-                Deposit
-              </Button>
-              {availableTotal > 0 && (
-                <Button
-                  onClick={() => setShowWithdrawModal(true)}
-                  className="flex-1 bg-white text-gray-900 hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
-                >
-                  <ArrowUpRight className="h-4 w-4 mr-1.5" />
-                  Withdraw
-                </Button>
+            {/* Mini breakdown pills */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {totalPendingPayouts > 0 && (
+                <div className="flex items-center gap-1.5 bg-blue-500/15 rounded-full px-2.5 py-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                  <span className="text-[11px] text-blue-300">
+                    {showBalance ? formatCurrency(totalPendingPayouts) : '••••'} pending
+                  </span>
+                </div>
+              )}
+              {pendingUnlockBalance > 0 && (
+                <div className="flex items-center gap-1.5 bg-amber-500/15 rounded-full px-2.5 py-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  <span className="text-[11px] text-amber-300">
+                    {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'} locked
+                  </span>
+                </div>
               )}
             </div>
           </div>
+        </div>
         </div>
       </motion.div>
 
