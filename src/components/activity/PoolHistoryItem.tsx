@@ -61,28 +61,28 @@ const PoolHistoryItem = ({ pool, onRateMember }: PoolHistoryItemProps) => {
             </Badge>
           </div>
           
-          <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+          <div className="grid grid-cols-2 gap-2 text-sm mb-3">
             <div>
-              <span className="text-gray-500">My Contribution:</span>
-              <div className="font-medium">{formatCurrency(pool.myContribution)}</div>
+              <span className="text-muted-foreground font-medium">My Contribution:</span>
+              <div className="font-semibold text-foreground">{formatCurrency(pool.myContribution)}</div>
             </div>
             <div>
-              <span className="text-gray-500">
+              <span className="text-muted-foreground font-medium">
                 {pool.status === 'completed' ? 'Payout:' : 'Refund:'}
               </span>
-              <div className={`font-medium ${
+              <div className={`font-semibold ${
                 pool.status === 'completed' ? 'text-green-600' : 'text-orange-600'
               }`}>
                 {formatCurrency(pool.payout)}
               </div>
             </div>
             <div>
-              <span className="text-gray-500">Total Pool:</span>
-              <div className="font-medium">{formatCurrency(pool.totalAmount)}</div>
+              <span className="text-muted-foreground font-medium">Total Pool:</span>
+              <div className="font-semibold text-foreground">{formatCurrency(pool.totalAmount)}</div>
             </div>
             <div>
-              <span className="text-gray-500">Participants:</span>
-              <div className="font-medium">{pool.participants} members</div>
+              <span className="text-muted-foreground font-medium">Participants:</span>
+              <div className="font-semibold text-foreground">{pool.participants} members</div>
             </div>
           </div>
 
