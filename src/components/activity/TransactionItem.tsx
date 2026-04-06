@@ -40,8 +40,8 @@ const TransactionItem = ({ transaction }: TransactionItemProps) => {
           </div>
         </div>
         <div className="text-right">
-          <p className={`font-bold text-sm ${
-            transaction.type === 'deposit' ? 'text-green-600' : 'text-gray-800'
+          <p className={`font-bold text-base ${
+            transaction.type === 'deposit' ? 'text-green-600' : 'text-foreground'
           }`}>
             {transaction.type === 'deposit' ? '+' : '-'}{formatCurrency(transaction.amount)}
           </p>
