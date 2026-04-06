@@ -15,7 +15,7 @@ interface RecentTransactionsProps {
 const RecentTransactions = ({ transactions }: RecentTransactionsProps) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-bold text-black dark:text-white">Recent Transactions</h3>
+      <h3 className="text-xl font-bold" style={{ color: '#000000' }}>Recent Transactions</h3>
       {transactions.map((transaction) => (
         <TransactionItem key={transaction.id} transaction={transaction} />
       ))}
