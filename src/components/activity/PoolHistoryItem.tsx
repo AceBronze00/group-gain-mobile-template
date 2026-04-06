@@ -137,8 +137,8 @@ const PoolHistoryItem = ({ pool, onRateMember }: PoolHistoryItemProps) => {
             </div>
           )}
           
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <div className="flex justify-between text-xs text-gray-500">
+          <div className="mt-3 pt-3 border-t border-border">
+            <div className="flex justify-between text-sm text-muted-foreground font-medium">
               <span>Duration: {pool.duration}</span>
               <span>
                 {pool.status === 'completed' ? 'Completed' : 'Failed'}: {' '}
@@ -146,7 +146,7 @@ const PoolHistoryItem = ({ pool, onRateMember }: PoolHistoryItemProps) => {
               </span>
             </div>
             {pool.status === 'failed' && pool.reason && (
-              <div className="mt-1 text-xs text-red-600">
+              <div className="mt-1 text-sm font-medium text-red-600">
                 Reason: {pool.reason}
               </div>
             )}
