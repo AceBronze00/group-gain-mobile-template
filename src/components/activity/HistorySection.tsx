@@ -116,6 +116,37 @@ function TransactionCard({ transaction }: { transaction: HistorySectionProps["tr
 }
 
 function PoolCard({ pool, onRateMember }: { pool: HistorySectionProps["poolHistory"][0]; onRateMember: (m: any, g: string) => void }) {
+  const [showAllMembers, setShowAllMembers] = useState(false);
+
+  const MemberRow = ({ member }: { member: { id: number; name: string; avatar: string; hasRated: boolean } }) => (
+    <div className="flex items-center justify-between p-2 bg-white rounded border">
+      <div className="flex items-center space-x-2">
+        <Avatar className="h-6 w-6">
+          <AvatarImage src={member.avatar} alt={member.name} />
+          <AvatarFallback className="bg-blue-500 text-white text-xs">
+            {member.name.split(" ").map((n) => n[0]).join("")}
+          </AvatarFallback>
+        </Avatar>
+        <span className="text-xs font-medium">{member.name}</span>
+      </div>
+      {member.hasRated ? (
+        <Badge variant="outline" className="text-green-600 bg-green-50 text-xs">
+          <CheckCircle className="h-3 w-3 mr-1" />
+          Rated
+        </Badge>
+      ) : (
+        <Button
+          size="sm"
+          onClick={() => onRateMember(member, pool.groupName)}
+          className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-6 px-2"
+        >
+          <Star className="h-2 w-2 mr-1" />
+          Rate
+        </Button>
+      )}
+    </div>
+  );
+
   return (
     <Card className="p-4 rounded-2xl">
       <div className="flex items-start space-x-3">
@@ -169,39 +200,17 @@ function PoolCard({ pool, onRateMember }: { pool: HistorySectionProps["poolHisto
               </div>
               <div className="grid grid-cols-1 gap-2">
                 {pool.membersToRate.slice(0, 3).map((member) => (
-                  <div key={member.id} className="flex items-center justify-between p-2 bg-white rounded border">
-                    <div className="flex items-center space-x-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={member.avatar} alt={member.name} />
-                        <AvatarFallback className="bg-blue-500 text-white text-xs">
-                          {member.name.split(" ").map((n) => n[0]).join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-xs font-medium">{member.name}</span>
-                    </div>
-                    {member.hasRated ? (
-                      <Badge variant="outline" className="text-green-600 bg-green-50 text-xs">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Rated
-                      </Badge>
-                    ) : (
-                      <Button
-                        size="sm"
-                        onClick={() => onRateMember(member, pool.groupName)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-6 px-2"
-                      >
-                        <Star className="h-2 w-2 mr-1" />
-                        Rate
-                      </Button>
-                    )}
-                  </div>
+                  <MemberRow key={member.id} member={member} />
                 ))}
                 {pool.membersToRate.length > 3 && (
-                  <div className="text-center">
-                    <span className="text-xs text-muted-foreground">
-                      +{pool.membersToRate.length - 3} more members
-                    </span>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAllMembers(true)}
+                    className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    +{pool.membersToRate.length - 3} more members — View All
+                  </Button>
                 )}
               </div>
             </div>
@@ -221,6 +230,29 @@ function PoolCard({ pool, onRateMember }: { pool: HistorySectionProps["poolHisto
           </div>
         </div>
       </div>
+
+      {/* All Members Dialog */}
+      {pool.membersToRate && (
+        <Dialog open={showAllMembers} onOpenChange={setShowAllMembers}>
+          <DialogContent className="max-w-md mx-auto">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold">
+                {pool.groupName} — Rate Members
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                {pool.membersToRate.filter((m) => !m.hasRated).length} of {pool.membersToRate.length} pending
+              </p>
+            </DialogHeader>
+            <ScrollArea className="max-h-[400px]">
+              <div className="grid grid-cols-1 gap-2 pr-2">
+                {pool.membersToRate.map((member) => (
+                  <MemberRow key={member.id} member={member} />
+                ))}
+              </div>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   );
 }
