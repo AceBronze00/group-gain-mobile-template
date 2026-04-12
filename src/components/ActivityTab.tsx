@@ -136,7 +136,7 @@ const ActivityTab = () => {
       failedDate: "2024-02-28",
       reason: "Group disbanded"
     }
-  ];
+  ]);
 
   // Recent transactions data
   const transactionHistory = [
