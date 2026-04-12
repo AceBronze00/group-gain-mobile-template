@@ -73,7 +73,7 @@ const ActivityTab = () => {
   ]);
 
   // Mock history data with member rating functionality
-  const history = [
+  const [history, setHistory] = useState([
     {
       id: 1,
       groupName: "Holiday Savings Pool",
