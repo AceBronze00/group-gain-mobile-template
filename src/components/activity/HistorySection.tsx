@@ -119,15 +119,15 @@ function PoolCard({ pool, onRateMember }: { pool: HistorySectionProps["poolHisto
   const [showAllMembers, setShowAllMembers] = useState(false);
 
   const MemberRow = ({ member }: { member: { id: number; name: string; avatar: string; hasRated: boolean } }) => (
-    <div className="flex items-center justify-between p-2 bg-white rounded border">
-      <div className="flex items-center space-x-2">
-        <Avatar className="h-6 w-6">
+    <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+      <div className="flex items-center space-x-3">
+        <Avatar className="h-8 w-8">
           <AvatarImage src={member.avatar} alt={member.name} />
           <AvatarFallback className="bg-blue-500 text-white text-xs">
             {member.name.split(" ").map((n) => n[0]).join("")}
           </AvatarFallback>
         </Avatar>
-        <span className="text-xs font-medium">{member.name}</span>
+        <span className="text-sm font-semibold text-foreground">{member.name}</span>
       </div>
       {member.hasRated ? (
         <Badge variant="outline" className="text-green-600 bg-green-50 text-xs">
