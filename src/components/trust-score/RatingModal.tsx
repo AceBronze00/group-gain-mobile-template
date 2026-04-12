@@ -9,9 +9,11 @@ import { Star, CheckCircle, X } from "lucide-react";
 interface RatingModalProps {
   showRatingModal: boolean;
   setShowRatingModal: (show: boolean) => void;
+  memberName?: string;
+  onSubmitRating?: () => void;
 }
 
-const RatingModal = ({ showRatingModal, setShowRatingModal }: RatingModalProps) => {
+const RatingModal = ({ showRatingModal, setShowRatingModal, memberName, onSubmitRating }: RatingModalProps) => {
   const [ratingData, setRatingData] = useState({
     onTimePayments: '',
     wouldGroupAgain: '',
@@ -24,9 +26,12 @@ const RatingModal = ({ showRatingModal, setShowRatingModal }: RatingModalProps) 
 
   const handleSubmitRating = () => {
     console.log('Rating submitted:', ratingData);
-    // TODO: Submit rating to backend
-    setShowRatingModal(false);
     setRatingData({ onTimePayments: '', wouldGroupAgain: '', starRating: 0 });
+    if (onSubmitRating) {
+      onSubmitRating();
+    } else {
+      setShowRatingModal(false);
+    }
   };
 
   return (
@@ -34,7 +39,7 @@ const RatingModal = ({ showRatingModal, setShowRatingModal }: RatingModalProps) 
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-center">
-            Rate Group Member
+            Rate {memberName || 'Group Member'}
           </DialogTitle>
         </DialogHeader>
         
