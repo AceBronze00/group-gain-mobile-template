@@ -189,44 +189,29 @@ const ActivityTab = () => {
   };
 
   const handleRateMember = (member: any, groupName: string) => {
-    setSelectedUserForRating({
-      ...member,
-      groupName: groupName
-    });
+    setRatingTarget({ member, groupName });
+    setShowRatingModal(true);
+  };
+
+  const handleRatingSubmitted = () => {
+    if (ratingTarget) {
+      // Update the member's hasRated status in the history
+      setHistory(prev => prev.map(pool => ({
+        ...pool,
+        membersToRate: pool.membersToRate?.map(m =>
+          m.id === ratingTarget.member.id ? { ...m, hasRated: true } : m
+        )
+      })));
+      toast({
+        title: "Rating Submitted!",
+        description: `You rated ${ratingTarget.member.name} from ${ratingTarget.groupName}`,
+      });
+    }
+    setShowRatingModal(false);
+    setRatingTarget(null);
   };
 
   const unreadCount = notifications.filter(n => n.unread).length;
-
-  if (selectedUserForRating) {
-    return (
-      <div className="space-y-6 pb-20">
-        <div className="flex items-center space-x-4 mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => setSelectedUserForRating(null)}
-            className="text-blue-600"
-          >
-            ← Back to Activity
-          </Button>
-        </div>
-        <TrustScoreProfile 
-          user={{
-            name: selectedUserForRating.name,
-            trustScore: 76,
-            groupsCompleted: 8,
-            onTimePayments: 100,
-            organizerRoles: 2,
-            peerRating: 4.3,
-            totalRaters: 6,
-            totalGroups: 5,
-            latePayments: 0,
-            groupsLeftActive: 0,
-            groupsLeftInactive: 0
-          }}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="pb-20">
