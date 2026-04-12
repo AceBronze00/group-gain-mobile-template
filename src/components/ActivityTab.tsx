@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bell, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import TrustScoreProfile from "@/components/TrustScoreProfile";
+import RatingModal from "./trust-score/RatingModal";
 import NotificationsSection from "./activity/NotificationsSection";
 import HistorySection from "./activity/HistorySection";
 
 const ActivityTab = () => {
   const [activeTab, setActiveTab] = useState<'notifications' | 'history'>('notifications');
-  const [selectedUserForRating, setSelectedUserForRating] = useState<any>(null);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingTarget, setRatingTarget] = useState<{ member: any; groupName: string } | null>(null);
   const { toast } = useToast();
 
   // Mock notifications data with state management
