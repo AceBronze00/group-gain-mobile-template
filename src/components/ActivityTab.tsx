@@ -73,7 +73,25 @@ const ActivityTab = () => {
   ]);
 
   // Mock history data with member rating functionality
-  const [history, setHistory] = useState([
+  const [history, setHistory] = useState<Array<{
+    id: number;
+    groupName: string;
+    status: string;
+    totalAmount: number;
+    myContribution: number;
+    payout: number;
+    participants: number;
+    duration: string;
+    completedDate?: string;
+    failedDate?: string;
+    reason?: string;
+    membersToRate?: Array<{
+      id: number;
+      name: string;
+      avatar: string;
+      hasRated: boolean;
+    }>;
+  }>>([
     {
       id: 1,
       groupName: "Holiday Savings Pool",
@@ -267,6 +285,16 @@ const ActivityTab = () => {
           onRateMember={handleRateMember}
         />
       )}
+
+      <RatingModal
+        showRatingModal={showRatingModal}
+        setShowRatingModal={(show) => {
+          setShowRatingModal(show);
+          if (!show) setRatingTarget(null);
+        }}
+        memberName={ratingTarget?.member?.name}
+        onSubmitRating={handleRatingSubmitted}
+      />
     </div>
   );
 };
