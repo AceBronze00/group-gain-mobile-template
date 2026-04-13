@@ -17,20 +17,7 @@ interface User {
   bio: string;
 }
 
-interface ActiveGroup {
-  id: number;
-  name: string;
-  members: number;
-  totalAmount: number;
-  contributionAmount: number;
-  frequency: string;
-  nextPayout: string;
-  payoutRecipient: string;
-  progress: number;
-  myTurn: boolean;
-  position: number;
-  status: string;
-}
+
 
 interface ProfileSettingsProps {
   activeSettingsTab: string;
