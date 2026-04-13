@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Settings, User, Bell, Lock, CreditCard, Users, Smartphone, ChevronDown } from "lucide-react";
+import { Settings, User, Bell, Lock, CreditCard, Users, ChevronDown } from "lucide-react";
 
 interface SettingsSectionProps {
   isSettingsOpen: boolean;
