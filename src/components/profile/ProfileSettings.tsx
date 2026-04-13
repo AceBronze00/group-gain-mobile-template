@@ -7,7 +7,7 @@ import NotificationSettings from "@/components/settings/NotificationSettings";
 import SecuritySettings from "@/components/settings/SecuritySettings";
 import PaymentSettings from "@/components/settings/PaymentSettings";
 
-interface User {
+interface UserData {
   name: string;
   trustScore: number;
   groupsCompleted: number;
@@ -17,20 +17,16 @@ interface User {
   bio: string;
 }
 
-
-
 interface ProfileSettingsProps {
   activeSettingsTab: string;
   setActiveSettingsTab: (tab: string | null) => void;
-  user: User;
-  activeGroups: ActiveGroup[];
+  user: UserData;
 }
 
 const ProfileSettings = ({ 
   activeSettingsTab, 
   setActiveSettingsTab, 
   user, 
-  activeGroups 
 }: ProfileSettingsProps) => {
   return (
     <div className="space-y-6 pb-20">
@@ -38,14 +34,14 @@ const ProfileSettings = ({
         <Button 
           variant="ghost" 
           onClick={() => setActiveSettingsTab(null)}
-          className="text-blue-600"
+          className="text-primary"
         >
           ← Back to Profile
         </Button>
       </div>
 
       <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab}>
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile" className="text-xs">
             <User className="h-4 w-4 mr-1" />
             Profile
@@ -62,14 +58,6 @@ const ProfileSettings = ({
             <CreditCard className="h-4 w-4 mr-1" />
             Payments
           </TabsTrigger>
-          <TabsTrigger value="groups" className="text-xs">
-            <Users className="h-4 w-4 mr-1" />
-            Groups
-          </TabsTrigger>
-          <TabsTrigger value="general" className="text-xs">
-            <Smartphone className="h-4 w-4 mr-1" />
-            General
-          </TabsTrigger>
         </TabsList>
 
         <div className="mt-6">
@@ -84,12 +72,6 @@ const ProfileSettings = ({
           </TabsContent>
           <TabsContent value="payments">
             <PaymentSettings />
-          </TabsContent>
-          <TabsContent value="groups">
-            <GroupSettings activeGroups={activeGroups} />
-          </TabsContent>
-          <TabsContent value="general">
-            <GeneralSettings />
           </TabsContent>
         </div>
       </Tabs>
