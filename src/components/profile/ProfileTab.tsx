@@ -44,7 +44,6 @@ const ProfileTab = () => {
         activeSettingsTab={activeSettingsTab}
         setActiveSettingsTab={setActiveSettingsTab}
         user={mockUser}
-        activeGroups={mockActiveGroups}
       />
     );
   }
