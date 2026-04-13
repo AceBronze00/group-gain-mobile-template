@@ -1,13 +1,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Bell, Lock, CreditCard, Users, Smartphone } from "lucide-react";
+import { User, Bell, Lock, CreditCard } from "lucide-react";
 import UserProfileSettings from "@/components/settings/UserProfileSettings";
 import NotificationSettings from "@/components/settings/NotificationSettings";
 import SecuritySettings from "@/components/settings/SecuritySettings";
 import PaymentSettings from "@/components/settings/PaymentSettings";
-import GroupSettings from "@/components/settings/GroupSettings";
-import GeneralSettings from "@/components/settings/GeneralSettings";
 
 interface User {
   name: string;
