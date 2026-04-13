@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Settings, User, Bell, Lock, CreditCard, Users, Smartphone, ChevronDown } from "lucide-react";
+import { Settings, User, Bell, Lock, CreditCard, Users, ChevronDown } from "lucide-react";
 
 interface SettingsSectionProps {
   isSettingsOpen: boolean;
@@ -84,17 +84,6 @@ const SettingsSection = ({ isSettingsOpen, setIsSettingsOpen, onSettingClick }: 
             </div>
           </Button>
 
-          <Button
-            variant="outline"
-            className="h-16 justify-start p-4 text-left"
-            onClick={() => onSettingClick('general')}
-          >
-            <Smartphone className="h-6 w-6 mr-4 text-indigo-500" />
-            <div>
-              <div className="font-semibold">General Settings</div>
-              <div className="text-sm text-gray-500">Language, timezone, theme</div>
-            </div>
-          </Button>
         </div>
       </CollapsibleContent>
     </Collapsible>
