@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Home, Activity, Search, User, Wallet, Settings } from "lucide-react";
+import { Home, Activity, Search, User, Wallet } from "lucide-react";
 import DashboardTab from "@/components/DashboardTab";
 import ActivityTab from "@/components/ActivityTab";
 import SearchTab from "@/components/SearchTab";
