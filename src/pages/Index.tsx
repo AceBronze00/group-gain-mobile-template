@@ -7,7 +7,7 @@ import ActivityTab from "@/components/ActivityTab";
 import SearchTab from "@/components/SearchTab";
 import ProfileTab from "@/components/ProfileTab";
 import WalletTab from "@/components/WalletTab";
-import SettingsTab from "@/components/SettingsTab";
+
 import { useApp } from "@/contexts/AppContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -77,13 +77,10 @@ const Index = () => {
               <ProfileTab />
             </TabsContent>
             
-            <TabsContent value="settings" className="mt-0">
-              <SettingsTab />
-            </TabsContent>
           </div>
 
           {/* Bottom Navigation */}
-          <TabsList className="fixed bottom-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-t border-gray-200 rounded-none grid grid-cols-6 shadow-lg">
+          <TabsList className="fixed bottom-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-t border-gray-200 rounded-none grid grid-cols-5 shadow-lg">
             <TabsTrigger value="dashboard" className="flex-col space-y-1 text-xs h-full">
               <Home className="h-5 w-5" />
               <span>Home</span>
@@ -103,10 +100,6 @@ const Index = () => {
             <TabsTrigger value="profile" className="flex-col space-y-1 text-xs h-full">
               <User className="h-5 w-5" />
               <span>Profile</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex-col space-y-1 text-xs h-full">
-              <Settings className="h-5 w-5" />
-              <span>Settings</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
