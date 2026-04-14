@@ -180,7 +180,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const createGroup = (groupData: any) => {
     const groupId = Date.now();
-    const memberLimit = parseInt(groupData.memberLimit);
+    const memberLimit = parseInt(groupData.maxMembers || groupData.memberLimit);
     const contributionAmount = parseFloat(groupData.contributionAmount);
     
     // Calculate next payout date based on frequency
