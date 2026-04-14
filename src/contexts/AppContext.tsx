@@ -70,63 +70,10 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // Initialize with sample groups
-  const [groups, setGroups] = useState<Group[]>([
-    {
-      id: 1,
-      name: "Weekend Getaway Fund",
-      members: 6,
-      totalAmount: 1800,
-      contributionAmount: 300,
-      frequency: "weekly",
-      nextPayout: "2024-07-05",
-      payoutRecipient: "Sarah M.",
-      progress: 65,
-      myTurn: false,
-      position: 3,
-      myPayoutDate: "2024-07-19",
-      membersPaid: 4,
-      status: 'active',
-      inviteCode: "GETAWAY2024",
-      adminId: "admin123",
-      isAdmin: true,
-      membersList: ["currentUser", "sarah123", "mike456", "emma789", "james101", "lisa202"],
-      createdAt: "2024-06-20T10:00:00.000Z",
-      isComplete: false,
-      allMembersPaidOut: false,
-      lockWithdrawals: true,
-      allowMultipleContributions: false,
-      payoutOrder: 'randomized',
-      payoutSequence: ["sarah123", "mike456", "currentUser", "emma789", "james101", "lisa202"],
-      hasStarted: true,
-      totalPayoutsSent: 1200
-    }
-  ]);
+  const [groups, setGroups] = useState<Group[]>([]);
 
-  const [walletEntries, setWalletEntries] = useState<WalletEntry[]>([
-    {
-      id: 1,
-      userId: "currentUser",
-      groupId: 2,
-      groupName: "Emergency Fund",
-      amount: 1800,
-      receivedDate: "2024-06-20T10:00:00.000Z",
-      isLocked: false,
-      groupLockPolicy: false
-    },
-    {
-      id: 2,
-      userId: "currentUser", 
-      groupId: 3,
-      groupName: "Holiday Shopping",
-      amount: 1200,
-      receivedDate: "2024-06-18T10:00:00.000Z",
-      isLocked: true,
-      groupLockPolicy: true
-    }
-  ]);
-
-  const [walletBalance, setWalletBalance] = useState(500.00);
+  const [walletEntries, setWalletEntries] = useState<WalletEntry[]>([]);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [pendingSettingsTab, setPendingSettingsTab] = useState<string | null>(null);
   
   const currentUserId = "currentUser";
