@@ -70,25 +70,22 @@ const WalletTab = () => {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[hsl(240,20%,10%)] to-[hsl(250,30%,18%)] p-6 text-white shadow-2xl"
+        className="relative overflow-hidden rounded-3xl bg-card border border-border p-6 text-foreground shadow-lg"
       >
-        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-purple-500/20 blur-3xl" />
-        <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-emerald-500/15 blur-3xl" />
-        
         <div className="relative z-10">
           {/* Total Balance - top section */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                <Wallet className="h-4 w-4" />
+              <div className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center">
+                <Wallet className="h-4 w-4 text-foreground" />
               </div>
-              <span className="text-sm font-medium text-white/70">Total Balance</span>
+              <span className="text-sm font-medium text-muted-foreground">Total Balance</span>
             </div>
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+              className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-accent transition-colors"
             >
-              {showBalance ? <Eye className="h-4 w-4 text-white/70" /> : <EyeOff className="h-4 w-4 text-white/70" />}
+              {showBalance ? <Eye className="h-4 w-4 text-muted-foreground" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
             </button>
           </div>
           
@@ -98,7 +95,7 @@ const WalletTab = () => {
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
-              className="text-3xl font-bold tracking-tight text-white/90"
+              className="text-3xl font-bold tracking-tight text-foreground"
             >
               {showBalance ? formatCurrency(totalBalance) : '••••••'}
             </motion.p>
@@ -106,24 +103,24 @@ const WalletTab = () => {
 
           {/* Mini breakdown pills */}
           <div className="flex flex-wrap gap-2 mt-3 mb-5">
-            <div className="flex items-center gap-1.5 bg-emerald-500/15 rounded-full px-2.5 py-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span className="text-[11px] text-emerald-300">
+            <div className="flex items-center gap-1.5 bg-emerald-100 rounded-full px-2.5 py-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+              <span className="text-[11px] text-emerald-700 font-medium">
                 {showBalance ? formatCurrency(availableTotal) : '••••'} available
               </span>
             </div>
             {totalPendingPayouts > 0 && (
-              <div className="flex items-center gap-1.5 bg-blue-500/15 rounded-full px-2.5 py-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                <span className="text-[11px] text-blue-300">
+              <div className="flex items-center gap-1.5 bg-blue-100 rounded-full px-2.5 py-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                <span className="text-[11px] text-blue-700 font-medium">
                   {showBalance ? formatCurrency(totalPendingPayouts) : '••••'} pending
                 </span>
               </div>
             )}
             {pendingUnlockBalance > 0 && (
-              <div className="flex items-center gap-1.5 bg-amber-500/15 rounded-full px-2.5 py-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <span className="text-[11px] text-amber-300">
+              <div className="flex items-center gap-1.5 bg-amber-100 rounded-full px-2.5 py-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                <span className="text-[11px] text-amber-700 font-medium">
                   {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'} locked
                 </span>
               </div>
@@ -134,14 +131,15 @@ const WalletTab = () => {
           <div className="flex gap-3">
             <Button
               onClick={() => setShowDepositModal(true)}
-              className="flex-1 bg-white/15 border border-white/20 text-white hover:bg-white/25 font-semibold h-11 rounded-xl"
+              variant="outline"
+              className="flex-1 font-semibold h-11 rounded-xl"
             >
               <ArrowDownLeft className="h-4 w-4 mr-1.5" />
               Deposit
             </Button>
             <Button
               onClick={() => setShowWithdrawModal(true)}
-              className="flex-1 bg-white text-foreground hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
+              className="flex-1 font-semibold h-11 rounded-xl"
             >
               <ArrowUpRight className="h-4 w-4 mr-1.5" />
               Withdraw
