@@ -265,9 +265,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  With multiple contributions enabled, members can receive multiple payouts. E.g., 4 members × 4 rounds = 16 total payouts.
-                </p>
 
                 {/* Cycle Start Configuration - Compact */}
                 <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
@@ -325,18 +322,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   )}
                 </div>
 
-                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                  <div className="flex-1">
-                    <Label className="text-sm font-medium">Multiple Contributions</Label>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Allow multiple shares per member
-                    </p>
-                  </div>
-                  <Switch
-                    checked={formData.allowMultipleContributions}
-                    onCheckedChange={(checked) => setFormData({...formData, allowMultipleContributions: checked})}
-                  />
-                </div>
               </div>
             </div>
           )}
@@ -543,12 +528,6 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Frequency:</span>
                     <Badge variant="secondary" className="capitalize">{formData.frequency}</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Multiple Contributions:</span>
-                    <Badge variant={formData.allowMultipleContributions ? "default" : "outline"}>
-                      {formData.allowMultipleContributions ? "Allowed" : "Single Only"}
-                    </Badge>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Payout Order:</span>
