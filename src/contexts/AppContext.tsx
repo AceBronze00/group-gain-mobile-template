@@ -72,30 +72,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [groups, setGroups] = useState<Group[]>([]);
 
-  const [walletEntries, setWalletEntries] = useState<WalletEntry[]>([
-    {
-      id: 1,
-      userId: "currentUser",
-      groupId: 2,
-      groupName: "Emergency Fund",
-      amount: 1800,
-      receivedDate: "2024-06-20T10:00:00.000Z",
-      isLocked: false,
-      groupLockPolicy: false
-    },
-    {
-      id: 2,
-      userId: "currentUser", 
-      groupId: 3,
-      groupName: "Holiday Shopping",
-      amount: 1200,
-      receivedDate: "2024-06-18T10:00:00.000Z",
-      isLocked: true,
-      groupLockPolicy: true
-    }
-  ]);
-
-  const [walletBalance, setWalletBalance] = useState(500.00);
+  const [walletEntries, setWalletEntries] = useState<WalletEntry[]>([]);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [pendingSettingsTab, setPendingSettingsTab] = useState<string | null>(null);
   
   const currentUserId = "currentUser";
