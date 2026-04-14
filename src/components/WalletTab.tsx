@@ -134,15 +134,14 @@ const WalletTab = () => {
           <div className="flex gap-3">
             <Button
               onClick={() => setShowDepositModal(true)}
-              variant="outline"
-              className="flex-1 border-white/20 text-white hover:bg-white/10 font-semibold h-11 rounded-xl"
+              className="flex-1 bg-white/15 border border-white/20 text-white hover:bg-white/25 font-semibold h-11 rounded-xl"
             >
               <ArrowDownLeft className="h-4 w-4 mr-1.5" />
               Deposit
             </Button>
             <Button
               onClick={() => setShowWithdrawModal(true)}
-              className="flex-1 bg-white text-gray-900 hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
+              className="flex-1 bg-white text-foreground hover:bg-white/90 font-semibold h-11 rounded-xl shadow-lg shadow-white/10"
             >
               <ArrowUpRight className="h-4 w-4 mr-1.5" />
               Withdraw
