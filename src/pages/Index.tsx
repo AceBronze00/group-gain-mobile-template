@@ -53,7 +53,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full max-w-md mx-auto">
           <div className="space-y-6">
@@ -80,7 +80,7 @@ const Index = () => {
           </div>
 
           {/* Bottom Navigation */}
-          <TabsList className="fixed bottom-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-t border-gray-200 rounded-none grid grid-cols-5 shadow-lg">
+          <TabsList className="fixed bottom-0 left-0 right-0 h-16 bg-card/95 backdrop-blur-md border-t border-border rounded-none grid grid-cols-5 shadow-lg">
             <TabsTrigger value="dashboard" className="flex-col space-y-1 text-xs h-full">
               <Home className="h-5 w-5" />
               <span>Home</span>
