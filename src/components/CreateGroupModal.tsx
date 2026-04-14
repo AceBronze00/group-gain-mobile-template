@@ -105,6 +105,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
         return formData.groupName.trim() !== '';
       case 2:
         return parseFloat(formData.contributionAmount) > 0 && 
+               parseInt(formData.maxMembers) >= 2 &&
                (!formData.isAutoStart || (formData.isAutoStart && formData.startDate));
       case 3:
         return true;
