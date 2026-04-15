@@ -404,6 +404,44 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   </p>
                 </Card>
               )}
+
+              {/* Delete Nest - Admin Only */}
+              {group.isAdmin && (
+                <Card className="p-4 border-destructive/30 bg-destructive/5">
+                  <h4 className="font-semibold mb-2 text-destructive flex items-center">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Danger Zone
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Permanently delete this nest. This action cannot be undone.
+                  </p>
+                  <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Nest
+                    </Button>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete "{group.name}"?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete this nest and all associated data. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteGroup} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </Card>
+              )}
             </TabsContent>
           </div>
         </Tabs>
