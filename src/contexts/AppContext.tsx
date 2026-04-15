@@ -60,6 +60,7 @@ interface AppContextType {
   withdrawFunds: (amount: number) => void;
   depositFunds: (amount: number) => void;
   updatePayoutOrder: (groupId: number, newOrder: string[]) => void;
+  deleteGroup: (groupId: number) => void;
   calculateLateJoinerAmount: (groupCode: string) => number;
   // Navigation state for settings
   pendingSettingsTab: string | null;
@@ -424,6 +425,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const deleteGroup = (groupId: number) => {
+    setGroups(prev => prev.filter(g => g.id !== groupId));
+    setWalletEntries(prev => prev.filter(e => e.groupId !== groupId));
+    toast({
+      title: "Nest Deleted",
+      description: "The nest has been permanently removed.",
+    });
+  };
+
   const generateInviteUrl = (groupCode: string) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/?invite=${groupCode}`;
@@ -452,6 +462,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       withdrawFunds,
       depositFunds,
       updatePayoutOrder,
+      deleteGroup,
       calculateLateJoinerAmount,
       pendingSettingsTab,
       setPendingSettingsTab,
