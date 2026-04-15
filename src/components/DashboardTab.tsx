@@ -118,79 +118,87 @@ const DashboardTab = () => {
           </h3>
         </div>
         
-        {activeNests.map((nest) => (
-          <Card 
-            key={nest.id} 
-            className="p-5 border-border shadow-lg cursor-pointer transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl rounded-2xl"
-            onClick={() => handleNestClick(nest)}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h4 className="font-bold text-lg text-card-foreground mb-1">{nest.name}</h4>
-                <div className="flex items-center space-x-2">
-                  <p className="text-sm text-muted-foreground flex items-center">
+        {activeNests.map((nest) => {
+          const missedPayments = nest.hasStarted && nest.progress === 0 ? 1 : 0;
+          return (
+            <Card 
+              key={nest.id} 
+              className="p-6 border-border/50 bg-[hsl(var(--success)/0.05)] shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg rounded-2xl"
+              onClick={() => handleNestClick(nest)}
+            >
+              {/* Row 1: Name + Admin badge */}
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="font-bold text-lg text-card-foreground">{nest.name}</h4>
+                  <p className="text-sm text-muted-foreground flex items-center mt-1">
                     <Users className="h-4 w-4 mr-1" />
-                    {nest.members} members
+                    {nest.membersList?.length || nest.members}/{nest.members} members
                   </p>
+                </div>
+                <div className="flex flex-col items-end space-y-2">
                   {nest.isAdmin && (
-                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30">
+                    <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30 rounded-full px-3">
                       Admin
-                    </Badge>
-                  )}
-                  <Badge variant="secondary" className="text-xs rounded-full px-3 py-1">
-                    #{nest.position}
-                  </Badge>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-xl font-bold text-card-foreground">
-                  {formatCurrency(nest.totalAmount)}
-                </div>
-                <div className="flex items-center space-x-2 mt-1">
-                  {nest.myTurn && (
-                    <Badge className="bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))] hover:bg-[hsl(var(--success))]/90">
-                      Your Turn 🎯
                     </Badge>
                   )}
                   <Button
                     onClick={(e) => handlePaymentClick(e, nest)}
                     size="sm"
-                    className="text-xs px-3 py-1 h-7"
+                    className="rounded-full px-4 h-8"
                   >
-                    <DollarSign className="h-3 w-3 mr-1" />
+                    <DollarSign className="h-3.5 w-3.5 mr-1" />
                     Pay Now
                   </Button>
                 </div>
               </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground font-medium">Progress</span>
-                <span className="font-bold text-primary">{nest.progress}%</span>
-              </div>
-              <Progress value={nest.progress} className="h-3 bg-muted" />
-              
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4 mr-2 text-primary" />
-                  <span className="font-medium">Payment Due: {new Date(nest.nextPayout).toLocaleDateString()}</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+
+              {/* Row 2: Amount */}
+              <div className="text-2xl font-bold text-card-foreground mb-4">
+                {formatCurrency(nest.totalAmount)}
               </div>
               
-              <div className="flex items-center justify-between pt-1 border-t border-border">
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <Clock className="h-3 w-3 mr-1 text-[hsl(var(--success))]" />
-                  <span>My payout: {new Date(nest.myPayoutDate).toLocaleDateString()}</span>
+              {/* Row 3: Progress */}
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground font-medium">Progress</span>
+                  <span className="font-bold text-primary">{nest.progress}%</span>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  {nest.myTurn ? "Today!" : `${getDaysUntilPayout(nest.myPayoutDate)} days`}
-                </span>
+                <Progress value={nest.progress} className="h-2 bg-muted" />
               </div>
-            </div>
-          </Card>
-        ))}
+              
+              {/* Row 4: Details */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Calendar className="h-4 w-4 mr-2 text-primary" />
+                    <span>Next Payment Due : </span>
+                    <span className="font-semibold text-card-foreground ml-1">{new Date(nest.nextPayout).toLocaleDateString()}</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+                
+                <div className="flex items-center justify-between py-1">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4 mr-2 text-[hsl(var(--success))]" />
+                    <span>Next Payout : </span>
+                    <span className="font-semibold text-card-foreground ml-1">{new Date(nest.myPayoutDate).toLocaleDateString()}</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+
+                {missedPayments > 0 && (
+                  <div className="flex items-center justify-between py-1">
+                    <div className="flex items-center text-sm text-destructive font-medium">
+                      <span className="mr-2">⚠</span>
+                      <span>Missed payments: {missedPayments}</span>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-destructive" />
+                  </div>
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </div>
 
       {activeNests.length === 0 && (
