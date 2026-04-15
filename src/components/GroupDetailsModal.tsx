@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -16,9 +18,11 @@ import {
   AlertCircle,
   Info,
   Copy,
-  RefreshCw
+  RefreshCw,
+  Trash2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useApp } from "@/contexts/AppContext";
 
 interface GroupMember {
   id: number;
@@ -39,6 +43,13 @@ interface GroupDetailsModalProps {
 
 const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps) => {
   const { toast } = useToast();
+  const { deleteGroup } = useApp();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleDeleteGroup = () => {
+    deleteGroup(group.id);
+    onOpenChange(false);
+  };
 
   // Mock members data
   const members: GroupMember[] = [
@@ -391,6 +402,44 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   <p className="text-xs text-muted-foreground mt-2">
                     Share this code with others to invite them to join
                   </p>
+                </Card>
+              )}
+
+              {/* Delete Nest - Admin Only */}
+              {group.isAdmin && (
+                <Card className="p-4 border-destructive/30 bg-destructive/5">
+                  <h4 className="font-semibold mb-2 text-destructive flex items-center">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Danger Zone
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Permanently delete this nest. This action cannot be undone.
+                  </p>
+                  <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Nest
+                    </Button>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete "{group.name}"?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete this nest and all associated data. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteGroup} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </Card>
               )}
             </TabsContent>
