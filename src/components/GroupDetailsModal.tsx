@@ -16,9 +16,11 @@ import {
   AlertCircle,
   Info,
   Copy,
-  RefreshCw
+  RefreshCw,
+  Trash2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useApp } from "@/contexts/AppContext";
 
 interface GroupMember {
   id: number;
@@ -39,6 +41,13 @@ interface GroupDetailsModalProps {
 
 const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps) => {
   const { toast } = useToast();
+  const { deleteGroup } = useApp();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleDeleteGroup = () => {
+    deleteGroup(group.id);
+    onOpenChange(false);
+  };
 
   // Mock members data
   const members: GroupMember[] = [
