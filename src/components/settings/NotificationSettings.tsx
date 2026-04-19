@@ -32,15 +32,9 @@ const NotificationSettings = () => {
     paymentDuePush: true,
     paymentDueEmail: true,
     paymentDueSMS: false,
-    poolUpdatesPush: true,
-    poolUpdatesEmail: false,
-    poolUpdatesSMS: false,
     payoutAlertsPush: true,
     payoutAlertsEmail: true,
     payoutAlertsSMS: true,
-    failedPaymentPush: true,
-    failedPaymentEmail: true,
-    failedPaymentSMS: true,
     muteAll: false
   });
 
