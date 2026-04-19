@@ -36,16 +36,16 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
 
     setCycleActive(true);
     toast({
-      title: "Cycle Started!",
-      description: `The ${frequency} contribution cycle has been activated.`,
+      title: "Rounds Started!",
+      description: `The ${frequency} contribution rounds has been activated.`,
     });
   };
 
   const handleStopCycle = () => {
     setCycleActive(false);
     toast({
-      title: "Cycle Stopped",
-      description: "The contribution cycle has been deactivated.",
+      title: "Rounds Stopped",
+      description: "The contribution rounds has been deactivated.",
     });
   };
 
@@ -84,17 +84,17 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Financial Rules</h1>
-          <p className="text-sm text-gray-600">Configure contribution cycles and payment rules</p>
+          <p className="text-sm text-gray-600">Configure contribution roundss and payment rules</p>
         </div>
       </div>
 
-      {/* Cycle Status */}
+      {/* Round Status */}
       <Card className="border-0 shadow-lg rounded-2xl bg-white/90 backdrop-blur-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className={`w-3 h-3 rounded-full ${cycleActive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-              <CardTitle className="text-lg">Cycle Status</CardTitle>
+              <CardTitle className="text-lg">Round Status</CardTitle>
             </div>
             <Badge variant={cycleActive ? "default" : "secondary"} className={cycleActive ? "bg-green-500" : ""}>
               {cycleActive ? "Active" : "Inactive"}
@@ -102,8 +102,8 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
           </div>
           <CardDescription>
             {cycleActive 
-              ? `${frequency.charAt(0).toUpperCase() + frequency.slice(1)} cycle is currently running`
-              : "No active contribution cycle"
+              ? `${frequency.charAt(0).toUpperCase() + frequency.slice(1)} rounds are currently running`
+              : "No active contribution rounds"
             }
           </CardDescription>
         </CardHeader>
@@ -159,7 +159,7 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
             <CalendarIcon className="h-5 w-5 text-blue-500" />
             <span>Start Date</span>
           </CardTitle>
-          <CardDescription>Configure when the first contribution cycle begins</CardDescription>
+          <CardDescription>Configure when the first contribution rounds begins</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Popover>
@@ -196,14 +196,14 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
         </CardContent>
       </Card>
 
-      {/* Cycle Start Configuration */}
+      {/* Round Start Configuration */}
       <Card className="border-0 shadow-lg rounded-2xl bg-white/90 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Settings className="h-5 w-5 text-blue-500" />
-            <span>Cycle Start Method</span>
+            <span>Round Start Method</span>
           </CardTitle>
-          <CardDescription>Choose how the contribution cycle should begin</CardDescription>
+          <CardDescription>Choose how the contribution rounds should begin</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center space-x-3">
@@ -215,7 +215,7 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
             <Label htmlFor="auto-start" className="flex-1">
               <div className="font-medium">Automatic Start</div>
               <div className="text-sm text-gray-500">
-                Cycle begins automatically on the selected start date
+                Rounds begin automatically on the selected start date
               </div>
             </Label>
           </div>
@@ -223,7 +223,7 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
           {!isAutoStart && (
             <div className="p-3 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600 mb-3">
-                <strong>Manual Start:</strong> You can manually trigger the cycle start below
+                <strong>Manual Start:</strong> You can manually trigger the rounds below
               </p>
             </div>
           )}
@@ -231,21 +231,21 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
           {isAutoStart && startDate && (
             <div className="p-3 bg-green-50 rounded-lg">
               <p className="text-sm text-green-700">
-                <strong>Automatic Start:</strong> Cycle will begin on {format(startDate, "PPP")}
+                <strong>Automatic Start:</strong> Rounds will begin on {format(startDate, "PPP")}
               </p>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Cycle Control */}
+      {/* Round Control */}
       <Card className="border-0 shadow-lg rounded-2xl bg-white/90 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Users className="h-5 w-5 text-blue-500" />
-            <span>Cycle Control</span>
+            <span>Round Control</span>
           </CardTitle>
-          <CardDescription>Start or stop the contribution cycle</CardDescription>
+          <CardDescription>Start or stop the contribution rounds</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -256,7 +256,7 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-xl"
               >
                 <Play className="mr-2 h-4 w-4" />
-                Start Cycle
+                Start Rounds
               </Button>
             ) : (
               <Button
@@ -264,13 +264,13 @@ const FinancialRulesPage = ({ onBack, groupId }: FinancialRulesPageProps) => {
                 variant="destructive"
                 className="w-full py-3 rounded-xl"
               >
-                Stop Cycle
+                Stop Rounds
               </Button>
             )}
             
             {!startDate && isAutoStart && (
               <p className="text-sm text-red-500 text-center">
-                Please select a start date before starting an automatic cycle
+                Please select a start date before starting an automatic rounds
               </p>
             )}
           </div>
