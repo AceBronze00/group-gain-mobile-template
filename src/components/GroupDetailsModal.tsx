@@ -211,8 +211,19 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
             </TabsContent>
 
             <TabsContent value="members" className="space-y-3">
-              {/* Payment Summary */}
-              <Card className="p-3 bg-muted/50">
+              {/* Payment Summary - clickable to open Cycle Details */}
+              <Card
+                className="p-3 bg-muted/50 cursor-pointer hover:bg-muted transition-colors"
+                onClick={() => setShowCycleDetails(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setShowCycleDetails(true);
+                  }
+                }}
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">This Cycle</span>
                   <span className="text-sm text-muted-foreground">
@@ -223,6 +234,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   value={(members.filter(m => m.hasPaid).length / members.length) * 100} 
                   className="h-2 mt-2" 
                 />
+                <p className="text-xs text-muted-foreground mt-2">Tap to view cycle details →</p>
               </Card>
 
               {members
