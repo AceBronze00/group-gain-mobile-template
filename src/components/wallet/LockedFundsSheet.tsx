@@ -25,18 +25,18 @@ const LockedFundsSheet = ({ open, onOpenChange, lockedEntries, totalLocked, form
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm mx-auto max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-sm mx-auto max-h-[85vh] overflow-y-auto bg-zinc-900 border-zinc-800 text-white">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center">
-              <Lock className="h-4 w-4 text-amber-600" />
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <Lock className="h-4 w-4 text-amber-400" />
             </div>
             <div>
-              <DialogTitle>Locked Funds</DialogTitle>
-              <DialogDescription>Held until your group cycle completes</DialogDescription>
+              <DialogTitle className="text-white">Locked Funds</DialogTitle>
+              <DialogDescription className="text-zinc-400">Held until your group cycle completes</DialogDescription>
             </div>
           </div>
-          <p className="text-2xl font-bold text-amber-600 mt-2">
+          <p className="text-3xl font-bold text-amber-400 mt-2">
             {showBalance ? formatCurrency(totalLocked) : '••••••'}
           </p>
         </DialogHeader>
@@ -48,24 +48,24 @@ const LockedFundsSheet = ({ open, onOpenChange, lockedEntries, totalLocked, form
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 * index }}
-              className="flex items-center justify-between p-4 rounded-2xl bg-card border"
+              className="flex items-center justify-between p-4 rounded-2xl bg-zinc-800/60 border border-zinc-800"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                  <Lock className="h-4 w-4 text-amber-600" />
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                  <Lock className="h-4 w-4 text-amber-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-foreground">{entry.groupName}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="font-semibold text-sm text-white">{entry.groupName}</p>
+                  <p className="text-xs text-zinc-400 mt-0.5">
                     Received {formatDate(entry.receivedDate)} · Unlocks on completion
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-bold text-amber-600 text-sm">
+                <p className="font-bold text-amber-400 text-sm">
                   {showBalance ? formatCurrency(entry.amount) : '••••'}
                 </p>
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 rounded-full px-2 py-0.5 mt-1">
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-300 bg-amber-500/10 rounded-full px-2 py-0.5 mt-1">
                   <Lock className="h-2.5 w-2.5" />
                   Locked
                 </span>
@@ -74,7 +74,7 @@ const LockedFundsSheet = ({ open, onOpenChange, lockedEntries, totalLocked, form
           ))}
 
           {lockedEntries.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground text-sm">
+            <div className="text-center py-8 text-zinc-500 text-sm">
               No locked funds
             </div>
           )}

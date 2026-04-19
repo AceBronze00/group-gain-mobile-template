@@ -25,18 +25,18 @@ const AvailableFundsSheet = ({ open, onOpenChange, walletBalance, unlockedEntrie
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm mx-auto max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-sm mx-auto max-h-[85vh] overflow-y-auto bg-zinc-900 border-zinc-800 text-white">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <Wallet className="h-4 w-4 text-emerald-600" />
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <Wallet className="h-4 w-4 text-emerald-400" />
             </div>
             <div>
-              <DialogTitle>Available Funds</DialogTitle>
-              <DialogDescription>Ready to withdraw or use as payment</DialogDescription>
+              <DialogTitle className="text-white">Available Funds</DialogTitle>
+              <DialogDescription className="text-zinc-400">Ready to withdraw or use as payment</DialogDescription>
             </div>
           </div>
-          <p className="text-2xl font-bold text-emerald-600 mt-2">
+          <p className="text-3xl font-bold text-emerald-400 mt-2">
             {showBalance ? formatCurrency(total) : '••••••'}
           </p>
         </DialogHeader>
@@ -46,18 +46,18 @@ const AvailableFundsSheet = ({ open, onOpenChange, walletBalance, unlockedEntrie
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-between p-4 rounded-2xl bg-card border"
+              className="flex items-center justify-between p-4 rounded-2xl bg-zinc-800/60 border border-zinc-800"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                  <Building2 className="h-4 w-4 text-emerald-600" />
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                  <Building2 className="h-4 w-4 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-foreground">Bank Deposit</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Added from your bank</p>
+                  <p className="font-semibold text-sm text-white">Bank Deposit</p>
+                  <p className="text-xs text-zinc-400 mt-0.5">Added from your bank</p>
                 </div>
               </div>
-              <p className="font-bold text-emerald-600 text-sm">
+              <p className="font-bold text-emerald-400 text-sm">
                 {showBalance ? formatCurrency(walletBalance) : '••••'}
               </p>
             </motion.div>
@@ -69,27 +69,27 @@ const AvailableFundsSheet = ({ open, onOpenChange, walletBalance, unlockedEntrie
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 * index }}
-              className="flex items-center justify-between p-4 rounded-2xl bg-card border"
+              className="flex items-center justify-between p-4 rounded-2xl bg-zinc-800/60 border border-zinc-800"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                  <Unlock className="h-4 w-4 text-emerald-600" />
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                  <Unlock className="h-4 w-4 text-emerald-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-foreground">{entry.groupName}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="font-semibold text-sm text-white">{entry.groupName}</p>
+                  <p className="text-xs text-zinc-400 mt-0.5">
                     Completed · Received {formatDate(entry.receivedDate)}
                   </p>
                 </div>
               </div>
-              <p className="font-bold text-emerald-600 text-sm">
+              <p className="font-bold text-emerald-400 text-sm">
                 {showBalance ? formatCurrency(entry.amount) : '••••'}
               </p>
             </motion.div>
           ))}
 
           {walletBalance <= 0 && unlockedEntries.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground text-sm">
+            <div className="text-center py-8 text-zinc-500 text-sm">
               No available funds yet
             </div>
           )}
