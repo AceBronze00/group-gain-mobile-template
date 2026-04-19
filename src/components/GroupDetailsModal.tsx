@@ -460,6 +460,32 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
           </div>
         </Tabs>
       </DialogContent>
+
+      <CycleDetailsModal
+        open={showCycleDetails}
+        onOpenChange={setShowCycleDetails}
+        groupName={group.name}
+        cycleNumber={group.currentCycle || 1}
+        status={group.startDate ? "active" : "scheduled"}
+        payoutRecipient={{
+          name: group.payoutRecipient || "—",
+          avatar: "/placeholder.svg",
+          originalDate: group.nextPayout,
+          nextDate: group.nextPayout,
+          actualDate: null,
+        }}
+        members={members.map((m) => ({
+          id: m.id,
+          name: m.name,
+          avatar: m.avatar,
+          hasPaid: m.hasPaid,
+          hasReceived: m.hasReceived,
+          position: m.position,
+          originalDate: group.nextPayout,
+          nextDate: group.nextPayout,
+          actualDate: m.hasPaid ? group.nextPayout : null,
+        }))}
+      />
     </Dialog>
   );
 };
