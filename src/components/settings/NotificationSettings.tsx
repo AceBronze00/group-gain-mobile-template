@@ -32,15 +32,9 @@ const NotificationSettings = () => {
     paymentDuePush: true,
     paymentDueEmail: true,
     paymentDueSMS: false,
-    poolUpdatesPush: true,
-    poolUpdatesEmail: false,
-    poolUpdatesSMS: false,
     payoutAlertsPush: true,
     payoutAlertsEmail: true,
     payoutAlertsSMS: true,
-    failedPaymentPush: true,
-    failedPaymentEmail: true,
-    failedPaymentSMS: true,
     muteAll: false
   });
 
@@ -219,17 +213,6 @@ const NotificationSettings = () => {
         />
       </Card>
 
-      {/* Pool Update Alerts */}
-      <Card className="p-6">
-        <NotificationRow
-          title="Pool Update Alerts"
-          description="When someone joins, leaves, or pool rules change"
-          pushKey="poolUpdatesPush"
-          emailKey="poolUpdatesEmail"
-          smsKey="poolUpdatesSMS"
-        />
-      </Card>
-
       {/* Next Payout Alerts */}
       <Card className="p-6">
         <NotificationRow
@@ -241,16 +224,6 @@ const NotificationSettings = () => {
         />
       </Card>
 
-      {/* Failed Payment Alerts */}
-      <Card className="p-6">
-        <NotificationRow
-          title="Failed Payment Alerts"
-          description="Important alerts when payments fail"
-          pushKey="failedPaymentPush"
-          emailKey="failedPaymentEmail"
-          smsKey="failedPaymentSMS"
-        />
-      </Card>
 
       {/* Due Date Reminder Timing - Dial */}
       <Card className="p-6">
@@ -281,21 +254,6 @@ const NotificationSettings = () => {
             <span className="font-medium text-foreground">Tip:</span> You'll always receive a notification when your payout has been processed.
           </p>
         </div>
-      </Card>
-
-      {/* Quiet Hours */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Quiet Hours</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Do not disturb</span>
-            <span className="text-sm text-muted-foreground">10 PM - 8 AM</span>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Non-urgent notifications will be held until quiet hours end. Critical alerts (failed payments) will still come through.
-          </p>
-        </div>
-        <Button variant="outline" className="mt-4">Customize Quiet Hours</Button>
       </Card>
 
       {/* Save Button */}
