@@ -214,37 +214,7 @@ const NotificationSettings = () => {
       </Card>
 
       {/* Pool Update Alerts */}
-      <Card className="p-6">
-        <NotificationRow
-          title="Pool Update Alerts"
-          description="When someone joins, leaves, or pool rules change"
-          pushKey="poolUpdatesPush"
-          emailKey="poolUpdatesEmail"
-          smsKey="poolUpdatesSMS"
-        />
-      </Card>
-
-      {/* Next Payout Alerts */}
-      <Card className="p-6">
-        <NotificationRow
-          title="Next Payout Alerts"
-          description="Get notified about upcoming payouts and when it's your turn"
-          pushKey="payoutAlertsPush"
-          emailKey="payoutAlertsEmail"
-          smsKey="payoutAlertsSMS"
-        />
-      </Card>
-
       {/* Failed Payment Alerts */}
-      <Card className="p-6">
-        <NotificationRow
-          title="Failed Payment Alerts"
-          description="Important alerts when payments fail"
-          pushKey="failedPaymentPush"
-          emailKey="failedPaymentEmail"
-          smsKey="failedPaymentSMS"
-        />
-      </Card>
 
       {/* Due Date Reminder Timing - Dial */}
       <Card className="p-6">
