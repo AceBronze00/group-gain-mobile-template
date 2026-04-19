@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "@/contexts/AppContext";
+import CycleDetailsModal from "./CycleDetailsModal";
 
 interface GroupMember {
   id: number;
