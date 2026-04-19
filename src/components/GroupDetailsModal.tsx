@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "@/contexts/AppContext";
+import CycleDetailsModal from "./CycleDetailsModal";
 
 interface GroupMember {
   id: number;
@@ -45,6 +46,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
   const { toast } = useToast();
   const { deleteGroup } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCycleDetails, setShowCycleDetails] = useState(false);
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
@@ -209,8 +211,19 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
             </TabsContent>
 
             <TabsContent value="members" className="space-y-3">
-              {/* Payment Summary */}
-              <Card className="p-3 bg-muted/50">
+              {/* Payment Summary - clickable to open Cycle Details */}
+              <Card
+                className="p-3 bg-muted/50 cursor-pointer hover:bg-muted transition-colors"
+                onClick={() => setShowCycleDetails(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setShowCycleDetails(true);
+                  }
+                }}
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">This Cycle</span>
                   <span className="text-sm text-muted-foreground">
@@ -221,6 +234,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   value={(members.filter(m => m.hasPaid).length / members.length) * 100} 
                   className="h-2 mt-2" 
                 />
+                <p className="text-xs text-muted-foreground mt-2">Tap to view cycle details →</p>
               </Card>
 
               {members
@@ -446,6 +460,32 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
           </div>
         </Tabs>
       </DialogContent>
+
+      <CycleDetailsModal
+        open={showCycleDetails}
+        onOpenChange={setShowCycleDetails}
+        groupName={group.name}
+        cycleNumber={group.currentCycle || 1}
+        status={group.startDate ? "active" : "scheduled"}
+        payoutRecipient={{
+          name: group.payoutRecipient || "—",
+          avatar: "/placeholder.svg",
+          originalDate: group.nextPayout,
+          nextDate: group.nextPayout,
+          actualDate: null,
+        }}
+        members={members.map((m) => ({
+          id: m.id,
+          name: m.name,
+          avatar: m.avatar,
+          hasPaid: m.hasPaid,
+          hasReceived: m.hasReceived,
+          position: m.position,
+          originalDate: group.nextPayout,
+          nextDate: group.nextPayout,
+          actualDate: m.hasPaid ? group.nextPayout : null,
+        }))}
+      />
     </Dialog>
   );
 };
