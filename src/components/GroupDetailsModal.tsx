@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "@/contexts/AppContext";
-import CycleDetailsModal from "./CycleDetailsModal";
+import RoundDetailsModal from "./RoundDetailsModal";
 
 interface GroupMember {
   id: number;
@@ -46,7 +46,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
   const { toast } = useToast();
   const { deleteGroup } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showCycleDetails, setShowCycleDetails] = useState(false);
+  const [showRoundDetails, setShowRoundDetails] = useState(false);
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
@@ -367,22 +367,17 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                 </div>
               </Card>
 
-              {/* Cycle Info */}
+              {/* Round Info */}
               <Card className="p-4">
                 <h4 className="font-semibold mb-3">
-                  Cycle Information
+                  Round Information
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Cycle Status</span>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="font-medium">
-                        Cycle {group.currentCycle || 1}/{group.totalCycles || 2}
-                      </Badge>
-                      <Badge variant="outline" className="font-medium">
-                        Round {group.currentRound || 1}/{group.roundsPerCycle || group.members || 5}
-                      </Badge>
-                    </div>
+                    <span className="text-sm text-muted-foreground">Round Status</span>
+                    <Badge variant="secondary" className="font-medium">
+                      Round {group.currentRound || 1} of {group.totalRounds || group.members || 5}
+                    </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Contribution</span>
@@ -461,11 +456,12 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
         </Tabs>
       </DialogContent>
 
-      <CycleDetailsModal
-        open={showCycleDetails}
-        onOpenChange={setShowCycleDetails}
+      <RoundDetailsModal
+        open={showRoundDetails}
+        onOpenChange={setShowRoundDetails}
         groupName={group.name}
-        cycleNumber={group.currentCycle || 1}
+        roundNumber={group.currentRound || 1}
+        totalRounds={group.totalRounds || group.members || 5}
         status={group.startDate ? "active" : "scheduled"}
         payoutRecipient={{
           name: group.payoutRecipient || "—",
