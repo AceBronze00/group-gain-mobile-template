@@ -51,8 +51,8 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
     if (!group || !startDate) return;
 
     toast({
-      title: "Cycle Started Successfully",
-      description: `The financial cycle for "${group.name}" has been started on ${format(startDate, "PPP")}.`,
+      title: "Rounds Started Successfully",
+      description: `Rounds for "${group.name}" have been started on ${format(startDate, "PPP")}.`,
     });
     
     onOpenChange(false);
@@ -100,13 +100,13 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
             Manage {group.name}
           </DialogTitle>
           <DialogDescription>
-            Start the group cycle or manage payout order and contribution amounts.
+            Start the rounds or manage payout order and contribution amounts.
           </DialogDescription>
         </DialogHeader>
         
         <Tabs defaultValue="start" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="start">Start Cycle</TabsTrigger>
+            <TabsTrigger value="start">Start Rounds</TabsTrigger>
             <TabsTrigger value="order">Payout Order</TabsTrigger>
           </TabsList>
           
@@ -149,7 +149,7 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
 
             {/* Start Date Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Select Cycle Start Date</label>
+              <label className="text-sm font-medium">Select Round Start Date</label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -175,7 +175,7 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
               </Popover>
             </div>
 
-            {/* Start Cycle Buttons */}
+            {/* Start Round Buttons */}
             <div className="flex gap-2 pt-2">
               <Button 
                 variant="outline" 
@@ -189,7 +189,7 @@ const StartCycleModal = ({ group, open, onOpenChange }: StartCycleModalProps) =>
                 disabled={!startDate}
                 className="flex-1 bg-green-600 hover:bg-green-700"
               >
-                Start Cycle
+                Start Rounds
               </Button>
             </div>
           </TabsContent>
