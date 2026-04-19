@@ -180,7 +180,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                     <div>
                       <p className="text-sm font-medium text-blue-800">Member Limit</p>
                       <p className="text-xs text-blue-700">
-                        You'll set the max members in the next step. Each member gets one payout cycle.
+                        You'll set the max members in the next step. Each member receives one payout per round.
                       </p>
                     </div>
                   </div>
@@ -250,7 +250,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="numberOfCycles">Payout Rounds *</Label>
+                    <Label htmlFor="numberOfCycles">Total Rounds *</Label>
                     <div className="relative mt-1">
                       <RefreshCw className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
@@ -263,15 +263,18 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                         className="pl-10"
                       />
                     </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      One round = one payout. For everyone to be paid once, set this equal to the number of members.
+                    </p>
                   </div>
                 </div>
 
-                {/* Cycle Start Configuration - Compact */}
+                {/* Round Start Configuration - Compact */}
                 <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between">
                     <Label className="text-sm font-medium flex items-center">
                       <Clock className="h-4 w-4 text-blue-500 mr-2" />
-                      Auto-Start Cycle
+                      Auto-Start Rounds
                     </Label>
                     <Switch
                       checked={formData.isAutoStart}
@@ -541,7 +544,7 @@ const CreateGroupModal = ({ open, onOpenChange }: CreateGroupModalProps) => {
                     </Badge>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Cycle Start:</span>
+                    <span className="text-gray-600">Round Start:</span>
                     <Badge variant={formData.isAutoStart ? "default" : "secondary"} className="flex items-center space-x-1">
                       {formData.isAutoStart ? <CalendarIcon className="h-3 w-3" /> : <Play className="h-3 w-3" />}
                       <span>{formData.isAutoStart ? "Automatic" : "Manual"}</span>

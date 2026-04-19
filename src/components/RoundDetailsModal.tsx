@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DollarSign, Users, CheckCircle, Clock } from "lucide-react";
 
-interface CycleMember {
+interface RoundMember {
   id: number;
   name: string;
   avatar: string;
@@ -16,11 +16,12 @@ interface CycleMember {
   actualDate?: string | null;
 }
 
-interface CycleDetailsModalProps {
+interface RoundDetailsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   groupName: string;
-  cycleNumber: number;
+  roundNumber: number;
+  totalRounds: number;
   status: "scheduled" | "active" | "completed";
   payoutRecipient?: {
     name: string;
@@ -29,7 +30,7 @@ interface CycleDetailsModalProps {
     nextDate: string;
     actualDate?: string | null;
   };
-  members: CycleMember[];
+  members: RoundMember[];
 }
 
 const formatDate = (date?: string | null) => {
@@ -39,7 +40,7 @@ const formatDate = (date?: string | null) => {
   return d.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
 };
 
-const StatusBadge = ({ status }: { status: CycleDetailsModalProps["status"] }) => {
+const StatusBadge = ({ status }: { status: RoundDetailsModalProps["status"] }) => {
   const map = {
     scheduled: { label: "SCHEDULED", className: "bg-muted text-muted-foreground border-border" },
     active: { label: "ACTIVE", className: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
@@ -53,41 +54,42 @@ const StatusBadge = ({ status }: { status: CycleDetailsModalProps["status"] }) =
   );
 };
 
-const DateBlock = ({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) => (
+const DateBlock = ({ label, value }: { label: string; value: string }) => (
   <div className="flex-1 min-w-0">
     <p className="text-xs text-muted-foreground mb-1">{label}</p>
-    <p className={`text-sm font-semibold ${highlight ? "text-foreground" : "text-foreground"}`}>{value}</p>
+    <p className="text-sm font-semibold text-foreground">{value}</p>
   </div>
 );
 
-const CycleDetailsModal = ({
+const RoundDetailsModal = ({
   open,
   onOpenChange,
   groupName,
-  cycleNumber,
+  roundNumber,
+  totalRounds,
   status,
   payoutRecipient,
   members,
-}: CycleDetailsModalProps) => {
+}: RoundDetailsModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md mx-auto max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold">
-            Cycle Details - {groupName}
+            Round Details - {groupName}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 mt-2">
-          {/* Cycle header pill + status */}
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-foreground text-background">
-              <span className="text-sm font-bold">Cycle {cycleNumber}</span>
+              <span className="text-sm font-bold">
+                Round {roundNumber} of {totalRounds}
+              </span>
             </div>
             <StatusBadge status={status} />
           </div>
 
-          {/* Payout Details */}
           {payoutRecipient && (
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -113,7 +115,6 @@ const CycleDetailsModal = ({
             </div>
           )}
 
-          {/* Member Payments */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Users className="h-5 w-5 text-foreground" />
@@ -159,4 +160,4 @@ const CycleDetailsModal = ({
   );
 };
 
-export default CycleDetailsModal;
+export default RoundDetailsModal;
