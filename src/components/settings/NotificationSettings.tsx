@@ -213,8 +213,17 @@ const NotificationSettings = () => {
         />
       </Card>
 
-      {/* Pool Update Alerts */}
-      {/* Failed Payment Alerts */}
+      {/* Next Payout Alerts */}
+      <Card className="p-6">
+        <NotificationRow
+          title="Next Payout Alerts"
+          description="Get notified about upcoming payouts and when it's your turn"
+          pushKey="payoutAlertsPush"
+          emailKey="payoutAlertsEmail"
+          smsKey="payoutAlertsSMS"
+        />
+      </Card>
+
 
       {/* Due Date Reminder Timing - Dial */}
       <Card className="p-6">
