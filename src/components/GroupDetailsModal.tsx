@@ -46,6 +46,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
   const { toast } = useToast();
   const { deleteGroup } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCycleDetails, setShowCycleDetails] = useState(false);
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
