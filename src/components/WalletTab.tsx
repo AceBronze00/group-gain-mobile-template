@@ -66,36 +66,36 @@ const WalletTab = () => {
 
   return (
     <div className="space-y-5 pb-24 px-3">
-      {/* Total Balance Hero */}
+      {/* Total Balance Hero - Dark */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl bg-card border border-border p-6 text-foreground shadow-lg"
+        className="relative overflow-hidden rounded-3xl bg-zinc-900 border border-zinc-800 p-6 text-white shadow-xl"
       >
         <div className="relative z-10">
           {/* Total Balance - top section */}
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-muted flex items-center justify-center">
-                <Wallet className="h-4 w-4 text-foreground" />
+              <div className="w-8 h-8 rounded-xl bg-zinc-800 flex items-center justify-center">
+                <Wallet className="h-4 w-4 text-zinc-300" />
               </div>
-              <span className="text-sm font-medium text-muted-foreground">Total Balance</span>
+              <span className="text-sm font-medium text-zinc-400">Total Balance</span>
             </div>
             <button
               onClick={() => setShowBalance(!showBalance)}
-              className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-accent transition-colors"
+              className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-zinc-700 transition-colors"
             >
-              {showBalance ? <Eye className="h-4 w-4 text-muted-foreground" /> : <EyeOff className="h-4 w-4 text-muted-foreground" />}
+              {showBalance ? <Eye className="h-4 w-4 text-zinc-400" /> : <EyeOff className="h-4 w-4 text-zinc-400" />}
             </button>
           </div>
-          
+
           <AnimatePresence mode="wait">
             <motion.p
               key={showBalance ? 'show' : 'hide'}
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
-              className="text-3xl font-bold tracking-tight text-foreground"
+              className="text-4xl font-bold tracking-tight text-white"
             >
               {showBalance ? formatCurrency(totalBalance) : '••••••'}
             </motion.p>
@@ -103,24 +103,24 @@ const WalletTab = () => {
 
           {/* Mini breakdown pills */}
           <div className="flex flex-wrap gap-2 mt-3 mb-5">
-            <div className="flex items-center gap-1.5 bg-emerald-100 rounded-full px-2.5 py-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-              <span className="text-[11px] text-emerald-700 font-medium">
+            <div className="flex items-center gap-1.5 bg-zinc-800/80 rounded-full px-2.5 py-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="text-[11px] text-zinc-200 font-medium">
                 {showBalance ? formatCurrency(availableTotal) : '••••'} available
               </span>
             </div>
             {totalPendingPayouts > 0 && (
-              <div className="flex items-center gap-1.5 bg-blue-100 rounded-full px-2.5 py-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                <span className="text-[11px] text-blue-700 font-medium">
+              <div className="flex items-center gap-1.5 bg-zinc-800/80 rounded-full px-2.5 py-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                <span className="text-[11px] text-zinc-200 font-medium">
                   {showBalance ? formatCurrency(totalPendingPayouts) : '••••'} pending
                 </span>
               </div>
             )}
             {pendingUnlockBalance > 0 && (
-              <div className="flex items-center gap-1.5 bg-amber-100 rounded-full px-2.5 py-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-600" />
-                <span className="text-[11px] text-amber-700 font-medium">
+              <div className="flex items-center gap-1.5 bg-zinc-800/80 rounded-full px-2.5 py-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className="text-[11px] text-zinc-200 font-medium">
                   {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'} locked
                 </span>
               </div>
@@ -131,15 +131,14 @@ const WalletTab = () => {
           <div className="flex gap-3">
             <Button
               onClick={() => setShowDepositModal(true)}
-              variant="outline"
-              className="flex-1 font-semibold h-11 rounded-xl"
+              className="flex-1 font-semibold h-11 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white border-0"
             >
               <ArrowDownLeft className="h-4 w-4 mr-1.5" />
               Deposit
             </Button>
             <Button
               onClick={() => setShowWithdrawModal(true)}
-              className="flex-1 font-semibold h-11 rounded-xl"
+              className="flex-1 font-semibold h-11 rounded-xl bg-white hover:bg-zinc-100 text-zinc-900"
             >
               <ArrowUpRight className="h-4 w-4 mr-1.5" />
               Withdraw
@@ -148,7 +147,7 @@ const WalletTab = () => {
         </div>
       </motion.div>
 
-      {/* === SUMMARY CARDS === */}
+      {/* === SUMMARY CARDS - Dark === */}
       <div className="space-y-3">
         {/* Available */}
         {(unlockedEntries.length > 0 || walletBalance > 0) && (
@@ -157,15 +156,15 @@ const WalletTab = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             onClick={() => setShowAvailableSheet(true)}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-emerald-200/50 hover:border-emerald-300 transition-all text-left"
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                <CircleDollarSign className="h-5 w-5 text-emerald-600" />
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                <CircleDollarSign className="h-5 w-5 text-emerald-400" />
               </div>
               <div>
-                <p className="font-semibold text-sm text-foreground">Available</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="font-semibold text-sm text-white">Available</p>
+                <p className="text-xs text-zinc-400 mt-0.5">
                   {walletBalance > 0 && unlockedEntries.length > 0
                     ? `Bank deposit + ${unlockedEntries.length} group${unlockedEntries.length > 1 ? 's' : ''}`
                     : walletBalance > 0 ? 'Bank deposit' : `${unlockedEntries.length} completed group${unlockedEntries.length > 1 ? 's' : ''}`}
@@ -173,10 +172,10 @@ const WalletTab = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <p className="font-bold text-emerald-600 text-sm">
+              <p className="font-bold text-emerald-400 text-sm">
                 {showBalance ? formatCurrency(availableTotal) : '••••'}
               </p>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <ChevronRight className="h-4 w-4 text-zinc-500" />
             </div>
           </motion.button>
         )}
@@ -188,24 +187,24 @@ const WalletTab = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
             onClick={() => setShowPendingSheet(true)}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-blue-200/50 hover:border-blue-300 transition-all text-left"
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-blue-400" />
               </div>
               <div>
-                <p className="font-semibold text-sm text-foreground">Pending</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="font-semibold text-sm text-white">Pending</p>
+                <p className="text-xs text-zinc-400 mt-0.5">
                   {pendingPayouts.length} active group{pendingPayouts.length > 1 ? 's' : ''}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <p className="font-bold text-blue-600 text-sm">
+              <p className="font-bold text-blue-400 text-sm">
                 {showBalance ? formatCurrency(totalPendingPayouts) : '••••'}
               </p>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <ChevronRight className="h-4 w-4 text-zinc-500" />
             </div>
           </motion.button>
         )}
@@ -217,24 +216,24 @@ const WalletTab = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             onClick={() => setShowLockedSheet(true)}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-amber-200/50 hover:border-amber-300 transition-all text-left"
+            className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                <Lock className="h-5 w-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                <Lock className="h-5 w-5 text-amber-400" />
               </div>
               <div>
-                <p className="font-semibold text-sm text-foreground">Locked</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="font-semibold text-sm text-white">Locked</p>
+                <p className="text-xs text-zinc-400 mt-0.5">
                   {lockedEntries.length} group{lockedEntries.length > 1 ? 's' : ''} · Unlocks on completion
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <p className="font-bold text-amber-600 text-sm">
+              <p className="font-bold text-amber-400 text-sm">
                 {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'}
               </p>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <ChevronRight className="h-4 w-4 text-zinc-500" />
             </div>
           </motion.button>
         )}
