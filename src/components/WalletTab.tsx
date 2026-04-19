@@ -147,114 +147,99 @@ const WalletTab = () => {
         </div>
       </motion.div>
 
-      {/* === SUMMARY CARDS - Dark === */}
+      {/* === SUMMARY CARDS - Dark (always visible) === */}
       <div className="space-y-3">
         {/* Available */}
-        {(unlockedEntries.length > 0 || walletBalance > 0) && (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            onClick={() => setShowAvailableSheet(true)}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                <CircleDollarSign className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <p className="font-semibold text-sm text-white">Available</p>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  {walletBalance > 0 && unlockedEntries.length > 0
-                    ? `Bank deposit + ${unlockedEntries.length} group${unlockedEntries.length > 1 ? 's' : ''}`
-                    : walletBalance > 0 ? 'Bank deposit' : `${unlockedEntries.length} completed group${unlockedEntries.length > 1 ? 's' : ''}`}
-                </p>
-              </div>
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          onClick={() => setShowAvailableSheet(true)}
+          className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <CircleDollarSign className="h-5 w-5 text-emerald-400" />
             </div>
-            <div className="flex items-center gap-2">
-              <p className="font-bold text-emerald-400 text-sm">
-                {showBalance ? formatCurrency(availableTotal) : '••••'}
+            <div>
+              <p className="font-semibold text-sm text-white">Available</p>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                {walletBalance > 0 && unlockedEntries.length > 0
+                  ? `Bank deposit + ${unlockedEntries.length} nest${unlockedEntries.length > 1 ? 's' : ''}`
+                  : walletBalance > 0
+                    ? 'Bank deposit'
+                    : unlockedEntries.length > 0
+                      ? `${unlockedEntries.length} completed nest${unlockedEntries.length > 1 ? 's' : ''}`
+                      : 'Ready to withdraw or use'}
               </p>
-              <ChevronRight className="h-4 w-4 text-zinc-500" />
             </div>
-          </motion.button>
-        )}
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="font-bold text-emerald-400 text-sm">
+              {showBalance ? formatCurrency(availableTotal) : '••••'}
+            </p>
+            <ChevronRight className="h-4 w-4 text-zinc-500" />
+          </div>
+        </motion.button>
 
         {/* Pending */}
-        {pendingPayouts.length > 0 && (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            onClick={() => setShowPendingSheet(true)}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-blue-400" />
-              </div>
-              <div>
-                <p className="font-semibold text-sm text-white">Pending</p>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  {pendingPayouts.length} active group{pendingPayouts.length > 1 ? 's' : ''}
-                </p>
-              </div>
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          onClick={() => setShowPendingSheet(true)}
+          className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-blue-400" />
             </div>
-            <div className="flex items-center gap-2">
-              <p className="font-bold text-blue-400 text-sm">
-                {showBalance ? formatCurrency(totalPendingPayouts) : '••••'}
+            <div>
+              <p className="font-semibold text-sm text-white">Pending</p>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                {pendingPayouts.length > 0
+                  ? `${pendingPayouts.length} active nest${pendingPayouts.length > 1 ? 's' : ''}`
+                  : 'Upcoming payouts from nests'}
               </p>
-              <ChevronRight className="h-4 w-4 text-zinc-500" />
             </div>
-          </motion.button>
-        )}
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="font-bold text-blue-400 text-sm">
+              {showBalance ? formatCurrency(totalPendingPayouts) : '••••'}
+            </p>
+            <ChevronRight className="h-4 w-4 text-zinc-500" />
+          </div>
+        </motion.button>
 
         {/* Locked */}
-        {lockedEntries.length > 0 && (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            onClick={() => setShowLockedSheet(true)}
-            className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                <Lock className="h-5 w-5 text-amber-400" />
-              </div>
-              <div>
-                <p className="font-semibold text-sm text-white">Locked</p>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  {lockedEntries.length} group{lockedEntries.length > 1 ? 's' : ''} · Unlocks on completion
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <p className="font-bold text-amber-400 text-sm">
-                {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'}
-              </p>
-              <ChevronRight className="h-4 w-4 text-zinc-500" />
-            </div>
-          </motion.button>
-        )}
-      </div>
-
-      {/* Empty State */}
-      {unlockedEntries.length === 0 && lockedEntries.length === 0 && pendingPayouts.length === 0 && walletBalance <= 0 && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center justify-center py-16 px-6"
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          onClick={() => setShowLockedSheet(true)}
+          className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all text-left"
         >
-          <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
-            <Wallet className="h-8 w-8 text-muted-foreground" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <Lock className="h-5 w-5 text-amber-400" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm text-white">Locked</p>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                {lockedEntries.length > 0
+                  ? `${lockedEntries.length} nest${lockedEntries.length > 1 ? 's' : ''} · Unlocks on completion`
+                  : 'Held until cycle completes'}
+              </p>
+            </div>
           </div>
-          <h3 className="text-lg font-bold text-foreground mb-1">No Funds Yet</h3>
-          <p className="text-sm text-muted-foreground text-center max-w-[250px]">
-            Your payouts from groups will appear here. Join or create groups to start earning!
-          </p>
-        </motion.div>
-      )}
+          <div className="flex items-center gap-2">
+            <p className="font-bold text-amber-400 text-sm">
+              {showBalance ? formatCurrency(pendingUnlockBalance) : '••••'}
+            </p>
+            <ChevronRight className="h-4 w-4 text-zinc-500" />
+          </div>
+        </motion.button>
+      </div>
 
       {/* Modals & Sheets */}
       <WithdrawModal
