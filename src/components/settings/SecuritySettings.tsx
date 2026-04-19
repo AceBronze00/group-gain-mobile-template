@@ -67,20 +67,6 @@ const SecuritySettings = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Smartphone className="h-5 w-5 text-purple-500" />
-              <div>
-                <Label htmlFor="biometric-lock">Biometric Lock</Label>
-                <p className="text-sm text-gray-600">Use Face ID or fingerprint to unlock</p>
-              </div>
-            </div>
-            <Switch
-              id="biometric-lock"
-              checked={settings.biometricLock}
-              onCheckedChange={() => toggleSetting('biometricLock')}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
               <Lock className="h-5 w-5 text-red-500" />
               <div>
                 <Label htmlFor="pin-lock">PIN Lock</Label>
@@ -94,29 +80,6 @@ const SecuritySettings = () => {
             />
           </div>
         </div>
-      </Card>
-
-      {/* KYC Verification */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4 flex items-center">
-          <CreditCard className="h-5 w-5 mr-2 text-green-500" />
-          KYC Verification
-        </h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center py-2">
-            <span className="text-gray-700">Identity Verification</span>
-            <Badge className="bg-green-500">Verified</Badge>
-          </div>
-          <div className="flex justify-between items-center py-2">
-            <span className="text-gray-700">Address Verification</span>
-            <Badge variant="outline" className="text-orange-600">Pending</Badge>
-          </div>
-          <div className="flex justify-between items-center py-2">
-            <span className="text-gray-700">Bank Account Verification</span>
-            <Badge className="bg-green-500">Verified</Badge>
-          </div>
-        </div>
-        <Button variant="outline" className="mt-4">Upload Documents</Button>
       </Card>
 
       {/* Privacy Settings */}
