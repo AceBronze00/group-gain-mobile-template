@@ -256,21 +256,6 @@ const NotificationSettings = () => {
         </div>
       </Card>
 
-      {/* Quiet Hours */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Quiet Hours</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Do not disturb</span>
-            <span className="text-sm text-muted-foreground">10 PM - 8 AM</span>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Non-urgent notifications will be held until quiet hours end. Critical alerts (failed payments) will still come through.
-          </p>
-        </div>
-        <Button variant="outline" className="mt-4">Customize Quiet Hours</Button>
-      </Card>
-
       {/* Save Button */}
       <div className="flex justify-end">
         <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
