@@ -228,7 +228,7 @@ const WalletTab = () => {
               <p className="text-xs text-zinc-400 mt-0.5">
                 {lockedEntries.length > 0
                   ? `${lockedEntries.length} nest${lockedEntries.length > 1 ? 's' : ''} · Unlocks on completion`
-                  : 'Held until cycle completes'}
+                  : 'Held until rounds complete'}
               </p>
             </div>
           </div>

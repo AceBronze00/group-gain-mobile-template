@@ -33,7 +33,7 @@ const LockedFundsSheet = ({ open, onOpenChange, lockedEntries, totalLocked, form
             </div>
             <div>
               <DialogTitle className="text-white">Locked Funds</DialogTitle>
-              <DialogDescription className="text-zinc-400">Held until your group cycle completes</DialogDescription>
+              <DialogDescription className="text-zinc-400">Held until your nest's rounds complete</DialogDescription>
             </div>
           </div>
           <p className="text-3xl font-bold text-amber-400 mt-2">
