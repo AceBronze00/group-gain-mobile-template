@@ -58,7 +58,8 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
     onOpenChange(false);
   };
 
-  // Mock members data
+  // Mock members data — payoutsExpected is how many times each member is scheduled
+  // to receive a payout across all rounds (e.g., total rounds / members)
   const members: GroupMember[] = [
     {
       id: 1,
@@ -68,7 +69,9 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       position: group.position,
       hasReceived: false,
       hasPaid: true,
-      joinedDate: "2024-01-15"
+      joinedDate: "2024-01-15",
+      payoutsReceived: 0,
+      payoutsExpected: 2,
     },
     {
       id: 2,
@@ -78,7 +81,9 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       position: 1,
       hasReceived: true,
       hasPaid: true,
-      joinedDate: "2024-01-10"
+      joinedDate: "2024-01-10",
+      payoutsReceived: 2,
+      payoutsExpected: 2,
     },
     {
       id: 3,
@@ -88,7 +93,10 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       position: 2,
       hasReceived: true,
       hasPaid: true,
-      joinedDate: "2024-01-12"
+      joinedDate: "2024-01-12",
+      payoutsReceived: 1,
+      payoutsExpected: 2,
+      isUpNext: true,
     },
     {
       id: 4,
@@ -98,7 +106,9 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       position: 4,
       hasReceived: false,
       hasPaid: true,
-      joinedDate: "2024-01-18"
+      joinedDate: "2024-01-18",
+      payoutsReceived: 0,
+      payoutsExpected: 2,
     },
     {
       id: 5,
@@ -108,7 +118,9 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
       position: 5,
       hasReceived: false,
       hasPaid: false,
-      joinedDate: "2024-01-20"
+      joinedDate: "2024-01-20",
+      payoutsReceived: 0,
+      payoutsExpected: 2,
     }
   ];
 
