@@ -234,7 +234,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   value={(members.filter(m => m.hasPaid).length / members.length) * 100} 
                   className="h-2 mt-2" 
                 />
-                <p className="text-xs text-muted-foreground mt-2">Tap to view cycle details →</p>
+                
               </Card>
 
               {members
