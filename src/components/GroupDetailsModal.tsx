@@ -502,26 +502,15 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
         open={showRoundDetails}
         onOpenChange={setShowRoundDetails}
         groupName={group.name}
-        roundNumber={group.currentRound || 1}
+        startDate={group.startDate}
+        frequency={group.frequency}
+        currentRound={group.currentRound || 1}
         totalRounds={group.totalRounds || group.members || 5}
-        status={group.startDate ? "active" : "scheduled"}
-        payoutRecipient={{
-          name: group.payoutRecipient || "—",
-          avatar: "/placeholder.svg",
-          originalDate: group.nextPayout,
-          nextDate: group.nextPayout,
-          actualDate: null,
-        }}
         members={members.map((m) => ({
           id: m.id,
           name: m.name,
           avatar: m.avatar,
-          hasPaid: m.hasPaid,
-          hasReceived: m.hasReceived,
           position: m.position,
-          originalDate: group.nextPayout,
-          nextDate: group.nextPayout,
-          actualDate: m.hasPaid ? group.nextPayout : null,
         }))}
       />
     </Dialog>
