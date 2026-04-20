@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Settings, User, Bell, Lock, CreditCard, Users, ChevronDown } from "lucide-react";
+import { Settings, User, Bell, CreditCard, ChevronDown } from "lucide-react";
 
 interface SettingsSectionProps {
   isSettingsOpen: boolean;
@@ -51,36 +51,12 @@ const SettingsSection = ({ isSettingsOpen, setIsSettingsOpen, onSettingClick }: 
           <Button
             variant="outline"
             className="h-16 justify-start p-4 text-left"
-            onClick={() => onSettingClick('security')}
-          >
-            <Lock className="h-6 w-6 mr-4 text-red-500" />
-            <div>
-              <div className="font-semibold">Security & Privacy</div>
-              <div className="text-sm text-gray-500">2FA, privacy, KYC</div>
-            </div>
-          </Button>
-
-          <Button
-            variant="outline"
-            className="h-16 justify-start p-4 text-left"
             onClick={() => onSettingClick('payments')}
           >
             <CreditCard className="h-6 w-6 mr-4 text-green-500" />
             <div>
               <div className="font-semibold">Payment & Payout</div>
               <div className="text-sm text-gray-500">Bank accounts, auto-debit</div>
-            </div>
-          </Button>
-
-          <Button
-            variant="outline"
-            className="h-16 justify-start p-4 text-left"
-            onClick={() => onSettingClick('groups')}
-          >
-            <Users className="h-6 w-6 mr-4 text-purple-500" />
-            <div>
-              <div className="font-semibold">Nest Settings</div>
-              <div className="text-sm text-gray-500">Manage your nests</div>
             </div>
           </Button>
 

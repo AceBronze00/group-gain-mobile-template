@@ -1,10 +1,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Bell, Lock, CreditCard } from "lucide-react";
+import { User, Bell, CreditCard } from "lucide-react";
 import UserProfileSettings from "@/components/settings/UserProfileSettings";
 import NotificationSettings from "@/components/settings/NotificationSettings";
-import SecuritySettings from "@/components/settings/SecuritySettings";
 import PaymentSettings from "@/components/settings/PaymentSettings";
 
 interface UserData {
@@ -41,7 +40,7 @@ const ProfileSettings = ({
       </div>
 
       <Tabs value={activeSettingsTab} onValueChange={setActiveSettingsTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="profile" className="text-xs">
             <User className="h-4 w-4 mr-1" />
             Profile
@@ -49,10 +48,6 @@ const ProfileSettings = ({
           <TabsTrigger value="notifications" className="text-xs">
             <Bell className="h-4 w-4 mr-1" />
             Notifications
-          </TabsTrigger>
-          <TabsTrigger value="security" className="text-xs">
-            <Lock className="h-4 w-4 mr-1" />
-            Security
           </TabsTrigger>
           <TabsTrigger value="payments" className="text-xs">
             <CreditCard className="h-4 w-4 mr-1" />
@@ -66,9 +61,6 @@ const ProfileSettings = ({
           </TabsContent>
           <TabsContent value="notifications">
             <NotificationSettings />
-          </TabsContent>
-          <TabsContent value="security">
-            <SecuritySettings />
           </TabsContent>
           <TabsContent value="payments">
             <PaymentSettings />

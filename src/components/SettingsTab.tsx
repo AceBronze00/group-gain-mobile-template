@@ -1,14 +1,10 @@
 
 import { Card } from "@/components/ui/card";
-import { Settings, User, Bell, Shield, CreditCard } from "lucide-react";
-import GroupSettings from "@/components/settings/GroupSettings";
+import { Settings, User, Bell, CreditCard } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 
 const SettingsTab = () => {
-  const { groups, navigateToSettings } = useApp();
-  
-  // Filter active nests for the settings
-  const activeGroups = groups.filter(group => group.status === 'active');
+  const { navigateToSettings } = useApp();
 
   const handleQuickSettingClick = (settingTab: string) => {
     navigateToSettings(settingTab);
@@ -28,7 +24,7 @@ const SettingsTab = () => {
       {/* Quick Settings Menu */}
       <Card className="p-6">
         <h2 className="text-lg font-semibold mb-4">Quick Settings</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div 
             onClick={() => handleQuickSettingClick('profile')}
             className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
@@ -44,13 +40,6 @@ const SettingsTab = () => {
             <span className="text-sm">Notifications</span>
           </div>
           <div 
-            onClick={() => handleQuickSettingClick('security')}
-            className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
-          >
-            <Shield className="h-5 w-5 text-purple-500" />
-            <span className="text-sm">Security</span>
-          </div>
-          <div 
             onClick={() => handleQuickSettingClick('payments')}
             className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
           >
@@ -59,9 +48,6 @@ const SettingsTab = () => {
           </div>
         </div>
       </Card>
-
-      {/* Group Settings */}
-      <GroupSettings activeGroups={activeGroups} />
     </div>
   );
 };
