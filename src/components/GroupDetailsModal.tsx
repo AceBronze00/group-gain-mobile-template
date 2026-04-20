@@ -36,6 +36,9 @@ interface GroupMember {
   hasReceived: boolean;
   hasPaid: boolean;
   joinedDate: string;
+  payoutsReceived: number;
+  payoutsExpected: number;
+  isUpNext?: boolean;
 }
 
 interface GroupDetailsModalProps {
