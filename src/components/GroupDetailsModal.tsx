@@ -256,14 +256,24 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
 
               {members
                 .sort((a, b) => {
-                  // Members who received payout go to the bottom
-                  if (a.hasReceived && !b.hasReceived) return 1;
-                  if (!a.hasReceived && b.hasReceived) return -1;
-                  // Among remaining, sort by position (next to receive at top)
+                  // 1. "Up Next" member at the very top
+                  if (a.isUpNext && !b.isUpNext) return -1;
+                  if (!a.isUpNext && b.isUpNext) return 1;
+                  // 2. Members who finished all their payouts go to the bottom
+                  const aDone = a.payoutsReceived >= a.payoutsExpected;
+                  const bDone = b.payoutsReceived >= b.payoutsExpected;
+                  if (aDone && !bDone) return 1;
+                  if (!aDone && bDone) return -1;
+                  // 3. Otherwise sort by queue position
                   return a.position - b.position;
                 })
-                .map((member) => (
-                  <Card key={member.id} className="p-3">
+                .map((member) => {
+                  const allPayoutsDone = member.payoutsReceived >= member.payoutsExpected;
+                  return (
+                  <Card
+                    key={member.id}
+                    className={`p-3 ${member.isUpNext ? "border-2 border-primary bg-primary/5" : ""}`}
+                  >
                     <div className="flex items-center space-x-3">
                       <div className="relative">
                         <Avatar className="h-10 w-10">
@@ -272,14 +282,24 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                             {member.name.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
-                        {member.hasReceived && (
-                          <CheckCircle className="absolute -top-1 -right-1 h-4 w-4 text-green-500 bg-white rounded-full" />
+                        {member.isUpNext && (
+                          <Crown className="absolute -top-1 -right-1 h-4 w-4 text-primary bg-background rounded-full p-0.5" />
+                        )}
+                        {!member.isUpNext && allPayoutsDone && (
+                          <Trophy className="absolute -top-1 -right-1 h-4 w-4 text-green-500 bg-white rounded-full p-0.5" />
                         )}
                       </div>
                       
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-semibold">{member.name}</h4>
+                          <h4 className="font-semibold flex items-center gap-2">
+                            {member.name}
+                            {member.isUpNext && (
+                              <Badge className="text-[10px] bg-primary text-primary-foreground hover:bg-primary">
+                                UP NEXT
+                              </Badge>
+                            )}
+                          </h4>
                           <Badge variant="outline" className="text-xs">
                             #{member.position}
                           </Badge>
@@ -303,18 +323,26 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                               Pending
                             </Badge>
                           )}
-                          {/* Payout Status */}
-                          {member.hasReceived && (
-                            <Badge className="text-xs bg-green-100 text-green-700 hover:bg-green-100">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Received Payout
-                            </Badge>
-                          )}
+                          {/* Payout count */}
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${
+                              allPayoutsDone
+                                ? "bg-green-100 text-green-700 border-green-300"
+                                : member.payoutsReceived > 0
+                                  ? "bg-green-50 text-green-700 border-green-200"
+                                  : "text-muted-foreground"
+                            }`}
+                          >
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Payouts: {member.payoutsReceived}/{member.payoutsExpected}
+                          </Badge>
                         </div>
                       </div>
                     </div>
                   </Card>
-                ))}
+                  );
+                })}
             </TabsContent>
 
             <TabsContent value="history" className="space-y-3">
