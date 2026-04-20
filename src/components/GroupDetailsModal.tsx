@@ -19,7 +19,9 @@ import {
   Info,
   Copy,
   RefreshCw,
-  Trash2
+  Trash2,
+  Crown,
+  Trophy
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "@/contexts/AppContext";
