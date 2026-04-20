@@ -300,9 +300,6 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                               </Badge>
                             )}
                           </h4>
-                          <Badge variant="outline" className="text-xs">
-                            #{member.position}
-                          </Badge>
                         </div>
                         <div className="flex items-center flex-wrap gap-2 mt-1">
                           <div className="flex items-center">
