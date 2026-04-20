@@ -498,32 +498,49 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
         </Tabs>
       </DialogContent>
 
-      <RoundDetailsModal
-        open={showRoundDetails}
-        onOpenChange={setShowRoundDetails}
-        groupName={group.name}
-        roundNumber={group.currentRound || 1}
-        totalRounds={group.totalRounds || group.members || 5}
-        status={group.startDate ? "active" : "scheduled"}
-        payoutRecipient={{
-          name: group.payoutRecipient || "—",
-          avatar: "/placeholder.svg",
-          originalDate: group.nextPayout,
-          nextDate: group.nextPayout,
-          actualDate: null,
-        }}
-        members={members.map((m) => ({
-          id: m.id,
-          name: m.name,
-          avatar: m.avatar,
-          hasPaid: m.hasPaid,
-          hasReceived: m.hasReceived,
-          position: m.position,
-          originalDate: group.nextPayout,
-          nextDate: group.nextPayout,
-          actualDate: m.hasPaid ? group.nextPayout : null,
-        }))}
-      />
+      {(() => {
+        const totalRounds = group.totalRounds || group.members || members.length;
+        const currentRound = group.currentRound || 1;
+        const startDate = group.startDate || group.createdAt || null;
+
+        const frequencyDays =
+          group.frequency === "daily" ? 1
+          : group.frequency === "biweekly" ? 14
+          : group.frequency === "monthly" ? 30
+          : 7;
+
+        const baseDate = startDate ? new Date(startDate) : new Date();
+        const orderedMembers = [...members].sort((a, b) => a.position - b.position);
+
+        const rounds = Array.from({ length: totalRounds }, (_, i) => {
+          const roundNumber = i + 1;
+          const recipient = orderedMembers[i % orderedMembers.length];
+          const scheduled = new Date(baseDate.getTime() + i * frequencyDays * 24 * 60 * 60 * 1000);
+          const status: "scheduled" | "active" | "completed" =
+            roundNumber < currentRound ? "completed"
+            : roundNumber === currentRound ? "active"
+            : "scheduled";
+          return {
+            roundNumber,
+            recipientName: recipient?.name ?? "—",
+            recipientAvatar: recipient?.avatar ?? "/placeholder.svg",
+            scheduledDate: scheduled.toISOString(),
+            actualDate: status === "completed" ? scheduled.toISOString() : null,
+            status,
+          };
+        });
+
+        return (
+          <RoundDetailsModal
+            open={showRoundDetails}
+            onOpenChange={setShowRoundDetails}
+            groupName={group.name}
+            startDate={startDate}
+            totalRounds={totalRounds}
+            rounds={rounds}
+          />
+        );
+      })()}
     </Dialog>
   );
 };
