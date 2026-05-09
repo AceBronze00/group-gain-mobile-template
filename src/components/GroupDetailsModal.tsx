@@ -198,13 +198,23 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
             )}
             {voteActive && (
               <Card className="p-3 border-primary/30 bg-primary/5">
-                <div className="flex items-center gap-2">
-                  <Vote className="h-4 w-4 text-primary shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold">Deletion vote in progress</p>
+                <div className="flex items-start gap-2">
+                  <Vote className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold">
+                      {group.deletionVote?.requestedBy && group.deletionVote.requestedBy !== "You"
+                        ? `${group.deletionVote.requestedBy} requested a deletion vote`
+                        : "Deletion vote in progress"}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {yesVotes} delete · {noVotes} keep · {yesVotes + noVotes}/{group.members} voted
+                      {group.deletionVote?.requestedAt && (
+                        <> · {new Date(group.deletionVote.requestedAt).toLocaleString()}</>
+                      )}
                     </p>
+                    {hasVoted && (
+                      <p className="text-xs text-primary mt-1">✓ Your vote has been recorded</p>
+                    )}
                   </div>
                   <Button size="sm" onClick={() => setVoteOpen(true)}>
                     {hasVoted ? "View" : "Vote"}
