@@ -21,7 +21,12 @@ import {
   RefreshCw,
   Trash2,
   Crown,
-  Trophy
+  Trophy,
+  PauseCircle,
+  PlayCircle,
+  Vote,
+  ThumbsUp,
+  ThumbsDown
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "@/contexts/AppContext";
@@ -52,6 +57,45 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
   const { deleteGroup } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRoundDetails, setShowRoundDetails] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [voteOpen, setVoteOpen] = useState(false);
+  const [voteActive, setVoteActive] = useState(false);
+  const [yesVotes, setYesVotes] = useState(0);
+  const [noVotes, setNoVotes] = useState(0);
+  const [hasVoted, setHasVoted] = useState(false);
+
+  const handleTogglePause = () => {
+    setIsPaused((p) => !p);
+    toast({
+      title: isPaused ? "Nest Resumed" : "Nest Paused",
+      description: isPaused
+        ? "Contributions and payouts have resumed."
+        : "Contributions and payouts are temporarily suspended.",
+    });
+  };
+
+  const startDeletionVote = () => {
+    setVoteActive(true);
+    setYesVotes(0);
+    setNoVotes(0);
+    setHasVoted(false);
+    setVoteOpen(true);
+    toast({
+      title: "Deletion Vote Started",
+      description: "All members can now vote on whether to delete this nest.",
+    });
+  };
+
+  const castVote = (approve: boolean) => {
+    if (hasVoted) return;
+    if (approve) setYesVotes((v) => v + 1);
+    else setNoVotes((v) => v + 1);
+    setHasVoted(true);
+    toast({
+      title: "Vote Recorded",
+      description: approve ? "You voted to delete." : "You voted to keep.",
+    });
+  };
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
