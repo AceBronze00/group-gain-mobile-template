@@ -614,6 +614,60 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
           />
         );
       })()}
+
+      <AlertDialog open={voteOpen} onOpenChange={setVoteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+              <Vote className="h-5 w-5 mr-2 text-primary" />
+              Vote to Delete "{group.name}"
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Members vote on whether this nest should be deleted. A majority is required to proceed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3 py-2">
+            <div className="grid grid-cols-2 gap-3">
+              <Card className="p-3 text-center">
+                <ThumbsUp className="h-5 w-5 mx-auto text-destructive mb-1" />
+                <div className="text-2xl font-bold">{yesVotes}</div>
+                <div className="text-xs text-muted-foreground">Delete</div>
+              </Card>
+              <Card className="p-3 text-center">
+                <ThumbsDown className="h-5 w-5 mx-auto text-green-600 mb-1" />
+                <div className="text-2xl font-bold">{noVotes}</div>
+                <div className="text-xs text-muted-foreground">Keep</div>
+              </Card>
+            </div>
+
+            <div className="text-xs text-center text-muted-foreground">
+              {yesVotes + noVotes} of {group.members} members have voted
+            </div>
+
+            {!hasVoted ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="destructive" size="sm" onClick={() => castVote(true)}>
+                  <ThumbsUp className="h-4 w-4 mr-2" />
+                  Vote Delete
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => castVote(false)}>
+                  <ThumbsDown className="h-4 w-4 mr-2" />
+                  Vote Keep
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-center text-muted-foreground">
+                Your vote has been recorded.
+              </p>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
