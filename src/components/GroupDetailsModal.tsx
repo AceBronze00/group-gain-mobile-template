@@ -180,6 +180,41 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
           </DialogTitle>
         </DialogHeader>
 
+        {/* Member-visible status banners */}
+        {(isPaused || voteActive) && (
+          <div className="space-y-2">
+            {isPaused && (
+              <Card className="p-3 border-amber-300 bg-amber-50">
+                <div className="flex items-center gap-2">
+                  <PauseCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-amber-800">Nest is paused</p>
+                    <p className="text-xs text-amber-700">
+                      The admin has temporarily suspended contributions and payouts.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+            {voteActive && (
+              <Card className="p-3 border-primary/30 bg-primary/5">
+                <div className="flex items-center gap-2">
+                  <Vote className="h-4 w-4 text-primary shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold">Deletion vote in progress</p>
+                    <p className="text-xs text-muted-foreground">
+                      {yesVotes} delete · {noVotes} keep · {yesVotes + noVotes}/{group.members} voted
+                    </p>
+                  </div>
+                  <Button size="sm" onClick={() => setVoteOpen(true)}>
+                    {hasVoted ? "View" : "Vote"}
+                  </Button>
+                </div>
+              </Card>
+            )}
+          </div>
+        )}
+
         <Tabs defaultValue="overview" className="flex-1 overflow-hidden">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
