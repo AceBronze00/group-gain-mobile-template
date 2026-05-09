@@ -14,7 +14,7 @@ import PaymentModal from "@/components/PaymentModal";
 import { useApp } from "@/contexts/AppContext";
 
 const DashboardTab = () => {
-  const { groups: activeNests, walletBalance } = useApp();
+  const { groups: activeNests, walletBalance, seedDemoPausedNest } = useApp();
   const [showCreateNest, setShowCreateNest] = useState(false);
   const [showJoinNest, setShowJoinNest] = useState(false);
   const [selectedNest, setSelectedNest] = useState(null);
@@ -224,6 +224,13 @@ const DashboardTab = () => {
                 className="w-full border-2 px-8 py-3 rounded-xl font-semibold"
               >
                 Join Existing Nest
+              </Button>
+              <Button
+                onClick={() => seedDemoPausedNest()}
+                variant="ghost"
+                className="w-full text-sm text-muted-foreground"
+              >
+                Load Demo: Paused Nest with Active Vote
               </Button>
             </div>
           </div>
