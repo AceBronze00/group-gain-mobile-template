@@ -29,6 +29,13 @@ export interface Group {
   payoutSequence: string[];
   hasStarted: boolean;
   totalPayoutsSent: number;
+  isPaused?: boolean;
+  deletionVote?: {
+    active: boolean;
+    yes: number;
+    no: number;
+    hasVoted?: boolean;
+  };
 }
 
 export interface WalletEntry {
@@ -62,6 +69,10 @@ interface AppContextType {
   updatePayoutOrder: (groupId: number, newOrder: string[]) => void;
   deleteGroup: (groupId: number) => void;
   calculateLateJoinerAmount: (groupCode: string) => number;
+  setNestPaused: (groupId: number, paused: boolean) => void;
+  startDeletionVote: (groupId: number) => void;
+  castDeletionVote: (groupId: number, approve: boolean) => void;
+  seedDemoPausedNest: () => void;
   // Navigation state for settings
   pendingSettingsTab: string | null;
   setPendingSettingsTab: (tab: string | null) => void;
@@ -434,6 +445,87 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const setNestPaused = (groupId: number, paused: boolean) => {
+    setGroups(prev => prev.map(g => g.id === groupId ? { ...g, isPaused: paused } : g));
+    toast({
+      title: paused ? "Nest Paused" : "Nest Resumed",
+      description: paused
+        ? "Contributions and payouts are temporarily suspended."
+        : "Contributions and payouts have resumed.",
+    });
+  };
+
+  const startDeletionVote = (groupId: number) => {
+    setGroups(prev => prev.map(g => g.id === groupId
+      ? { ...g, deletionVote: { active: true, yes: 0, no: 0, hasVoted: false } }
+      : g));
+    toast({
+      title: "Deletion Vote Started",
+      description: "All members can now vote on whether to delete this nest.",
+    });
+  };
+
+  const castDeletionVote = (groupId: number, approve: boolean) => {
+    setGroups(prev => prev.map(g => {
+      if (g.id !== groupId || !g.deletionVote || g.deletionVote.hasVoted) return g;
+      return {
+        ...g,
+        deletionVote: {
+          ...g.deletionVote,
+          yes: g.deletionVote.yes + (approve ? 1 : 0),
+          no: g.deletionVote.no + (approve ? 0 : 1),
+          hasVoted: true,
+        }
+      };
+    }));
+    toast({
+      title: "Vote Recorded",
+      description: approve ? "You voted to delete." : "You voted to keep.",
+    });
+  };
+
+  const seedDemoPausedNest = () => {
+    const groupId = Date.now();
+    const nextPayoutDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
+    const myPayoutDate = new Date(Date.now() + 21 * 24 * 60 * 60 * 1000);
+    const demoNest: Group = {
+      id: groupId,
+      name: "Demo: Family Savings",
+      members: 5,
+      totalAmount: 500,
+      contributionAmount: 100,
+      frequency: "weekly",
+      nextPayout: nextPayoutDate.toISOString().split('T')[0],
+      payoutRecipient: "Sarah M.",
+      progress: 40,
+      myTurn: false,
+      position: 4,
+      myPayoutDate: myPayoutDate.toISOString().split('T')[0],
+      membersPaid: 2,
+      status: 'active',
+      inviteCode: "DEMO-PAUSED",
+      adminId: "otherUser",
+      isAdmin: false,
+      membersList: ["member1", "member2", "member3", "member4", currentUserId],
+      createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+      isComplete: false,
+      allMembersPaidOut: false,
+      lockWithdrawals: true,
+      allowMultipleContributions: false,
+      payoutOrder: 'manual',
+      payoutSequence: ["member1", "member2", "member3", "member4", currentUserId],
+      hasStarted: true,
+      totalPayoutsSent: 200,
+      isPaused: true,
+      deletionVote: { active: true, yes: 1, no: 1, hasVoted: false },
+    };
+    setGroups(prev => [...prev, demoNest]);
+    toast({
+      title: "Demo Nest Loaded",
+      description: "Open it to see the paused state and cast a deletion vote.",
+    });
+  };
+
   const generateInviteUrl = (groupCode: string) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/?invite=${groupCode}`;
@@ -464,6 +556,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       updatePayoutOrder,
       deleteGroup,
       calculateLateJoinerAmount,
+      setNestPaused,
+      startDeletionVote,
+      castDeletionVote,
+      seedDemoPausedNest,
       pendingSettingsTab,
       setPendingSettingsTab,
       navigateToSettings,
