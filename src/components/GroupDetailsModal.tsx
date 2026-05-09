@@ -573,6 +573,32 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   </Button>
                 </Card>
               )}
+
+              {/* Member Actions - non-admins */}
+              {!group.isAdmin && (
+                <Card className="p-4">
+                  <h4 className="font-semibold mb-2 flex items-center">
+                    <Vote className="h-4 w-4 mr-2 text-primary" />
+                    Member Actions
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {voteActive
+                      ? "A deletion vote is in progress. Cast your vote below."
+                      : "If something is wrong, you can request a deletion vote among members."}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => (voteActive ? setVoteOpen(true) : startDeletionVote())}
+                  >
+                    <Vote className="h-4 w-4 mr-2" />
+                    {voteActive
+                      ? hasVoted ? "View Deletion Vote" : "Cast Your Vote"
+                      : "Request Deletion Vote"}
+                  </Button>
+                </Card>
+              )}
             </TabsContent>
           </div>
         </Tabs>
