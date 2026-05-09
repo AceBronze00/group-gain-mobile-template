@@ -21,7 +21,12 @@ import {
   RefreshCw,
   Trash2,
   Crown,
-  Trophy
+  Trophy,
+  PauseCircle,
+  PlayCircle,
+  Vote,
+  ThumbsUp,
+  ThumbsDown
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useApp } from "@/contexts/AppContext";
@@ -52,6 +57,45 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
   const { deleteGroup } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRoundDetails, setShowRoundDetails] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [voteOpen, setVoteOpen] = useState(false);
+  const [voteActive, setVoteActive] = useState(false);
+  const [yesVotes, setYesVotes] = useState(0);
+  const [noVotes, setNoVotes] = useState(0);
+  const [hasVoted, setHasVoted] = useState(false);
+
+  const handleTogglePause = () => {
+    setIsPaused((p) => !p);
+    toast({
+      title: isPaused ? "Nest Resumed" : "Nest Paused",
+      description: isPaused
+        ? "Contributions and payouts have resumed."
+        : "Contributions and payouts are temporarily suspended.",
+    });
+  };
+
+  const startDeletionVote = () => {
+    setVoteActive(true);
+    setYesVotes(0);
+    setNoVotes(0);
+    setHasVoted(false);
+    setVoteOpen(true);
+    toast({
+      title: "Deletion Vote Started",
+      description: "All members can now vote on whether to delete this nest.",
+    });
+  };
+
+  const castVote = (approve: boolean) => {
+    if (hasVoted) return;
+    if (approve) setYesVotes((v) => v + 1);
+    else setNoVotes((v) => v + 1);
+    setHasVoted(true);
+    toast({
+      title: "Vote Recorded",
+      description: approve ? "You voted to delete." : "You voted to keep.",
+    });
+  };
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
@@ -464,9 +508,28 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                     Danger Zone
                   </h4>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Permanently delete this nest. This action cannot be undone.
+                    Pause activity, start a member vote, or permanently delete this nest.
                   </p>
-                  <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                  {isPaused && (
+                    <Badge variant="outline" className="mb-3 text-amber-600 border-amber-300">
+                      <PauseCircle className="h-3 w-3 mr-1" />
+                      Nest is currently paused
+                    </Badge>
+                  )}
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleTogglePause}
+                      className="w-full"
+                    >
+                      {isPaused ? (
+                        <><PlayCircle className="h-4 w-4 mr-2" />Resume Nest</>
+                      ) : (
+                        <><PauseCircle className="h-4 w-4 mr-2" />Pause Nest</>
+                      )}
+                    </Button>
+                    <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
                     <Button
                       variant="destructive"
                       size="sm"
@@ -491,6 +554,16 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => (voteActive ? setVoteOpen(true) : startDeletionVote())}
+                  >
+                    <Vote className="h-4 w-4 mr-2" />
+                    {voteActive ? "View Deletion Vote" : "Start Deletion Vote"}
+                  </Button>
                 </Card>
               )}
             </TabsContent>
@@ -541,6 +614,60 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
           />
         );
       })()}
+
+      <AlertDialog open={voteOpen} onOpenChange={setVoteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+              <Vote className="h-5 w-5 mr-2 text-primary" />
+              Vote to Delete "{group.name}"
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Members vote on whether this nest should be deleted. A majority is required to proceed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3 py-2">
+            <div className="grid grid-cols-2 gap-3">
+              <Card className="p-3 text-center">
+                <ThumbsUp className="h-5 w-5 mx-auto text-destructive mb-1" />
+                <div className="text-2xl font-bold">{yesVotes}</div>
+                <div className="text-xs text-muted-foreground">Delete</div>
+              </Card>
+              <Card className="p-3 text-center">
+                <ThumbsDown className="h-5 w-5 mx-auto text-green-600 mb-1" />
+                <div className="text-2xl font-bold">{noVotes}</div>
+                <div className="text-xs text-muted-foreground">Keep</div>
+              </Card>
+            </div>
+
+            <div className="text-xs text-center text-muted-foreground">
+              {yesVotes + noVotes} of {group.members} members have voted
+            </div>
+
+            {!hasVoted ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="destructive" size="sm" onClick={() => castVote(true)}>
+                  <ThumbsUp className="h-4 w-4 mr-2" />
+                  Vote Delete
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => castVote(false)}>
+                  <ThumbsDown className="h-4 w-4 mr-2" />
+                  Vote Keep
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-center text-muted-foreground">
+                Your vote has been recorded.
+              </p>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
