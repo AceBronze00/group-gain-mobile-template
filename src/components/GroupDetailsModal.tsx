@@ -508,9 +508,28 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                     Danger Zone
                   </h4>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Permanently delete this nest. This action cannot be undone.
+                    Pause activity, start a member vote, or permanently delete this nest.
                   </p>
-                  <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                  {isPaused && (
+                    <Badge variant="outline" className="mb-3 text-amber-600 border-amber-300">
+                      <PauseCircle className="h-3 w-3 mr-1" />
+                      Nest is currently paused
+                    </Badge>
+                  )}
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleTogglePause}
+                      className="w-full"
+                    >
+                      {isPaused ? (
+                        <><PlayCircle className="h-4 w-4 mr-2" />Resume Nest</>
+                      ) : (
+                        <><PauseCircle className="h-4 w-4 mr-2" />Pause Nest</>
+                      )}
+                    </Button>
+                    <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
                     <Button
                       variant="destructive"
                       size="sm"
@@ -535,6 +554,16 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => (voteActive ? setVoteOpen(true) : startDeletionVote())}
+                  >
+                    <Vote className="h-4 w-4 mr-2" />
+                    {voteActive ? "View Deletion Vote" : "Start Deletion Vote"}
+                  </Button>
                 </Card>
               )}
             </TabsContent>
