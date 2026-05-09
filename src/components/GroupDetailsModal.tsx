@@ -54,48 +54,20 @@ interface GroupDetailsModalProps {
 
 const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps) => {
   const { toast } = useToast();
-  const { deleteGroup } = useApp();
+  const { deleteGroup, setNestPaused, startDeletionVote: startVote, castDeletionVote } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRoundDetails, setShowRoundDetails] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [voteOpen, setVoteOpen] = useState(false);
-  const [voteActive, setVoteActive] = useState(false);
-  const [yesVotes, setYesVotes] = useState(0);
-  const [noVotes, setNoVotes] = useState(0);
-  const [hasVoted, setHasVoted] = useState(false);
 
-  const handleTogglePause = () => {
-    setIsPaused((p) => !p);
-    toast({
-      title: isPaused ? "Nest Resumed" : "Nest Paused",
-      description: isPaused
-        ? "Contributions and payouts have resumed."
-        : "Contributions and payouts are temporarily suspended.",
-    });
-  };
+  const isPaused = !!group.isPaused;
+  const voteActive = !!group.deletionVote?.active;
+  const yesVotes = group.deletionVote?.yes ?? 0;
+  const noVotes = group.deletionVote?.no ?? 0;
+  const hasVoted = !!group.deletionVote?.hasVoted;
 
-  const startDeletionVote = () => {
-    setVoteActive(true);
-    setYesVotes(0);
-    setNoVotes(0);
-    setHasVoted(false);
-    setVoteOpen(true);
-    toast({
-      title: "Deletion Vote Started",
-      description: "All members can now vote on whether to delete this nest.",
-    });
-  };
-
-  const castVote = (approve: boolean) => {
-    if (hasVoted) return;
-    if (approve) setYesVotes((v) => v + 1);
-    else setNoVotes((v) => v + 1);
-    setHasVoted(true);
-    toast({
-      title: "Vote Recorded",
-      description: approve ? "You voted to delete." : "You voted to keep.",
-    });
-  };
+  const handleTogglePause = () => setNestPaused(group.id, !isPaused);
+  const startDeletionVote = () => { startVote(group.id); setVoteOpen(true); };
+  const castVote = (approve: boolean) => castDeletionVote(group.id, approve);
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
@@ -207,6 +179,41 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
             {group.name}
           </DialogTitle>
         </DialogHeader>
+
+        {/* Member-visible status banners */}
+        {(isPaused || voteActive) && (
+          <div className="space-y-2">
+            {isPaused && (
+              <Card className="p-3 border-amber-300 bg-amber-50">
+                <div className="flex items-center gap-2">
+                  <PauseCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-amber-800">Nest is paused</p>
+                    <p className="text-xs text-amber-700">
+                      The admin has temporarily suspended contributions and payouts.
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+            {voteActive && (
+              <Card className="p-3 border-primary/30 bg-primary/5">
+                <div className="flex items-center gap-2">
+                  <Vote className="h-4 w-4 text-primary shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold">Deletion vote in progress</p>
+                    <p className="text-xs text-muted-foreground">
+                      {yesVotes} delete · {noVotes} keep · {yesVotes + noVotes}/{group.members} voted
+                    </p>
+                  </div>
+                  <Button size="sm" onClick={() => setVoteOpen(true)}>
+                    {hasVoted ? "View" : "Vote"}
+                  </Button>
+                </div>
+              </Card>
+            )}
+          </div>
+        )}
 
         <Tabs defaultValue="overview" className="flex-1 overflow-hidden">
           <TabsList className="grid w-full grid-cols-4">
@@ -563,6 +570,32 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                   >
                     <Vote className="h-4 w-4 mr-2" />
                     {voteActive ? "View Deletion Vote" : "Start Deletion Vote"}
+                  </Button>
+                </Card>
+              )}
+
+              {/* Member Actions - non-admins */}
+              {!group.isAdmin && (
+                <Card className="p-4">
+                  <h4 className="font-semibold mb-2 flex items-center">
+                    <Vote className="h-4 w-4 mr-2 text-primary" />
+                    Member Actions
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {voteActive
+                      ? "A deletion vote is in progress. Cast your vote below."
+                      : "If something is wrong, you can request a deletion vote among members."}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => (voteActive ? setVoteOpen(true) : startDeletionVote())}
+                  >
+                    <Vote className="h-4 w-4 mr-2" />
+                    {voteActive
+                      ? hasVoted ? "View Deletion Vote" : "Cast Your Vote"
+                      : "Request Deletion Vote"}
                   </Button>
                 </Card>
               )}
