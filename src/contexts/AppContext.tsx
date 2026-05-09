@@ -35,6 +35,8 @@ export interface Group {
     yes: number;
     no: number;
     hasVoted?: boolean;
+    requestedBy?: string;
+    requestedAt?: string;
   };
 }
 
@@ -457,7 +459,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const startDeletionVote = (groupId: number) => {
     setGroups(prev => prev.map(g => g.id === groupId
-      ? { ...g, deletionVote: { active: true, yes: 0, no: 0, hasVoted: false } }
+      ? { ...g, deletionVote: {
+          active: true, yes: 0, no: 0, hasVoted: false,
+          requestedBy: "You", requestedAt: new Date().toISOString()
+        } }
       : g));
     toast({
       title: "Deletion Vote Started",
@@ -517,7 +522,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       hasStarted: true,
       totalPayoutsSent: 200,
       isPaused: true,
-      deletionVote: { active: true, yes: 1, no: 1, hasVoted: false },
+      deletionVote: {
+        active: true, yes: 1, no: 1, hasVoted: false,
+        requestedBy: "Sarah M.",
+        requestedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      },
     };
     setGroups(prev => [...prev, demoNest]);
     toast({
