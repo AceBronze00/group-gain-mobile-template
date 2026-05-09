@@ -116,6 +116,14 @@ const DashboardTab = () => {
             <Users className="h-5 w-5 mr-2 text-primary" />
             Your Nests ({activeNests.length})
           </h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => seedDemoPausedNest()}
+            className="text-xs text-muted-foreground"
+          >
+            + Demo Paused Nest
+          </Button>
         </div>
         
         {activeNests.map((nest) => {
