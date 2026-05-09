@@ -54,48 +54,20 @@ interface GroupDetailsModalProps {
 
 const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps) => {
   const { toast } = useToast();
-  const { deleteGroup } = useApp();
+  const { deleteGroup, setNestPaused, startDeletionVote: startVote, castDeletionVote } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRoundDetails, setShowRoundDetails] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [voteOpen, setVoteOpen] = useState(false);
-  const [voteActive, setVoteActive] = useState(false);
-  const [yesVotes, setYesVotes] = useState(0);
-  const [noVotes, setNoVotes] = useState(0);
-  const [hasVoted, setHasVoted] = useState(false);
 
-  const handleTogglePause = () => {
-    setIsPaused((p) => !p);
-    toast({
-      title: isPaused ? "Nest Resumed" : "Nest Paused",
-      description: isPaused
-        ? "Contributions and payouts have resumed."
-        : "Contributions and payouts are temporarily suspended.",
-    });
-  };
+  const isPaused = !!group.isPaused;
+  const voteActive = !!group.deletionVote?.active;
+  const yesVotes = group.deletionVote?.yes ?? 0;
+  const noVotes = group.deletionVote?.no ?? 0;
+  const hasVoted = !!group.deletionVote?.hasVoted;
 
-  const startDeletionVote = () => {
-    setVoteActive(true);
-    setYesVotes(0);
-    setNoVotes(0);
-    setHasVoted(false);
-    setVoteOpen(true);
-    toast({
-      title: "Deletion Vote Started",
-      description: "All members can now vote on whether to delete this nest.",
-    });
-  };
-
-  const castVote = (approve: boolean) => {
-    if (hasVoted) return;
-    if (approve) setYesVotes((v) => v + 1);
-    else setNoVotes((v) => v + 1);
-    setHasVoted(true);
-    toast({
-      title: "Vote Recorded",
-      description: approve ? "You voted to delete." : "You voted to keep.",
-    });
-  };
+  const handleTogglePause = () => setNestPaused(group.id, !isPaused);
+  const startDeletionVote = () => { startVote(group.id); setVoteOpen(true); };
+  const castVote = (approve: boolean) => castDeletionVote(group.id, approve);
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
