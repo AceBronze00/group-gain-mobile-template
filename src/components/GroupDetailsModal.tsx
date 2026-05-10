@@ -54,10 +54,11 @@ interface GroupDetailsModalProps {
 
 const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps) => {
   const { toast } = useToast();
-  const { deleteGroup, setNestPaused, startDeletionVote: startVote, castDeletionVote } = useApp();
+  const { deleteGroup, setNestPaused, startDeletionVote: startVote, castDeletionVote, startPauseVote, castPauseVote } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRoundDetails, setShowRoundDetails] = useState(false);
   const [voteOpen, setVoteOpen] = useState(false);
+  const [pauseVoteOpen, setPauseVoteOpen] = useState(false);
 
   const isPaused = !!group.isPaused;
   const voteActive = !!group.deletionVote?.active;
@@ -65,9 +66,24 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
   const noVotes = group.deletionVote?.no ?? 0;
   const hasVoted = !!group.deletionVote?.hasVoted;
 
-  const handleTogglePause = () => setNestPaused(group.id, !isPaused);
+  const pauseVoteActive = !!group.pauseVote?.active;
+  const pauseYes = group.pauseVote?.yes ?? 0;
+  const pauseNo = group.pauseVote?.no ?? 0;
+  const hasVotedPause = !!group.pauseVote?.hasVoted;
+
+  const handleTogglePause = () => {
+    if (isPaused) {
+      setNestPaused(group.id, false);
+    } else if (!pauseVoteActive) {
+      startPauseVote(group.id);
+      setPauseVoteOpen(true);
+    } else {
+      setPauseVoteOpen(true);
+    }
+  };
   const startDeletionVote = () => { startVote(group.id); setVoteOpen(true); };
   const castVote = (approve: boolean) => castDeletionVote(group.id, approve);
+  const castPause = (approve: boolean) => castPauseVote(group.id, approve);
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
@@ -181,7 +197,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
         </DialogHeader>
 
         {/* Member-visible status banners */}
-        {(isPaused || voteActive) && (
+        {(isPaused || voteActive || pauseVoteActive) && (
           <div className="space-y-2">
             {isPaused && (
               <Card className="p-3 border-amber-300 bg-amber-50">
@@ -193,6 +209,32 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                       The admin has temporarily suspended contributions and payouts.
                     </p>
                   </div>
+                </div>
+              </Card>
+            )}
+            {pauseVoteActive && (
+              <Card className="p-3 border-amber-300 bg-amber-50">
+                <div className="flex items-start gap-2">
+                  <Vote className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-amber-800">
+                      {group.pauseVote?.requestedBy && group.pauseVote.requestedBy !== "You"
+                        ? `${group.pauseVote.requestedBy} requested a pause vote`
+                        : "Pause vote in progress"}
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      {pauseYes} pause · {pauseNo} keep active · {pauseYes + pauseNo}/{group.members} voted
+                      {group.pauseVote?.requestedAt && (
+                        <> · {new Date(group.pauseVote.requestedAt).toLocaleString()}</>
+                      )}
+                    </p>
+                    {hasVotedPause && (
+                      <p className="text-xs text-amber-800 mt-1">✓ Your vote has been recorded</p>
+                    )}
+                  </div>
+                  <Button size="sm" onClick={() => setPauseVoteOpen(true)}>
+                    {hasVotedPause ? "View" : "Vote"}
+                  </Button>
                 </div>
               </Card>
             )}
