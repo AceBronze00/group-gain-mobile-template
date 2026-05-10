@@ -636,21 +636,36 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                     Member Actions
                   </h4>
                   <p className="text-sm text-muted-foreground mb-3">
-                    {voteActive
-                      ? "A deletion vote is in progress. Cast your vote below."
-                      : "If something is wrong, you can request a deletion vote among members."}
+                    Members can request a pause or deletion vote. Both require a majority to take effect.
                   </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => (voteActive ? setVoteOpen(true) : startDeletionVote())}
-                  >
-                    <Vote className="h-4 w-4 mr-2" />
-                    {voteActive
-                      ? hasVoted ? "View Deletion Vote" : "Cast Your Vote"
-                      : "Request Deletion Vote"}
-                  </Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={handleTogglePause}
+                      disabled={isPaused}
+                    >
+                      {isPaused ? (
+                        <><PauseCircle className="h-4 w-4 mr-2" />Nest Paused</>
+                      ) : pauseVoteActive ? (
+                        <><Vote className="h-4 w-4 mr-2" />{hasVotedPause ? "View Pause Vote" : "Cast Pause Vote"}</>
+                      ) : (
+                        <><PauseCircle className="h-4 w-4 mr-2" />Request Pause Vote</>
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => (voteActive ? setVoteOpen(true) : startDeletionVote())}
+                    >
+                      <Vote className="h-4 w-4 mr-2" />
+                      {voteActive
+                        ? hasVoted ? "View Deletion Vote" : "Cast Your Vote"
+                        : "Request Deletion Vote"}
+                    </Button>
+                  </div>
                 </Card>
               )}
             </TabsContent>
