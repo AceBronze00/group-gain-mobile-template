@@ -85,6 +85,7 @@ interface AppContextType {
   startDeletionVote: (groupId: number) => void;
   castDeletionVote: (groupId: number, approve: boolean) => void;
   seedDemoPausedNest: () => void;
+  seedDemoCompletedNests: () => void;
   // Navigation state for settings
   pendingSettingsTab: string | null;
   setPendingSettingsTab: (tab: string | null) => void;
@@ -673,6 +674,59 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const seedDemoCompletedNests = () => {
+    const baseId = Date.now();
+    const samples: Array<Partial<Group> & { name: string; members: number; contribution: number; daysAgo: number; recipient: string }> = [
+      { name: "Holiday Travel Fund", members: 8, contribution: 250, daysAgo: 18, recipient: "You" },
+      { name: "Office Coffee Club", members: 5, contribution: 50, daysAgo: 62, recipient: "Marcus T." },
+      { name: "Sister Circle Savings", members: 6, contribution: 200, daysAgo: 110, recipient: "You" },
+      { name: "Wedding Gift Pool", members: 10, contribution: 100, daysAgo: 200, recipient: "Priya R." },
+    ];
+    const completed: Group[] = samples.map((s, i) => {
+      const closed = new Date(Date.now() - s.daysAgo * 24 * 60 * 60 * 1000);
+      const opened = new Date(closed.getTime() - s.members * 7 * 24 * 60 * 60 * 1000);
+      const memberIds = Array.from({ length: s.members - 1 }, (_, n) => `member${n + 1}`).concat(currentUserId);
+      return {
+        id: baseId + i,
+        name: s.name,
+        members: s.members,
+        totalAmount: s.contribution * s.members,
+        contributionAmount: s.contribution,
+        frequency: "weekly",
+        nextPayout: closed.toISOString().split("T")[0],
+        payoutRecipient: s.recipient,
+        progress: 100,
+        myTurn: false,
+        position: (i % s.members) + 1,
+        myPayoutDate: closed.toISOString().split("T")[0],
+        membersPaid: s.members,
+        status: "completed",
+        inviteCode: `DONE-${i + 1}`,
+        adminId: i % 2 === 0 ? currentUserId : "otherUser",
+        isAdmin: i % 2 === 0,
+        membersList: memberIds,
+        createdAt: opened.toISOString(),
+        isComplete: true,
+        allMembersPaidOut: true,
+        lockWithdrawals: false,
+        allowMultipleContributions: false,
+        payoutOrder: "randomized",
+        payoutSequence: memberIds,
+        hasStarted: true,
+        totalPayoutsSent: s.contribution * s.members,
+      };
+    });
+    setGroups(prev => {
+      const existingCodes = new Set(prev.map(p => p.inviteCode));
+      const fresh = completed.filter(c => !existingCodes.has(c.inviteCode));
+      return [...prev, ...fresh];
+    });
+    toast({
+      title: "Demo Completed Nests Loaded",
+      description: `${samples.length} archived nests added to your history.`,
+    });
+  };
+
   const generateInviteUrl = (groupCode: string) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/?invite=${groupCode}`;
@@ -709,6 +763,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       startDeletionVote,
       castDeletionVote,
       seedDemoPausedNest,
+      seedDemoCompletedNests,
       pendingSettingsTab,
       setPendingSettingsTab,
       navigateToSettings,
