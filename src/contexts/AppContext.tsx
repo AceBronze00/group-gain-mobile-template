@@ -511,6 +511,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       title: "Vote Recorded",
       description: approve ? "You voted to pause." : "You voted to keep active.",
     });
+    // Simulate remaining members voting over the next few seconds
+    simulateRemainingVotes(groupId, "pause");
   };
 
   const startDeletionVote = (groupId: number) => {
@@ -529,20 +531,100 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const castDeletionVote = (groupId: number, approve: boolean) => {
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId || !g.deletionVote || g.deletionVote.hasVoted) return g;
+      const yes = g.deletionVote.yes + (approve ? 1 : 0);
+      const no = g.deletionVote.no + (approve ? 0 : 1);
+      const totalVoted = yes + no;
+      const majorityThreshold = Math.floor(g.members / 2) + 1;
+      if (yes >= majorityThreshold) {
+        setTimeout(() => {
+          toast({
+            title: "Deletion Approved",
+            description: "Majority voted to delete. The nest has been removed.",
+          });
+          setGroups(curr => curr.filter(x => x.id !== groupId));
+          setWalletEntries(curr => curr.filter(e => e.groupId !== groupId));
+        }, 0);
+        return { ...g, deletionVote: { ...g.deletionVote, yes, no, hasVoted: true } };
+      }
+      if (no >= majorityThreshold || totalVoted >= g.members) {
+        setTimeout(() => toast({
+          title: "Deletion Rejected",
+          description: "Majority voted to keep the nest. Activity continues.",
+        }), 0);
+        return { ...g, deletionVote: undefined };
+      }
       return {
         ...g,
-        deletionVote: {
-          ...g.deletionVote,
-          yes: g.deletionVote.yes + (approve ? 1 : 0),
-          no: g.deletionVote.no + (approve ? 0 : 1),
-          hasVoted: true,
-        }
+        deletionVote: { ...g.deletionVote, yes, no, hasVoted: true },
       };
     }));
     toast({
       title: "Vote Recorded",
       description: approve ? "You voted to delete." : "You voted to keep.",
     });
+    simulateRemainingVotes(groupId, "delete");
+  };
+
+  // Simulate remaining members casting their votes over a few seconds
+  const simulateRemainingVotes = (groupId: number, kind: "pause" | "delete") => {
+    let step = 0;
+    const tick = () => {
+      let shouldContinue = false;
+      setGroups(prev => prev.map(g => {
+        if (g.id !== groupId) return g;
+        const vote = kind === "pause" ? g.pauseVote : g.deletionVote;
+        if (!vote) return g;
+        const totalVoted = vote.yes + vote.no;
+        const remaining = g.members - totalVoted;
+        if (remaining <= 0) return g;
+        const majorityThreshold = Math.floor(g.members / 2) + 1;
+        // Random vote, slightly weighted toward the initiator's intent
+        const approve = Math.random() < 0.55;
+        const yes = vote.yes + (approve ? 1 : 0);
+        const no = vote.no + (approve ? 0 : 1);
+        const newTotal = yes + no;
+        // Resolve if threshold reached
+        if (yes >= majorityThreshold) {
+          if (kind === "pause") {
+            setTimeout(() => toast({
+              title: "Pause Approved",
+              description: "Majority voted to pause. The nest is now paused.",
+            }), 0);
+            return { ...g, isPaused: true, pauseVote: undefined };
+          } else {
+            setTimeout(() => {
+              toast({
+                title: "Deletion Approved",
+                description: "Majority voted to delete. The nest has been removed.",
+              });
+              setGroups(curr => curr.filter(x => x.id !== groupId));
+              setWalletEntries(curr => curr.filter(e => e.groupId !== groupId));
+            }, 0);
+            return { ...g, deletionVote: { ...vote, yes, no } };
+          }
+        }
+        if (no >= majorityThreshold || newTotal >= g.members) {
+          setTimeout(() => toast({
+            title: kind === "pause" ? "Pause Rejected" : "Deletion Rejected",
+            description: kind === "pause"
+              ? "Majority voted against pausing. Activity continues."
+              : "Majority voted to keep the nest. Activity continues.",
+          }), 0);
+          return kind === "pause"
+            ? { ...g, pauseVote: undefined }
+            : { ...g, deletionVote: undefined };
+        }
+        shouldContinue = newTotal < g.members;
+        return kind === "pause"
+          ? { ...g, pauseVote: { ...vote, yes, no } }
+          : { ...g, deletionVote: { ...vote, yes, no } };
+      }));
+      step++;
+      if (shouldContinue && step < 20) {
+        setTimeout(tick, 1200 + Math.random() * 800);
+      }
+    };
+    setTimeout(tick, 1200 + Math.random() * 800);
   };
 
   const seedDemoPausedNest = () => {
