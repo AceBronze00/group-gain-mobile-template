@@ -54,10 +54,11 @@ interface GroupDetailsModalProps {
 
 const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps) => {
   const { toast } = useToast();
-  const { deleteGroup, setNestPaused, startDeletionVote: startVote, castDeletionVote } = useApp();
+  const { deleteGroup, setNestPaused, startDeletionVote: startVote, castDeletionVote, startPauseVote, castPauseVote } = useApp();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRoundDetails, setShowRoundDetails] = useState(false);
   const [voteOpen, setVoteOpen] = useState(false);
+  const [pauseVoteOpen, setPauseVoteOpen] = useState(false);
 
   const isPaused = !!group.isPaused;
   const voteActive = !!group.deletionVote?.active;
@@ -65,9 +66,24 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
   const noVotes = group.deletionVote?.no ?? 0;
   const hasVoted = !!group.deletionVote?.hasVoted;
 
-  const handleTogglePause = () => setNestPaused(group.id, !isPaused);
+  const pauseVoteActive = !!group.pauseVote?.active;
+  const pauseYes = group.pauseVote?.yes ?? 0;
+  const pauseNo = group.pauseVote?.no ?? 0;
+  const hasVotedPause = !!group.pauseVote?.hasVoted;
+
+  const handleTogglePause = () => {
+    if (isPaused) {
+      setNestPaused(group.id, false);
+    } else if (!pauseVoteActive) {
+      startPauseVote(group.id);
+      setPauseVoteOpen(true);
+    } else {
+      setPauseVoteOpen(true);
+    }
+  };
   const startDeletionVote = () => { startVote(group.id); setVoteOpen(true); };
   const castVote = (approve: boolean) => castDeletionVote(group.id, approve);
+  const castPause = (approve: boolean) => castPauseVote(group.id, approve);
 
   const handleDeleteGroup = () => {
     deleteGroup(group.id);
@@ -181,7 +197,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
         </DialogHeader>
 
         {/* Member-visible status banners */}
-        {(isPaused || voteActive) && (
+        {(isPaused || voteActive || pauseVoteActive) && (
           <div className="space-y-2">
             {isPaused && (
               <Card className="p-3 border-amber-300 bg-amber-50">
@@ -193,6 +209,32 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                       The admin has temporarily suspended contributions and payouts.
                     </p>
                   </div>
+                </div>
+              </Card>
+            )}
+            {pauseVoteActive && (
+              <Card className="p-3 border-amber-300 bg-amber-50">
+                <div className="flex items-start gap-2">
+                  <Vote className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-amber-800">
+                      {group.pauseVote?.requestedBy && group.pauseVote.requestedBy !== "You"
+                        ? `${group.pauseVote.requestedBy} requested a pause vote`
+                        : "Pause vote in progress"}
+                    </p>
+                    <p className="text-xs text-amber-700">
+                      {pauseYes} pause · {pauseNo} keep active · {pauseYes + pauseNo}/{group.members} voted
+                      {group.pauseVote?.requestedAt && (
+                        <> · {new Date(group.pauseVote.requestedAt).toLocaleString()}</>
+                      )}
+                    </p>
+                    {hasVotedPause && (
+                      <p className="text-xs text-amber-800 mt-1">✓ Your vote has been recorded</p>
+                    )}
+                  </div>
+                  <Button size="sm" onClick={() => setPauseVoteOpen(true)}>
+                    {hasVotedPause ? "View" : "Vote"}
+                  </Button>
                 </div>
               </Card>
             )}
@@ -525,7 +567,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                     Danger Zone
                   </h4>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Pause activity, start a member vote, or permanently delete this nest.
+                    Pausing requires a majority member vote. You can also start a deletion vote or permanently delete this nest.
                   </p>
                   {isPaused && (
                     <Badge variant="outline" className="mb-3 text-amber-600 border-amber-300">
@@ -542,8 +584,10 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                     >
                       {isPaused ? (
                         <><PlayCircle className="h-4 w-4 mr-2" />Resume Nest</>
+                      ) : pauseVoteActive ? (
+                        <><Vote className="h-4 w-4 mr-2" />View Pause Vote</>
                       ) : (
-                        <><PauseCircle className="h-4 w-4 mr-2" />Pause Nest</>
+                        <><PauseCircle className="h-4 w-4 mr-2" />Start Pause Vote</>
                       )}
                     </Button>
                     <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
@@ -697,6 +741,61 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                 <Button variant="outline" size="sm" onClick={() => castVote(false)}>
                   <ThumbsDown className="h-4 w-4 mr-2" />
                   Vote Keep
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-center text-muted-foreground">
+                Your vote has been recorded.
+              </p>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={pauseVoteOpen} onOpenChange={setPauseVoteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+              <PauseCircle className="h-5 w-5 mr-2 text-amber-600" />
+              Vote to Pause "{group.name}"
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Pausing suspends contributions and payouts. A majority of members must approve.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3 py-2">
+            <div className="grid grid-cols-2 gap-3">
+              <Card className="p-3 text-center">
+                <ThumbsUp className="h-5 w-5 mx-auto text-amber-600 mb-1" />
+                <div className="text-2xl font-bold">{pauseYes}</div>
+                <div className="text-xs text-muted-foreground">Pause</div>
+              </Card>
+              <Card className="p-3 text-center">
+                <ThumbsDown className="h-5 w-5 mx-auto text-green-600 mb-1" />
+                <div className="text-2xl font-bold">{pauseNo}</div>
+                <div className="text-xs text-muted-foreground">Keep Active</div>
+              </Card>
+            </div>
+
+            <div className="text-xs text-center text-muted-foreground">
+              {pauseYes + pauseNo} of {group.members} members have voted ·
+              {" "}Need {Math.floor(group.members / 2) + 1} to pass
+            </div>
+
+            {!hasVotedPause ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Button size="sm" onClick={() => castPause(true)} className="bg-amber-600 hover:bg-amber-700 text-white">
+                  <ThumbsUp className="h-4 w-4 mr-2" />
+                  Vote Pause
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => castPause(false)}>
+                  <ThumbsDown className="h-4 w-4 mr-2" />
+                  Keep Active
                 </Button>
               </div>
             ) : (
