@@ -30,6 +30,14 @@ export interface Group {
   hasStarted: boolean;
   totalPayoutsSent: number;
   isPaused?: boolean;
+  pauseVote?: {
+    active: boolean;
+    yes: number;
+    no: number;
+    hasVoted?: boolean;
+    requestedBy?: string;
+    requestedAt?: string;
+  };
   deletionVote?: {
     active: boolean;
     yes: number;
@@ -72,6 +80,8 @@ interface AppContextType {
   deleteGroup: (groupId: number) => void;
   calculateLateJoinerAmount: (groupCode: string) => number;
   setNestPaused: (groupId: number, paused: boolean) => void;
+  startPauseVote: (groupId: number) => void;
+  castPauseVote: (groupId: number, approve: boolean) => void;
   startDeletionVote: (groupId: number) => void;
   castDeletionVote: (groupId: number, approve: boolean) => void;
   seedDemoPausedNest: () => void;
@@ -457,6 +467,52 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const startPauseVote = (groupId: number) => {
+    setGroups(prev => prev.map(g => g.id === groupId
+      ? { ...g, pauseVote: {
+          active: true, yes: 0, no: 0, hasVoted: false,
+          requestedBy: "You", requestedAt: new Date().toISOString()
+        } }
+      : g));
+    toast({
+      title: "Pause Vote Started",
+      description: "All members can now vote on whether to pause this nest. Majority required.",
+    });
+  };
+
+  const castPauseVote = (groupId: number, approve: boolean) => {
+    setGroups(prev => prev.map(g => {
+      if (g.id !== groupId || !g.pauseVote || g.pauseVote.hasVoted) return g;
+      const yes = g.pauseVote.yes + (approve ? 1 : 0);
+      const no = g.pauseVote.no + (approve ? 0 : 1);
+      const totalVoted = yes + no;
+      const majorityThreshold = Math.floor(g.members / 2) + 1;
+      // Resolve vote when majority reached either way, or all members voted
+      if (yes >= majorityThreshold) {
+        setTimeout(() => toast({
+          title: "Pause Approved",
+          description: "Majority voted to pause. The nest is now paused.",
+        }), 0);
+        return { ...g, isPaused: true, pauseVote: undefined };
+      }
+      if (no >= majorityThreshold || totalVoted >= g.members) {
+        setTimeout(() => toast({
+          title: "Pause Rejected",
+          description: "Majority voted against pausing. Activity continues.",
+        }), 0);
+        return { ...g, pauseVote: undefined };
+      }
+      return {
+        ...g,
+        pauseVote: { ...g.pauseVote, yes, no, hasVoted: true },
+      };
+    }));
+    toast({
+      title: "Vote Recorded",
+      description: approve ? "You voted to pause." : "You voted to keep active.",
+    });
+  };
+
   const startDeletionVote = (groupId: number) => {
     setGroups(prev => prev.map(g => g.id === groupId
       ? { ...g, deletionVote: {
@@ -566,6 +622,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       deleteGroup,
       calculateLateJoinerAmount,
       setNestPaused,
+      startPauseVote,
+      castPauseVote,
       startDeletionVote,
       castDeletionVote,
       seedDemoPausedNest,
