@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { Users, Calendar, CheckCircle, Archive, ChevronRight, Crown } from "lucide-react";
 import { useApp, type Group } from "@/contexts/AppContext";
 
@@ -16,7 +17,7 @@ const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 
 const NestListModal = ({ open, onOpenChange, variant, onSelect }: NestListModalProps) => {
-  const { groups } = useApp();
+  const { groups, seedDemoCompletedNests } = useApp();
   const isCompleted = variant === "completed";
   const list = groups.filter((g) =>
     isCompleted ? g.status === "completed" : g.status !== "completed"
@@ -59,6 +60,16 @@ const NestListModal = ({ open, onOpenChange, variant, onSelect }: NestListModalP
                   ? "Completed nests will be archived here for your records."
                   : "Create or join a nest to get started."}
               </p>
+              {isCompleted && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => seedDemoCompletedNests()}
+                >
+                  Load demo completed nests
+                </Button>
+              )}
             </Card>
           ) : (
             list.map((nest) => (

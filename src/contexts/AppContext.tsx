@@ -85,6 +85,7 @@ interface AppContextType {
   startDeletionVote: (groupId: number) => void;
   castDeletionVote: (groupId: number, approve: boolean) => void;
   seedDemoPausedNest: () => void;
+  seedDemoCompletedNests: () => void;
   // Navigation state for settings
   pendingSettingsTab: string | null;
   setPendingSettingsTab: (tab: string | null) => void;
@@ -673,6 +674,86 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const seedDemoCompletedNests = () => {
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    const samples = [
+      {
+        name: "Holiday Travel Fund",
+        members: 6,
+        contributionAmount: 250,
+        frequency: "monthly",
+        completedDaysAgo: 14,
+        startedDaysAgo: 200,
+      },
+      {
+        name: "Office Lunch Pool",
+        members: 5,
+        contributionAmount: 50,
+        frequency: "weekly",
+        completedDaysAgo: 45,
+        startedDaysAgo: 80,
+      },
+      {
+        name: "Down Payment Circle",
+        members: 8,
+        contributionAmount: 500,
+        frequency: "monthly",
+        completedDaysAgo: 90,
+        startedDaysAgo: 330,
+      },
+      {
+        name: "Wedding Gift Nest",
+        members: 4,
+        contributionAmount: 150,
+        frequency: "weekly",
+        completedDaysAgo: 120,
+        startedDaysAgo: 180,
+      },
+    ];
+
+    const completed: Group[] = samples.map((s, idx) => {
+      const completedDate = new Date(now - s.completedDaysAgo * day);
+      const memberIds = Array.from({ length: s.members - 1 }, (_, i) => `member${idx}_${i}`);
+      const fullList = [...memberIds, currentUserId];
+      return {
+        id: now + idx + 1,
+        name: s.name,
+        members: s.members,
+        totalAmount: s.contributionAmount * s.members,
+        contributionAmount: s.contributionAmount,
+        frequency: s.frequency,
+        nextPayout: completedDate.toISOString().split("T")[0],
+        payoutRecipient: "All members paid",
+        progress: 100,
+        myTurn: false,
+        position: (idx % s.members) + 1,
+        myPayoutDate: completedDate.toISOString().split("T")[0],
+        membersPaid: s.members,
+        status: "completed",
+        inviteCode: `DONE-${idx}`,
+        adminId: idx % 2 === 0 ? currentUserId : "otherUser",
+        isAdmin: idx % 2 === 0,
+        membersList: fullList,
+        createdAt: new Date(now - s.startedDaysAgo * day).toISOString(),
+        isComplete: true,
+        allMembersPaidOut: true,
+        lockWithdrawals: true,
+        allowMultipleContributions: false,
+        payoutOrder: "randomized",
+        payoutSequence: fullList,
+        hasStarted: true,
+        totalPayoutsSent: s.contributionAmount * s.members,
+      };
+    });
+
+    setGroups(prev => [...prev, ...completed]);
+    toast({
+      title: "Demo Completed Nests Loaded",
+      description: `${completed.length} archived nests added to your history.`,
+    });
+  };
+
   const generateInviteUrl = (groupCode: string) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/?invite=${groupCode}`;
@@ -709,6 +790,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       startDeletionVote,
       castDeletionVote,
       seedDemoPausedNest,
+      seedDemoCompletedNests,
       pendingSettingsTab,
       setPendingSettingsTab,
       navigateToSettings,
