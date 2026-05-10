@@ -35,6 +35,8 @@ interface ProfileContentProps {
   setIsSettingsOpen: (open: boolean) => void;
   onTrustScoreClick: () => void;
   onSettingClick: (tab: string) => void;
+  onActiveNestsClick?: () => void;
+  onCompletedNestsClick?: () => void;
 }
 
 const ProfileContent = ({ 
@@ -43,14 +45,18 @@ const ProfileContent = ({
   isSettingsOpen, 
   setIsSettingsOpen, 
   onTrustScoreClick, 
-  onSettingClick 
+  onSettingClick,
+  onActiveNestsClick,
+  onCompletedNestsClick,
 }: ProfileContentProps) => {
   return (
     <div className="space-y-6 pb-20">
       <ProfileHeader 
         user={user} 
         activeGroups={activeGroups} 
-        onTrustScoreClick={onTrustScoreClick} 
+        onTrustScoreClick={onTrustScoreClick}
+        onActiveNestsClick={onActiveNestsClick}
+        onCompletedNestsClick={onCompletedNestsClick}
       />
       
       <SettingsSection 
