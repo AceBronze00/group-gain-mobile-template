@@ -567,7 +567,7 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                     Danger Zone
                   </h4>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Pause activity, start a member vote, or permanently delete this nest.
+                    Pausing requires a majority member vote. You can also start a deletion vote or permanently delete this nest.
                   </p>
                   {isPaused && (
                     <Badge variant="outline" className="mb-3 text-amber-600 border-amber-300">
@@ -584,8 +584,10 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
                     >
                       {isPaused ? (
                         <><PlayCircle className="h-4 w-4 mr-2" />Resume Nest</>
+                      ) : pauseVoteActive ? (
+                        <><Vote className="h-4 w-4 mr-2" />View Pause Vote</>
                       ) : (
-                        <><PauseCircle className="h-4 w-4 mr-2" />Pause Nest</>
+                        <><PauseCircle className="h-4 w-4 mr-2" />Start Pause Vote</>
                       )}
                     </Button>
                     <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
