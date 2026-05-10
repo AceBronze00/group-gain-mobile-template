@@ -21,9 +21,17 @@ interface ProfileHeaderProps {
   user: User;
   activeGroups: ActiveGroup[];
   onTrustScoreClick: () => void;
+  onActiveNestsClick?: () => void;
+  onCompletedNestsClick?: () => void;
 }
 
-const ProfileHeader = ({ user, activeGroups, onTrustScoreClick }: ProfileHeaderProps) => {
+const ProfileHeader = ({
+  user,
+  activeGroups,
+  onTrustScoreClick,
+  onActiveNestsClick,
+  onCompletedNestsClick,
+}: ProfileHeaderProps) => {
   const getTrustScoreColor = (score: number) => {
     if (score >= 80) return "text-green-600";
     if (score >= 60) return "text-yellow-600";
@@ -55,14 +63,22 @@ const ProfileHeader = ({ user, activeGroups, onTrustScoreClick }: ProfileHeaderP
       </div>
       
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
-        <div className="text-center">
+        <button
+          type="button"
+          onClick={onCompletedNestsClick}
+          className="text-center rounded-lg p-2 -m-2 transition hover:bg-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
           <div className="text-2xl font-bold text-gray-800">{user.groupsCompleted}</div>
-          <div className="text-sm text-gray-600">Groups Completed</div>
-        </div>
-        <div className="text-center">
+          <div className="text-sm text-gray-600">Nests Completed</div>
+        </button>
+        <button
+          type="button"
+          onClick={onActiveNestsClick}
+          className="text-center rounded-lg p-2 -m-2 transition hover:bg-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
           <div className="text-2xl font-bold text-blue-600">{activeGroups.length}</div>
           <div className="text-sm text-gray-600">Active Nests</div>
-        </div>
+        </button>
       </div>
     </Card>
   );

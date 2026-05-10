@@ -4,14 +4,18 @@ import { Button } from "@/components/ui/button";
 import TrustScoreProfile from "@/components/TrustScoreProfile";
 import ProfileSettings from "./ProfileSettings";
 import ProfileContent from "./ProfileContent";
-import { mockUser, mockActiveGroups } from "@/data/mockUserData";
+import { mockUser } from "@/data/mockUserData";
 import { useApp } from "@/contexts/AppContext";
+import NestListModal from "./NestListModal";
+import GroupDetailsModal from "@/components/GroupDetailsModal";
 
 const ProfileTab = () => {
-  const { pendingSettingsTab, setPendingSettingsTab } = useApp();
+  const { pendingSettingsTab, setPendingSettingsTab, groups } = useApp();
   const [activeSettingsTab, setActiveSettingsTab] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showTrustScore, setShowTrustScore] = useState(false);
+  const [nestListVariant, setNestListVariant] = useState<"active" | "completed" | null>(null);
+  const [selectedNest, setSelectedNest] = useState<any>(null);
 
   // Handle navigation from other components (like SettingsTab)
   useEffect(() => {
@@ -48,15 +52,39 @@ const ProfileTab = () => {
     );
   }
 
+  const activeGroups = groups.filter((g) => g.status !== "completed");
+
   return (
-    <ProfileContent
-      user={mockUser}
-      activeGroups={mockActiveGroups}
-      isSettingsOpen={isSettingsOpen}
-      setIsSettingsOpen={setIsSettingsOpen}
-      onTrustScoreClick={() => setShowTrustScore(true)}
-      onSettingClick={setActiveSettingsTab}
-    />
+    <>
+      <ProfileContent
+        user={mockUser}
+        activeGroups={activeGroups as any}
+        isSettingsOpen={isSettingsOpen}
+        setIsSettingsOpen={setIsSettingsOpen}
+        onTrustScoreClick={() => setShowTrustScore(true)}
+        onSettingClick={setActiveSettingsTab}
+        onActiveNestsClick={() => setNestListVariant("active")}
+        onCompletedNestsClick={() => setNestListVariant("completed")}
+      />
+      {nestListVariant && (
+        <NestListModal
+          open={!!nestListVariant}
+          onOpenChange={(o) => !o && setNestListVariant(null)}
+          variant={nestListVariant}
+          onSelect={(nest) => {
+            setSelectedNest(nest);
+            setNestListVariant(null);
+          }}
+        />
+      )}
+      {selectedNest && (
+        <GroupDetailsModal
+          group={selectedNest}
+          open={!!selectedNest}
+          onOpenChange={(o) => !o && setSelectedNest(null)}
+        />
+      )}
+    </>
   );
 };
 
