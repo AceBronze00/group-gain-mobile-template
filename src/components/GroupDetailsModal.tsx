@@ -755,6 +755,61 @@ const GroupDetailsModal = ({ group, open, onOpenChange }: GroupDetailsModalProps
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={pauseVoteOpen} onOpenChange={setPauseVoteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+              <PauseCircle className="h-5 w-5 mr-2 text-amber-600" />
+              Vote to Pause "{group.name}"
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Pausing suspends contributions and payouts. A majority of members must approve.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-3 py-2">
+            <div className="grid grid-cols-2 gap-3">
+              <Card className="p-3 text-center">
+                <ThumbsUp className="h-5 w-5 mx-auto text-amber-600 mb-1" />
+                <div className="text-2xl font-bold">{pauseYes}</div>
+                <div className="text-xs text-muted-foreground">Pause</div>
+              </Card>
+              <Card className="p-3 text-center">
+                <ThumbsDown className="h-5 w-5 mx-auto text-green-600 mb-1" />
+                <div className="text-2xl font-bold">{pauseNo}</div>
+                <div className="text-xs text-muted-foreground">Keep Active</div>
+              </Card>
+            </div>
+
+            <div className="text-xs text-center text-muted-foreground">
+              {pauseYes + pauseNo} of {group.members} members have voted ·
+              {" "}Need {Math.floor(group.members / 2) + 1} to pass
+            </div>
+
+            {!hasVotedPause ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Button size="sm" onClick={() => castPause(true)} className="bg-amber-600 hover:bg-amber-700 text-white">
+                  <ThumbsUp className="h-4 w-4 mr-2" />
+                  Vote Pause
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => castPause(false)}>
+                  <ThumbsDown className="h-4 w-4 mr-2" />
+                  Keep Active
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-center text-muted-foreground">
+                Your vote has been recorded.
+              </p>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
