@@ -85,6 +85,7 @@ interface AppContextType {
   startDeletionVote: (groupId: number) => void;
   castDeletionVote: (groupId: number, approve: boolean) => void;
   seedDemoPausedNest: () => void;
+  seedDemoCompletedNests: () => void;
   // Navigation state for settings
   pendingSettingsTab: string | null;
   setPendingSettingsTab: (tab: string | null) => void;
