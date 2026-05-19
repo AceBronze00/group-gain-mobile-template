@@ -98,11 +98,57 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [groups, setGroups] = useState<Group[]>([]);
 
-  const [walletEntries, setWalletEntries] = useState<WalletEntry[]>([]);
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [pendingSettingsTab, setPendingSettingsTab] = useState<string | null>(null);
-  
   const currentUserId = "currentUser";
+
+  // Seed example wallet entries so Available and Locked sheets show content out of the box.
+  const _now = Date.now();
+  const _day = 24 * 60 * 60 * 1000;
+  const initialWalletEntries: WalletEntry[] = [
+    {
+      id: 9001,
+      userId: currentUserId,
+      groupId: 9001,
+      groupName: "Summer Savings Circle",
+      amount: 1200,
+      receivedDate: new Date(_now - 12 * _day).toISOString(),
+      isLocked: false,
+      groupLockPolicy: false,
+    },
+    {
+      id: 9002,
+      userId: currentUserId,
+      groupId: 9002,
+      groupName: "Family Vacation Fund",
+      amount: 800,
+      receivedDate: new Date(_now - 3 * _day).toISOString(),
+      isLocked: false,
+      groupLockPolicy: false,
+    },
+    {
+      id: 9101,
+      userId: currentUserId,
+      groupId: 9101,
+      groupName: "Office Lunch Pool",
+      amount: 450,
+      receivedDate: new Date(_now - 5 * _day).toISOString(),
+      isLocked: true,
+      groupLockPolicy: true,
+    },
+    {
+      id: 9102,
+      userId: currentUserId,
+      groupId: 9102,
+      groupName: "Holiday Gift Squad",
+      amount: 600,
+      receivedDate: new Date(_now - 1 * _day).toISOString(),
+      isLocked: true,
+      groupLockPolicy: true,
+    },
+  ];
+
+  const [walletEntries, setWalletEntries] = useState<WalletEntry[]>(initialWalletEntries);
+  const [walletBalance, setWalletBalance] = useState(250);
+  const [pendingSettingsTab, setPendingSettingsTab] = useState<string | null>(null);
   const { toast } = useToast();
 
   const navigateToSettings = (tab: string) => {
