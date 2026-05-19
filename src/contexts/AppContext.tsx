@@ -96,13 +96,75 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [groups, setGroups] = useState<Group[]>([]);
-
   const currentUserId = "currentUser";
 
   // Seed example wallet entries so Available and Locked sheets show content out of the box.
   const _now = Date.now();
   const _day = 24 * 60 * 60 * 1000;
+
+  const initialGroups: Group[] = [
+    {
+      id: 8001,
+      name: "Rent Split Crew",
+      members: 6,
+      totalAmount: 2400,
+      contributionAmount: 400,
+      frequency: "monthly",
+      nextPayout: new Date(_now + 21 * _day).toISOString().split("T")[0],
+      payoutRecipient: "Alex",
+      progress: 50,
+      myTurn: false,
+      position: 4,
+      myPayoutDate: new Date(_now + 21 * _day).toISOString().split("T")[0],
+      membersPaid: 3,
+      status: "active",
+      inviteCode: "DEMO-RENT",
+      adminId: "otherUser",
+      isAdmin: false,
+      membersList: ["m1", "m2", "m3", currentUserId, "m4", "m5"],
+      createdAt: new Date(_now - 60 * _day).toISOString(),
+      isComplete: false,
+      allMembersPaidOut: false,
+      lockWithdrawals: false,
+      allowMultipleContributions: false,
+      payoutOrder: "manual",
+      payoutSequence: ["m1", "m2", "m3", currentUserId, "m4", "m5"],
+      hasStarted: true,
+      totalPayoutsSent: 7200,
+    },
+    {
+      id: 8002,
+      name: "Wedding Fund",
+      members: 5,
+      totalAmount: 1500,
+      contributionAmount: 300,
+      frequency: "weekly",
+      nextPayout: new Date(_now + 10 * _day).toISOString().split("T")[0],
+      payoutRecipient: "Jamie",
+      progress: 20,
+      myTurn: false,
+      position: 2,
+      myPayoutDate: new Date(_now + 10 * _day).toISOString().split("T")[0],
+      membersPaid: 1,
+      status: "active",
+      inviteCode: "DEMO-WED",
+      adminId: "otherUser",
+      isAdmin: false,
+      membersList: ["m1", currentUserId, "m2", "m3", "m4"],
+      createdAt: new Date(_now - 14 * _day).toISOString(),
+      isComplete: false,
+      allMembersPaidOut: false,
+      lockWithdrawals: false,
+      allowMultipleContributions: false,
+      payoutOrder: "manual",
+      payoutSequence: ["m1", currentUserId, "m2", "m3", "m4"],
+      hasStarted: true,
+      totalPayoutsSent: 1500,
+    },
+  ];
+
+  const [groups, setGroups] = useState<Group[]>(initialGroups);
+
   const initialWalletEntries: WalletEntry[] = [
     {
       id: 9001,
