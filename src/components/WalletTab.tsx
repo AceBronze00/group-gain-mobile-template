@@ -19,6 +19,7 @@ const WalletTab = () => {
     getUnlockedEntries,
     groups,
     walletBalance,
+    seedDemoWallet,
   } = useApp();
   
   const [showBalance, setShowBalance] = useState(true);
@@ -63,6 +64,8 @@ const WalletTab = () => {
   };
 
   const availableTotal = withdrawableBalance + walletBalance;
+  const isWalletEmpty =
+    totalBalance === 0 && pendingPayouts.length === 0 && lockedEntries.length === 0;
 
   return (
     <div className="space-y-5 pb-24 px-3">
@@ -146,6 +149,15 @@ const WalletTab = () => {
           </div>
         </div>
       </motion.div>
+
+      {isWalletEmpty && (
+        <button
+          onClick={seedDemoWallet}
+          className="w-full text-xs font-medium text-zinc-500 hover:text-zinc-700 underline underline-offset-4 py-1"
+        >
+          Load demo wallet data
+        </button>
+      )}
 
       {/* === SUMMARY CARDS - Dark (always visible) === */}
       <div className="space-y-3">
