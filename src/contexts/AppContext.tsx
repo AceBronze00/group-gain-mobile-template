@@ -755,6 +755,127 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const seedDemoWallet = () => {
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+
+    const unlocked: WalletEntry[] = [
+      {
+        id: now + 101,
+        userId: currentUserId,
+        groupId: now + 101,
+        groupName: "Summer Savings Circle",
+        amount: 1200,
+        receivedDate: new Date(now - 12 * day).toISOString(),
+        isLocked: false,
+        groupLockPolicy: false,
+      },
+      {
+        id: now + 102,
+        userId: currentUserId,
+        groupId: now + 102,
+        groupName: "Family Vacation Fund",
+        amount: 800,
+        receivedDate: new Date(now - 3 * day).toISOString(),
+        isLocked: false,
+        groupLockPolicy: false,
+      },
+    ];
+
+    const locked: WalletEntry[] = [
+      {
+        id: now + 201,
+        userId: currentUserId,
+        groupId: now + 201,
+        groupName: "Office Lunch Pool",
+        amount: 450,
+        receivedDate: new Date(now - 5 * day).toISOString(),
+        isLocked: true,
+        groupLockPolicy: true,
+      },
+      {
+        id: now + 202,
+        userId: currentUserId,
+        groupId: now + 202,
+        groupName: "Holiday Gift Squad",
+        amount: 600,
+        receivedDate: new Date(now - 1 * day).toISOString(),
+        isLocked: true,
+        groupLockPolicy: true,
+      },
+    ];
+
+    const pendingGroups: Group[] = [
+      {
+        id: now + 301,
+        name: "Rent Split Crew",
+        members: 6,
+        totalAmount: 2400,
+        contributionAmount: 400,
+        frequency: "monthly",
+        nextPayout: new Date(now + 21 * day).toISOString().split("T")[0],
+        payoutRecipient: "Alex",
+        progress: 50,
+        myTurn: false,
+        position: 4,
+        myPayoutDate: new Date(now + 21 * day).toISOString().split("T")[0],
+        membersPaid: 3,
+        status: "active",
+        inviteCode: "DEMO-RENT",
+        adminId: "otherUser",
+        isAdmin: false,
+        membersList: ["m1", "m2", "m3", currentUserId, "m4", "m5"],
+        createdAt: new Date(now - 60 * day).toISOString(),
+        isComplete: false,
+        allMembersPaidOut: false,
+        lockWithdrawals: false,
+        allowMultipleContributions: false,
+        payoutOrder: "manual",
+        payoutSequence: ["m1", "m2", "m3", currentUserId, "m4", "m5"],
+        hasStarted: true,
+        totalPayoutsSent: 7200,
+      },
+      {
+        id: now + 302,
+        name: "Wedding Fund",
+        members: 5,
+        totalAmount: 1500,
+        contributionAmount: 300,
+        frequency: "weekly",
+        nextPayout: new Date(now + 10 * day).toISOString().split("T")[0],
+        payoutRecipient: "Jamie",
+        progress: 20,
+        myTurn: false,
+        position: 2,
+        myPayoutDate: new Date(now + 10 * day).toISOString().split("T")[0],
+        membersPaid: 1,
+        status: "active",
+        inviteCode: "DEMO-WED",
+        adminId: "otherUser",
+        isAdmin: false,
+        membersList: ["m1", currentUserId, "m2", "m3", "m4"],
+        createdAt: new Date(now - 14 * day).toISOString(),
+        isComplete: false,
+        allMembersPaidOut: false,
+        lockWithdrawals: false,
+        allowMultipleContributions: false,
+        payoutOrder: "manual",
+        payoutSequence: ["m1", currentUserId, "m2", "m3", "m4"],
+        hasStarted: true,
+        totalPayoutsSent: 1500,
+      },
+    ];
+
+    setWalletBalance(prev => prev + 250);
+    setWalletEntries(prev => [...prev, ...unlocked, ...locked]);
+    setGroups(prev => [...prev, ...pendingGroups]);
+
+    toast({
+      title: "Demo Wallet Data Loaded",
+      description: "Available, pending, and locked example funds added.",
+    });
+  };
+
   const generateInviteUrl = (groupCode: string) => {
     const baseUrl = window.location.origin;
     return `${baseUrl}/?invite=${groupCode}`;
@@ -792,6 +913,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       castDeletionVote,
       seedDemoPausedNest,
       seedDemoCompletedNests,
+      seedDemoWallet,
       pendingSettingsTab,
       setPendingSettingsTab,
       navigateToSettings,
